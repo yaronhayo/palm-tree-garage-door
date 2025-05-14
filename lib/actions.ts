@@ -1,7 +1,7 @@
 "use server"
 
 import { Resend } from "resend"
-import { renderBusinessEmail, renderCustomerEmail } from "./email-renderer"
+import { generateBusinessEmailHtml, generateCustomerEmailHtml } from "./email-templates"
 
 export async function sendContactForm(formData: FormData) {
   const apiKey = process.env.RESEND_API_KEY
@@ -25,9 +25,9 @@ export async function sendContactForm(formData: FormData) {
   const resend = new Resend(apiKey)
 
   try {
-    // Render email templates to HTML strings
-    const businessEmailHtml = await renderBusinessEmail({ name, email, phone, service, message })
-    const customerEmailHtml = await renderCustomerEmail({ name, service })
+    // Generate email HTML strings - now with await
+    const businessEmailHtml = await generateBusinessEmailHtml(name, email, phone, service, message)
+    const customerEmailHtml = await generateCustomerEmailHtml(name, service)
 
     // Send email to business
     const { data, error } = await resend.emails.send({
