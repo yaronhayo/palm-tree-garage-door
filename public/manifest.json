@@ -1,0 +1,21 @@
+{
+  "name": "Palm Tree Garage Door Repair",
+  "short_name": "Palm Tree Garage",
+  "description": "Professional garage door repair and installation services for residential and commercial properties.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0D423A",
+  "theme_color": "#0D423A",
+  "icons": [
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

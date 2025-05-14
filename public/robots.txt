@@ -1,0 +1,9 @@
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+# Host
+Host: https://garagedoorspringsrepairfl.com
+
+# Sitemaps
+Sitemap: https://garagedoorspringsrepairfl.com/sitemap.xml

@@ -1,0 +1,3 @@
+npm install react-hook-form @hookform/resolvers zod framer-motion resend
+# or with yarn
+yarn add react-hook-form @hookform/resolvers zod framer-motion resend
