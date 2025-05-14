@@ -1,21 +1,11 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { Resend } from "resend"
 
-// Initialize Resend with API key
-const resend = new Resend(process.env.RESEND_API_KEY)
-
-// Business email from environment variables
-const businessEmail = process.env.BUSINESS_EMAIL
-
 export async function POST(request: NextRequest) {
   // Check if environment variables are set
-  if (!process.env.RESEND_API_KEY || !businessEmail) {
-    console.error("Missing required environment variables: RESEND_API_KEY or BUSINESS_EMAIL")
-    return NextResponse.json(
-      { ok: false, error: "Server configuration error. Please try again later." },
-      { status: 500 },
-    )
-  }
+  const apiKey = process.env.RESEND_API_KEY
+  const businessEmail = process.env.BUSINESS_EMAIL || "support@garagedoorspringsrepairfl.com"
+  const isDevelopment = process.env.NODE_ENV === "development"
 
   try {
     // Parse the request body
@@ -26,6 +16,43 @@ export async function POST(request: NextRequest) {
     if (!issue || !zipCode || !name || !phone || !email) {
       return NextResponse.json({ ok: false, error: "All fields are required" }, { status: 400 })
     }
+
+    // If we're in development and don't have an API key, log the data and return success
+    if (isDevelopment && !apiKey) {
+      console.log("Development mode - Email would be sent with the following data:")
+      console.log({
+        to: businessEmail,
+        from: "Lead Form <onboarding@resend.dev>",
+        subject: "New Lead from Website",
+        name,
+        email,
+        phone,
+        issue,
+        zipCode,
+      })
+
+      // Return success in development mode
+      return NextResponse.json({
+        ok: true,
+        message: "Development mode - Email sending simulated",
+      })
+    }
+
+    // In production, we need the API key
+    if (!apiKey) {
+      console.error("Missing required environment variable: RESEND_API_KEY")
+      return NextResponse.json(
+        {
+          ok: false,
+          error:
+            "Email service not configured. Your submission has been logged, but email notifications are not available.",
+        },
+        { status: 500 },
+      )
+    }
+
+    // Initialize Resend with API key
+    const resend = new Resend(apiKey)
 
     // Format the data for the business email
     const businessEmailHtml = `
@@ -65,7 +92,7 @@ export async function POST(request: NextRequest) {
 
     // Send email to business
     const businessEmailResult = await resend.emails.send({
-      from: `Lead Form <no-reply@palmtreegaragedoor.com>`,
+      from: `Lead Form <onboarding@resend.dev>`,
       to: businessEmail,
       subject: "New Lead from Website",
       html: businessEmailHtml,
@@ -74,7 +101,7 @@ export async function POST(request: NextRequest) {
 
     // Send confirmation email to customer
     const customerEmailResult = await resend.emails.send({
-      from: `Palm Tree Garage Door <no-reply@palmtreegaragedoor.com>`,
+      from: `Palm Tree Garage Door <onboarding@resend.dev>`,
       to: email,
       subject: "We got your request 🚀",
       text: customerEmailText,

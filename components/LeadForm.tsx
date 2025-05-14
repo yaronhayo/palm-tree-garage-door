@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { motion, AnimatePresence } from "framer-motion"
-import { ArrowRight, Loader2 } from "lucide-react"
+import { ArrowRight, Loader2, CheckCircle } from "lucide-react"
 
 // Define the form schema with Zod
 const formSchema = z.object({
@@ -31,6 +31,8 @@ export default function LeadForm() {
   const [step, setStep] = useState(1)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const [submitSuccess, setSubmitSuccess] = useState(false)
+  const [devModeMessage, setDevModeMessage] = useState<string | null>(null)
 
   // Initialize React Hook Form
   const {
@@ -40,6 +42,7 @@ export default function LeadForm() {
     trigger,
     getValues,
     watch,
+    reset,
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
     mode: "onChange",
@@ -77,6 +80,7 @@ export default function LeadForm() {
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true)
     setSubmitError(null)
+    setDevModeMessage(null)
 
     try {
       // Push to Google Tag Manager dataLayer
@@ -103,14 +107,27 @@ export default function LeadForm() {
       const result = await response.json()
 
       if (result.ok) {
-        // Redirect to thank you page
-        router.push("/thank-you")
+        // Check if we're in development mode
+        if (result.message && result.message.includes("Development mode")) {
+          setDevModeMessage("Development mode: Your submission was successful, but emails were not sent.")
+          setSubmitSuccess(true)
+          reset() // Reset the form
+        } else {
+          // Redirect to thank you page in production
+          router.push("/thank-you")
+        }
       } else {
-        throw new Error(result.error || "Something went wrong")
+        // Handle API error with the error message from the API
+        throw new Error(result.error || "Something went wrong with your submission. Please try again.")
       }
     } catch (error) {
       console.error("Error submitting form:", error)
       setSubmitError(error instanceof Error ? error.message : "Failed to submit form. Please try again.")
+
+      // Log additional details for debugging
+      if (error instanceof Error) {
+        console.error("Error details:", error.stack)
+      }
     } finally {
       setIsSubmitting(false)
     }
@@ -128,6 +145,37 @@ export default function LeadForm() {
     { value: "new-installation", label: "New installation" },
     { value: "other", label: "Other issue" },
   ]
+
+  // If form was successfully submitted in dev mode
+  if (submitSuccess && devModeMessage) {
+    return (
+      <section id="lead-form" className="py-16 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="max-w-2xl mx-auto">
+            <div className="bg-white rounded-lg shadow-md p-6 md:p-8 text-center">
+              <div className="flex justify-center mb-4">
+                <div className="bg-green-100 p-3 rounded-full">
+                  <CheckCircle className="h-12 w-12 text-green-600" />
+                </div>
+              </div>
+              <h2 className="text-2xl font-bold text-primary-600 mb-4">Form Submitted Successfully</h2>
+              <p className="text-gray-600 mb-6">{devModeMessage}</p>
+              <button
+                onClick={() => {
+                  setSubmitSuccess(false)
+                  setDevModeMessage(null)
+                  setStep(1)
+                }}
+                className="bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 px-6 rounded-md transition-colors"
+              >
+                Submit Another Request
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
 
   return (
     <section id="lead-form" className="py-16 bg-gray-50">
