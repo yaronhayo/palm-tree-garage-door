@@ -1,3 +1,5 @@
+"use server"
+
 import type * as React from "react"
 
 interface EmailTemplateProps {
