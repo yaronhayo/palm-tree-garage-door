@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
@@ -93,7 +92,7 @@ export default function StickyHeader() {
     <AnimatePresence>
       {isVisible && (
         <motion.div
-          className="fixed top-0 left-0 right-0 bg-primary-600/95 backdrop-blur-sm shadow-md z-50"
+          className="fixed top-0 left-0 right-0 bg-primary-600/95 backdrop-blur-sm shadow-md z-[100]"
           initial={{ y: -100 }}
           animate={{ y: 0 }}
           exit={{ y: -100 }}
@@ -132,7 +131,7 @@ export default function StickyHeader() {
       )}
       <header
         className={cn(
-          "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
+          "fixed top-0 left-0 right-0 z-[100] transition-all duration-300",
           isVisible
             ? ""
             : scrollDirection === "down"
@@ -143,7 +142,7 @@ export default function StickyHeader() {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <Link href="/" className="relative z-10 hover:opacity-90 transition-all duration-300 hover:scale-105">
+            <Link href="/" className="relative z-[110] hover:opacity-90 transition-all duration-300 hover:scale-105">
               <Image
                 src="/logo.png"
                 alt="Palm Tree Garage Door Repair"
@@ -211,7 +210,7 @@ export default function StickyHeader() {
 
             {/* Mobile Menu Button */}
             <button
-              className="md:hidden text-white p-2 transition-transform duration-300 hover:scale-110 active:scale-95 z-[60]"
+              className="md:hidden text-white p-2 transition-transform duration-300 hover:scale-110 active:scale-95 z-[110]"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               aria-label={isMenuOpen ? "Close menu" : "Open menu"}
             >
@@ -222,7 +221,7 @@ export default function StickyHeader() {
 
         {/* Mobile Menu - Fullscreen overlay */}
         <div
-          className={`md:hidden fixed inset-0 bg-primary-900 z-[55] mobile-menu-container overflow-auto transition-all duration-300 ${
+          className={`md:hidden fixed inset-0 bg-primary-900 z-[9999] mobile-menu-container overflow-auto transition-all duration-300 ${
             isMenuOpen
               ? "opacity-100 translate-y-0 pointer-events-auto"
               : "opacity-0 -translate-y-full pointer-events-none"

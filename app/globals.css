@@ -170,7 +170,7 @@ html {
   right: 0;
   bottom: 0;
   height: 100%;
-  z-index: 55;
+  z-index: 9999;
 }
 
 .mobile-menu-open {
@@ -178,7 +178,44 @@ html {
 }
 
 .mobile-menu {
+  z-index: 9999;
+}
+
+/* Z-index layers */
+.z-layer-1 {
+  z-index: 10;
+}
+
+.z-layer-2 {
+  z-index: 20;
+}
+
+.z-layer-3 {
+  z-index: 30;
+}
+
+.z-layer-4 {
+  z-index: 40;
+}
+
+.z-layer-5 {
+  z-index: 50;
+}
+
+.z-layer-header {
   z-index: 100;
+}
+
+.z-layer-modal {
+  z-index: 200;
+}
+
+.z-layer-mobile-menu {
+  z-index: 9999;
+}
+
+.z-layer-mobile-menu-button {
+  z-index: 10000;
 }
 
 /* Ensure proper positioning for fixed elements */

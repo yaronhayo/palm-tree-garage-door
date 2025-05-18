@@ -154,7 +154,7 @@ export default function Header() {
   return (
     <header
       ref={headerRef}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? "bg-primary-600/75 backdrop-blur-sm" : "bg-primary-600"} py-5`}
+      className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${isScrolled ? "bg-primary-600/75 backdrop-blur-sm" : "bg-primary-600"} py-5`}
     >
       <SkipToContent contentId="main-content" />
 
@@ -248,7 +248,7 @@ export default function Header() {
         <div
           id="mobile-menu"
           ref={menuRef}
-          className={`md:hidden fixed inset-0 top-0 z-50 bg-primary-700/95 backdrop-blur-sm overflow-y-auto transition-all duration-300 ${
+          className={`md:hidden fixed inset-0 top-0 z-[9999] bg-primary-700/95 backdrop-blur-sm overflow-y-auto transition-all duration-300 ${
             isMenuOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-full pointer-events-none"
           }`}
           aria-hidden={!isMenuOpen}

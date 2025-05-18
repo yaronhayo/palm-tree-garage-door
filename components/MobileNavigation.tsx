@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -76,7 +75,12 @@ export default function MobileNavigation({ items, phoneNumber, logo }: MobileNav
             <span className="font-medium">{formattedPhone}</span>
           </a>
 
-          <button type="button" className="p-2 text-white" onClick={() => setIsOpen(true)} aria-label="Open menu">
+          <button
+            type="button"
+            className="p-2 text-white z-[110]"
+            onClick={() => setIsOpen(true)}
+            aria-label="Open menu"
+          >
             <Menu className="h-6 w-6" />
           </button>
         </div>
@@ -85,7 +89,7 @@ export default function MobileNavigation({ items, phoneNumber, logo }: MobileNav
       {/* Mobile menu overlay */}
       <div
         className={cn(
-          "fixed inset-0 z-50 bg-black bg-opacity-50 transition-opacity lg:hidden",
+          "fixed inset-0 z-[9990] bg-black bg-opacity-50 transition-opacity lg:hidden",
           isOpen ? "opacity-100" : "opacity-0 pointer-events-none",
         )}
         aria-hidden={!isOpen}
@@ -95,7 +99,7 @@ export default function MobileNavigation({ items, phoneNumber, logo }: MobileNav
       {/* Mobile menu panel */}
       <div
         className={cn(
-          "fixed top-0 right-0 z-50 h-full w-full max-w-xs bg-white shadow-xl transition-transform transform lg:hidden overflow-y-auto",
+          "fixed top-0 right-0 z-[9999] h-full w-full max-w-xs bg-white shadow-xl transition-transform transform lg:hidden overflow-y-auto",
           isOpen ? "translate-x-0" : "translate-x-full",
         )}
         aria-hidden={!isOpen}
@@ -104,7 +108,7 @@ export default function MobileNavigation({ items, phoneNumber, logo }: MobileNav
           <div className="font-bold text-lg text-gray-900">Menu</div>
           <button
             type="button"
-            className="p-2 text-gray-500 hover:text-gray-700"
+            className="p-2 text-gray-500 hover:text-gray-700 z-[110]"
             onClick={() => setIsOpen(false)}
             aria-label="Close menu"
           >
