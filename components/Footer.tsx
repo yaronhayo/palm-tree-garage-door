@@ -25,7 +25,7 @@ import {
 } from "lucide-react"
 import { trackPhoneCall } from "@/lib/dataLayer"
 import { usePathname } from "next/navigation"
-import { useState } from "react"
+import { useState, useCallback } from "react"
 import { PrivacyPolicyModal } from "./PrivacyPolicyModal"
 import { TermsOfServiceModal } from "./TermsOfServiceModal"
 
@@ -46,6 +46,24 @@ export default function Footer() {
     }
     // Otherwise, let the Link component handle navigation to homepage
   }
+
+  // Handle smooth scrolling for anchor links
+  const handleAnchorClick = useCallback(
+    (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+      // Only handle anchor links on the homepage
+      if (pathname === "/" && href.startsWith("/#")) {
+        e.preventDefault()
+        const targetId = href.replace("/#", "")
+        const targetElement = document.getElementById(targetId)
+
+        if (targetElement) {
+          // Scroll to the element
+          targetElement.scrollIntoView({ behavior: "smooth" })
+        }
+      }
+    },
+    [pathname],
+  )
 
   return (
     <>
@@ -191,6 +209,7 @@ export default function Footer() {
                   <Link
                     href="/#services"
                     className="text-gray-300 hover:text-accent-500 transition-colors flex items-center"
+                    onClick={(e) => handleAnchorClick(e, "/#services")}
                   >
                     <Wrench className="h-4 w-4 mr-2 text-accent-500" />
                     Garage Door Repair
@@ -198,8 +217,9 @@ export default function Footer() {
                 </li>
                 <li>
                   <Link
-                    href="/#issues"
+                    href="/#door-problems"
                     className="text-gray-300 hover:text-accent-500 transition-colors flex items-center"
+                    onClick={(e) => handleAnchorClick(e, "/#door-problems")}
                   >
                     <AlertTriangle className="h-4 w-4 mr-2 text-accent-500" />
                     Problems We Solve
@@ -209,6 +229,7 @@ export default function Footer() {
                   <Link
                     href="/#faq"
                     className="text-gray-300 hover:text-accent-500 transition-colors flex items-center"
+                    onClick={(e) => handleAnchorClick(e, "/#faq")}
                   >
                     <HelpCircle className="h-4 w-4 mr-2 text-accent-500" />
                     FAQ
@@ -218,6 +239,7 @@ export default function Footer() {
                   <Link
                     href="/#testimonials"
                     className="text-gray-300 hover:text-accent-500 transition-colors flex items-center"
+                    onClick={(e) => handleAnchorClick(e, "/#testimonials")}
                   >
                     <Star className="h-4 w-4 mr-2 text-accent-500" />
                     Reviews
@@ -227,6 +249,7 @@ export default function Footer() {
                   <Link
                     href="/#booking"
                     className="text-gray-300 hover:text-accent-500 transition-colors flex items-center"
+                    onClick={(e) => handleAnchorClick(e, "/#booking")}
                   >
                     <Calendar className="h-4 w-4 mr-2 text-accent-500" />
                     Book Now
