@@ -105,13 +105,15 @@ export default function Footer() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
             <div>
               <Link href="/" className="inline-block mb-6" onClick={handleLogoClick}>
-                <Image
-                  src="/logo.png"
-                  alt="Palm Tree Garage Door Repair"
-                  width={180}
-                  height={60}
-                  className="h-12 w-auto"
-                />
+                <div className="relative h-12 w-48">
+                  <Image
+                    src="/logo.png"
+                    alt="Palm Tree Garage Door Repair"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 192px"
+                    style={{ objectFit: "contain", objectPosition: "left" }}
+                  />
+                </div>
               </Link>
               <p className="text-gray-300 mb-6">
                 Professional garage door repair and installation services. Available 24/7 for all your garage door needs

@@ -76,12 +76,15 @@ export default function Header() {
   useEffect(() => {
     if (isMenuOpen) {
       document.body.style.overflow = "hidden"
+      document.body.classList.add("mobile-menu-open")
     } else {
       document.body.style.overflow = ""
+      document.body.classList.remove("mobile-menu-open")
     }
 
     return () => {
       document.body.style.overflow = ""
+      document.body.classList.remove("mobile-menu-open")
     }
   }, [isMenuOpen])
 
@@ -166,7 +169,16 @@ export default function Header() {
             aria-label="Palm Tree Garage Door Repair - Home"
             onClick={handleLogoClick}
           >
-            <Image src="/logo.png" alt="Palm Tree Garage Door Repair" width={60} height={60} className="h-auto w-14" />
+            <div className="relative h-14 w-14">
+              <Image
+                src="/logo.png"
+                alt="Palm Tree Garage Door Repair"
+                fill
+                sizes="56px"
+                style={{ objectFit: "contain" }}
+                priority
+              />
+            </div>
           </Link>
 
           <div className="hidden md:flex items-center">
@@ -227,7 +239,7 @@ export default function Header() {
             </Link>
 
             <button
-              className="text-white p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-accent-300 focus:ring-offset-2 focus:ring-offset-primary-600 active:scale-95 transition-transform"
+              className="text-white p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-accent-300 focus:ring-offset-2 focus:ring-offset-primary-600 active:scale-95 transition-transform z-[110]"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               aria-label={isMenuOpen ? "Close menu" : "Open menu"}
               aria-expanded={isMenuOpen}
@@ -243,19 +255,53 @@ export default function Header() {
         </div>
       </div>
 
+      {/* Mobile menu - Full viewport overlay */}
+      <div
+        id="mobile-menu-overlay"
+        className={`fixed inset-0 bg-black/50 backdrop-blur-sm z-[9998] md:hidden transition-opacity duration-300 ${
+          isMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
+        onClick={() => setIsMenuOpen(false)}
+        aria-hidden="true"
+      />
+
       {/* Mobile menu */}
       <FocusTrap isActive={isMenuOpen} onEscape={() => setIsMenuOpen(false)}>
         <div
           id="mobile-menu"
           ref={menuRef}
-          className={`md:hidden fixed inset-0 top-0 z-[9999] bg-primary-700/95 backdrop-blur-sm overflow-y-auto transition-all duration-300 ${
-            isMenuOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-full pointer-events-none"
+          className={`md:hidden fixed inset-0 z-[9999] bg-primary-700/95 backdrop-blur-sm overflow-y-auto transition-all duration-300 ${
+            isMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none"
           }`}
           aria-hidden={!isMenuOpen}
           role="navigation"
-          style={{ paddingTop: "5rem" }}
+          style={{
+            height: "100%",
+            transform: isMenuOpen ? "none" : "translateY(-100%)",
+          }}
         >
-          <div className="container mx-auto px-4 pt-4 pb-6">
+          {/* Close button at the top */}
+          <div className="sticky top-0 left-0 right-0 bg-primary-600 p-4 flex justify-between items-center z-[100]">
+            <div className="relative h-10 w-10">
+              <Image
+                src="/logo.png"
+                alt="Palm Tree Garage Door Repair"
+                fill
+                sizes="40px"
+                style={{ objectFit: "contain" }}
+              />
+            </div>
+            <button
+              type="button"
+              className="p-2 text-white hover:text-accent-300 focus:outline-none focus:ring-2 focus:ring-accent-300 rounded-md"
+              onClick={() => setIsMenuOpen(false)}
+              aria-label="Close menu"
+            >
+              <X className="h-6 w-6" aria-hidden="true" />
+            </button>
+          </div>
+
+          <div className="container mx-auto px-4 py-6">
             <nav className="flex flex-col space-y-1">
               {navItems.map((item) => (
                 <Link

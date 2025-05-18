@@ -175,10 +175,17 @@ html {
 
 .mobile-menu-open {
   overflow: hidden;
+  position: fixed;
+  width: 100%;
+  height: 100%;
 }
 
 .mobile-menu {
   z-index: 9999;
+  height: 100vh;
+  max-height: 100vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Z-index layers */
