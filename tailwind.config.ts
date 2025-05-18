@@ -3,9 +3,10 @@ import type { Config } from "tailwindcss"
 const config: Config = {
   darkMode: ["class"],
   content: [
-    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
     "*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
@@ -24,19 +25,32 @@ const config: Config = {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
-          50: "#f0f5f4",
-          100: "#d8e6e3",
-          200: "#b3d0ca",
-          300: "#8db9b0",
-          400: "#68a396",
-          500: "#438d7c",
-          600: "#0D423A", // Dark forest primary color
-          700: "#0a3830",
-          800: "#072e27",
-          900: "#03241d",
-          950: "#011a15",
+          DEFAULT: "#0D423A",
+          50: "#E6EFEE",
+          100: "#CCDEDD",
+          200: "#99BDBB",
+          300: "#669C98",
+          400: "#337B76",
+          500: "#005A54",
+          600: "#0D423A", // Main brand color
+          700: "#0A3530",
+          800: "#072925",
+          900: "#031C1A",
+          950: "#021311",
+        },
+        accent: {
+          DEFAULT: "#9ADF67",
+          50: "#F5FBEF",
+          100: "#EBF7DF",
+          200: "#D6EFBF",
+          300: "#C2E79F",
+          400: "#ADDF7F",
+          500: "#9ADF67", // Main accent color
+          600: "#7BB252",
+          700: "#5C863E",
+          800: "#3D5929",
+          900: "#1E2D15",
+          950: "#0F160A",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -49,21 +63,6 @@ const config: Config = {
         muted: {
           DEFAULT: "hsl(var(--muted))",
           foreground: "hsl(var(--muted-foreground))",
-        },
-        accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
-          50: "#f7fce9",
-          100: "#eef9d2",
-          200: "#ddf3a5",
-          300: "#c9eb78",
-          400: "#b6e34b",
-          500: "#9ADF67", // Accent green
-          600: "#7bb32e",
-          700: "#5f8a24",
-          800: "#436119",
-          900: "#27380f",
-          950: "#141f07",
         },
         popover: {
           DEFAULT: "hsl(var(--popover))",
@@ -79,8 +78,19 @@ const config: Config = {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
-      fontFamily: {
-        sans: ["var(--font-montserrat)", "sans-serif"],
+      keyframes: {
+        "accordion-down": {
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
+        },
+        "accordion-up": {
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
+        },
+      },
+      animation: {
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
       },
     },
   },

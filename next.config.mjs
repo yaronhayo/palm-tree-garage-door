@@ -3,8 +3,8 @@ import runtimeCaching from 'next-pwa/cache.js';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'export',  // Keep static export
   reactStrictMode: true,
-  swcMinify: true,
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -12,14 +12,26 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
-    domains: ['garagedoorspringsrepairfl.com'],
+    domains: [
+      'res.cloudinary.com',
+      process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ? 
+        `${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}.cloudinary.com` : 
+        'res.cloudinary.com',
+      'via.placeholder.com',
+    ],
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    loader: 'default',
+    path: '/_next/image',
+    unoptimized: true, // Required for static export
   },
+  trailingSlash: true, // Add trailing slashes for cleaner URLs
   experimental: {
-    optimizeCss: true,
+    // Disable CSS optimization completely
+    optimizeCss: false,
     optimizePackageImports: ['lucide-react', 'framer-motion'],
+    serverActions: true,
   },
 };
 
@@ -28,31 +40,7 @@ const pwaConfig = {
   disable: process.env.NODE_ENV === 'development',
   register: true,
   skipWaiting: true,
-  runtimeCaching: [
-    ...runtimeCaching,
-    {
-      urlPattern: /^https:\/\/fonts\.(?:googleapis|gstatic)\.com\/.*/i,
-      handler: 'CacheFirst',
-      options: {
-        cacheName: 'google-fonts',
-        expiration: {
-          maxEntries: 30,
-          maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
-        },
-      },
-    },
-    {
-      urlPattern: /\.(?:jpg|jpeg|png|webp|avif|gif|svg)$/i,
-      handler: 'CacheFirst',
-      options: {
-        cacheName: 'images',
-        expiration: {
-          maxEntries: 50,
-          maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
-        },
-      },
-    },
-  ],
+  runtimeCaching,
 };
 
 export default withPWA(pwaConfig)(nextConfig);

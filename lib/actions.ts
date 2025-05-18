@@ -2,12 +2,14 @@
 
 import { Resend } from "resend"
 import { generateBusinessEmailHtml, generateCustomerEmailHtml } from "./email-templates"
+import { verifyRecaptcha } from "./recaptcha"
 
 export async function sendContactForm(formData: FormData) {
   const apiKey = process.env.RESEND_API_KEY
   const businessEmail = process.env.BUSINESS_EMAIL || "support@garagedoorspringsrepairfl.com"
+  const isDevelopment = process.env.NODE_ENV === "development"
 
-  if (!apiKey) {
+  if (!apiKey && !isDevelopment) {
     throw new Error("RESEND_API_KEY must be defined in environment variables")
   }
 
@@ -16,15 +18,45 @@ export async function sendContactForm(formData: FormData) {
   const phone = formData.get("phone") as string
   const service = formData.get("service") as string
   const message = (formData.get("message") as string) || "No additional message provided"
+  const recaptchaToken = formData.get("recaptchaToken") as string | null
 
   if (!name || !email || !phone || !service) {
     throw new Error("Missing required fields")
   }
 
-  // Initialize Resend
-  const resend = new Resend(apiKey)
+  // Verify reCAPTCHA token (skip in development if no token is provided)
+  if (!isDevelopment || recaptchaToken) {
+    const recaptchaResult = await verifyRecaptcha(recaptchaToken)
+
+    // If verification failed, return an error
+    if (!recaptchaResult.success) {
+      console.error("reCAPTCHA verification failed:", recaptchaResult.error)
+      throw new Error("Spam protection verification failed. Please try again.")
+    }
+
+    // If the score is too low, it might be a bot
+    if (recaptchaResult.score !== undefined && recaptchaResult.score < 0.5) {
+      console.warn("Suspicious submission detected with reCAPTCHA score:", recaptchaResult.score)
+      throw new Error("Your submission was flagged as potentially automated. Please try again.")
+    }
+  }
+
+  // In development mode without API key, just log the data
+  if (isDevelopment && !apiKey) {
+    console.log("Development mode - Contact form submission:", {
+      name,
+      email,
+      phone,
+      service,
+      message,
+    })
+    return { success: true }
+  }
 
   try {
+    // Initialize Resend
+    const resend = new Resend(apiKey)
+
     // Generate email HTML strings - now with await
     const businessEmailHtml = await generateBusinessEmailHtml(name, email, phone, service, message)
     const customerEmailHtml = await generateCustomerEmailHtml(name, service)

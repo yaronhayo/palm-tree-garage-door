@@ -2,8 +2,12 @@
 User-agent: *
 Allow: /
 
+# Disallow admin pages
+Disallow: /admin/
+Disallow: /thank-you/
+
 # Host
 Host: https://garagedoorspringsrepairfl.com
 
 # Sitemaps
-Sitemap: https://garagedoorspringsrepairfl.com/sitemap.xml
+Sitemap: https://palmtreegaragedoor.com/sitemap.xml

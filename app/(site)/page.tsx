@@ -1,41 +1,35 @@
-import type { Metadata } from "next"
-import StickyHeader from "@/components/StickyHeader"
 import HeroSection from "@/components/HeroSection"
 import ServicesGrid from "@/components/ServicesGrid"
-import WhyChooseUs from "@/components/WhyChooseUs"
-import Testimonials from "@/components/Testimonials"
-import FAQ from "@/components/FAQ"
-import LeadForm from "@/components/LeadForm"
+import CommonIssuesSection from "@/components/CommonIssuesSection"
+import FAQSection from "@/components/FAQSection"
+import TestimonialsSection from "@/components/TestimonialsSection"
+import TrustBadges from "@/components/TrustBadges"
+import CallToAction from "@/components/CallToAction"
+import BookingSection from "@/components/BookingSection"
+import ServiceAreas from "@/components/ServiceAreas"
+import type { Metadata } from "next"
+import ResourcePreloader from "@/components/ResourcePreloader"
+import { ErrorBoundary } from "@/components/ErrorBoundary"
 
 export const metadata: Metadata = {
-  title: "Garage Door Repair South Florida | Palm Tree Garage Door",
+  title: "Palm Tree Garage Door Repair | South Florida's Trusted Experts",
   description:
-    "24/7 emergency garage door repair in South Florida. Fast response, certified technicians, and free estimates. Call now for same-day service!",
-  openGraph: {
-    title: "Garage Door Repair South Florida | Palm Tree Garage Door",
-    description:
-      "24/7 emergency garage door repair in South Florida. Fast response, certified technicians, and free estimates. Call now for same-day service!",
-    images: [
-      {
-        url: "/images/og-cover.webp",
-        width: 1200,
-        height: 630,
-        alt: "Palm Tree Garage Door Repair South Florida",
-      },
-    ],
-  },
+    "Fast, reliable garage door repair in South Florida. 24/7 emergency service, free estimates, and expert technicians. Call now!",
 }
 
-export default function HomePage() {
+export default function Home() {
   return (
-    <>
-      <StickyHeader />
+    <ErrorBoundary fallback={<div className="p-8 text-center">Something went wrong. Please refresh the page.</div>}>
+      <ResourcePreloader />
       <HeroSection />
+      <TrustBadges />
       <ServicesGrid />
-      <WhyChooseUs />
-      <Testimonials />
-      <FAQ />
-      <LeadForm />
-    </>
+      <CommonIssuesSection />
+      <TestimonialsSection />
+      <FAQSection />
+      <CallToAction />
+      <ServiceAreas />
+      <BookingSection />
+    </ErrorBoundary>
   )
 }

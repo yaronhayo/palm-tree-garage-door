@@ -77,11 +77,11 @@ export default function Testimonials() {
   })
 
   return (
-    <section className="py-16 bg-primary-50" ref={ref}>
+    <section className="py-16 bg-primary-600" ref={ref}>
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <motion.h2
-            className="text-3xl md:text-4xl font-bold text-primary-600 mb-4"
+            className="text-3xl md:text-4xl font-bold text-white mb-4"
             initial={{ opacity: 0, y: -20 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: -20 }}
             transition={{ duration: 0.5 }}
@@ -89,7 +89,7 @@ export default function Testimonials() {
             What Our Customers Say
           </motion.h2>
           <motion.p
-            className="text-lg text-gray-600 max-w-2xl mx-auto"
+            className="text-lg text-white/90 max-w-2xl mx-auto"
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : { opacity: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
@@ -119,7 +119,7 @@ export default function Testimonials() {
                     ))}
                   </div>
                   <p className="text-gray-600 italic mb-6 flex-grow">&ldquo;{testimonial.quote}&rdquo;</p>
-                  <div>
+                  <div className="mt-auto">
                     <p className="font-bold text-primary-900">{testimonial.name}</p>
                     <p className="text-sm text-gray-500">{testimonial.location}</p>
                   </div>

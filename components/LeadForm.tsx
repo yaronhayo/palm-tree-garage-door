@@ -6,7 +6,8 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { motion, AnimatePresence } from "framer-motion"
-import { ArrowRight, Loader2, CheckCircle } from "lucide-react"
+import { ArrowRight, Loader2, CheckCircle, AlertTriangle } from "lucide-react"
+import { useRecaptcha } from "@/hooks/useRecaptcha"
 
 // Define the form schema with Zod
 const formSchema = z.object({
@@ -33,6 +34,9 @@ export default function LeadForm() {
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [submitSuccess, setSubmitSuccess] = useState(false)
   const [devModeMessage, setDevModeMessage] = useState<string | null>(null)
+
+  // Initialize reCAPTCHA hook
+  const { isLoaded: recaptchaLoaded, error: recaptchaError, getToken } = useRecaptcha()
 
   // Initialize React Hook Form
   const {
@@ -83,6 +87,14 @@ export default function LeadForm() {
     setDevModeMessage(null)
 
     try {
+      // Get reCAPTCHA token
+      const recaptchaToken = await getToken("lead_form_submit")
+
+      // If we couldn't get a token and we're not in development mode, show an error
+      if (!recaptchaToken && process.env.NODE_ENV === "production") {
+        throw new Error("Could not verify that you are human. Please try again or refresh the page.")
+      }
+
       // Push to Google Tag Manager dataLayer
       if (typeof window !== "undefined" && window.dataLayer) {
         window.dataLayer.push({
@@ -101,7 +113,10 @@ export default function LeadForm() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          ...data,
+          recaptchaToken,
+        }),
       })
 
       const result = await response.json()
@@ -167,6 +182,8 @@ export default function LeadForm() {
                   setStep(1)
                 }}
                 className="bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 px-6 rounded-md transition-colors"
+                id="lead-reset"
+                name="lead-reset"
               >
                 Submit Another Request
               </button>
@@ -177,6 +194,9 @@ export default function LeadForm() {
     )
   }
 
+  // Show reCAPTCHA error if there is one and we're not in development mode
+  const showRecaptchaError = recaptchaError && process.env.NODE_ENV === "production"
+
   return (
     <section id="lead-form" className="py-16 bg-gray-50">
       <div className="container mx-auto px-4">
@@ -185,6 +205,19 @@ export default function LeadForm() {
             <h2 className="text-3xl font-bold text-primary-600 mb-2">Get Your Free Quote</h2>
             <p className="text-gray-600">Tell us about your garage door needs and we'll get back to you quickly</p>
           </div>
+
+          {/* reCAPTCHA Error Message */}
+          {showRecaptchaError && (
+            <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-md flex items-start">
+              <AlertTriangle className="h-5 w-5 text-yellow-500 mr-2 mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-yellow-700">
+                  There was an issue loading our security verification. Please refresh the page and try again.
+                </p>
+                <p className="text-yellow-600 text-sm mt-1">Error: {recaptchaError}</p>
+              </div>
+            </div>
+          )}
 
           {/* Progress bar */}
           <div className="mb-8">
@@ -204,7 +237,7 @@ export default function LeadForm() {
 
           {/* Form */}
           <div className="bg-white rounded-lg shadow-md p-6 md:p-8">
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <form onSubmit={handleSubmit(onSubmit)} id="lead-capture-form" name="lead-capture-form">
               <AnimatePresence mode="wait">
                 {step === 1 ? (
                   <motion.div
@@ -247,6 +280,7 @@ export default function LeadForm() {
                         className={`w-full px-4 py-2 border rounded-md focus:ring-primary-500 focus:border-primary-500 ${
                           errors.zipCode ? "border-red-500" : "border-gray-300"
                         }`}
+                        autoComplete="postal-code"
                       />
                       {errors.zipCode && <p className="mt-1 text-sm text-red-500">{errors.zipCode.message}</p>}
                     </div>
@@ -255,6 +289,8 @@ export default function LeadForm() {
                       type="button"
                       onClick={handleNextStep}
                       className="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 px-4 rounded-md transition-colors flex items-center justify-center"
+                      id="lead-next"
+                      name="lead-next"
                     >
                       Continue
                       <ArrowRight className="ml-2 h-5 w-5" />
@@ -281,6 +317,7 @@ export default function LeadForm() {
                         className={`w-full px-4 py-2 border rounded-md focus:ring-primary-500 focus:border-primary-500 ${
                           errors.name ? "border-red-500" : "border-gray-300"
                         }`}
+                        autoComplete="name"
                       />
                       {errors.name && <p className="mt-1 text-sm text-red-500">{errors.name.message}</p>}
                     </div>
@@ -297,6 +334,7 @@ export default function LeadForm() {
                         className={`w-full px-4 py-2 border rounded-md focus:ring-primary-500 focus:border-primary-500 ${
                           errors.phone ? "border-red-500" : "border-gray-300"
                         }`}
+                        autoComplete="tel"
                       />
                       {errors.phone && <p className="mt-1 text-sm text-red-500">{errors.phone.message}</p>}
                     </div>
@@ -313,6 +351,7 @@ export default function LeadForm() {
                         className={`w-full px-4 py-2 border rounded-md focus:ring-primary-500 focus:border-primary-500 ${
                           errors.email ? "border-red-500" : "border-gray-300"
                         }`}
+                        autoComplete="email"
                       />
                       {errors.email && <p className="mt-1 text-sm text-red-500">{errors.email.message}</p>}
                     </div>
@@ -322,13 +361,17 @@ export default function LeadForm() {
                         type="button"
                         onClick={() => setStep(1)}
                         className="sm:w-1/3 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-4 rounded-md transition-colors"
+                        id="lead-back"
+                        name="lead-back"
                       >
                         Back
                       </button>
                       <button
                         type="submit"
-                        disabled={isSubmitting || !isValid}
+                        disabled={isSubmitting || !isValid || showRecaptchaError}
                         className="sm:w-2/3 bg-accent-500 hover:bg-accent-600 text-primary-900 font-bold py-3 px-4 rounded-md transition-colors flex items-center justify-center disabled:opacity-70"
+                        id="lead-submit"
+                        name="lead-submit"
                       >
                         {isSubmitting ? (
                           <span className="flex items-center">
@@ -358,6 +401,27 @@ export default function LeadForm() {
                   privacy policy
                 </a>
                 . We'll never share your information with third parties.
+              </p>
+              <p className="mt-1">
+                This site is protected by reCAPTCHA and the Google{" "}
+                <a
+                  href="https://policies.google.com/privacy"
+                  className="text-primary-600 hover:underline"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Privacy Policy
+                </a>{" "}
+                and{" "}
+                <a
+                  href="https://policies.google.com/terms"
+                  className="text-primary-600 hover:underline"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Terms of Service
+                </a>{" "}
+                apply.
               </p>
             </div>
           </div>

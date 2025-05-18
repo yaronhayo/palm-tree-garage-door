@@ -1,18 +1,18 @@
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
-  siteUrl: process.env.SITE_URL || "https://garagedoorspringsrepairfl.com",
+  siteUrl: process.env.SITE_URL || "https://palmtreegaragedoor.com",
   generateRobotsTxt: true,
   robotsTxtOptions: {
     policies: [
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/api/*"],
+      },
+      {
+        userAgent: "*",
+        disallow: ["/admin/", "/thank-you/"],
       },
     ],
-    additionalSitemaps: [`${process.env.SITE_URL || "https://garagedoorspringsrepairfl.com"}/sitemap.xml`],
   },
-  changefreq: "weekly",
-  priority: 0.7,
-  exclude: ["/thank-you"],
+  exclude: ["/admin/*", "/thank-you"],
 }

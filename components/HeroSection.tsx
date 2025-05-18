@@ -1,62 +1,125 @@
 "use client"
-import { ArrowRight, Phone } from "lucide-react"
-import BookingForm from "@/components/BookingForm"
+
+import { useState } from "react"
+import Link from "next/link"
+import Image from "next/image"
+import { CheckCircle, Clock, Shield, Award, ArrowRight, Phone } from "lucide-react"
+import { trackPhoneCall } from "@/lib/dataLayer"
+import QuickContactForm from "./forms/QuickContactForm"
 
 export default function HeroSection() {
+  const [showBookingForm, setShowBookingForm] = useState(false)
+  const [imageError, setImageError] = useState(false)
+
+  const handlePhoneClick = () => {
+    try {
+      trackPhoneCall("3213669723", "hero_section")
+    } catch (error) {
+      console.error("Error tracking phone call:", error)
+      // Continue execution even if tracking fails
+    }
+  }
+
   return (
-    <section className="relative min-h-screen flex items-center pt-20 pb-10">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+    <section className="relative pt-28 pb-20">
+      {/* Background Image with Overlay */}
+      <div className="absolute inset-0 z-0">
+        {!imageError ? (
+          <Image
+            src="/images/service-truck.png"
+            alt="Palm Tree Garage Door Repairs service truck"
+            fill
+            priority
+            className="object-cover"
+            sizes="100vw"
+            quality={85}
+            onError={() => setImageError(true)}
+          />
+        ) : (
+          <div className="w-full h-full bg-primary-800"></div>
+        )}
+        <div className="absolute inset-0 bg-primary-900/80" />
+      </div>
+
+      <div className="container mx-auto px-4 relative z-10">
+        {/* Trust badges */}
+        <div className="bg-white rounded-full inline-flex items-center px-6 py-3 mb-16 shadow-md max-w-full overflow-x-auto md:overflow-visible">
+          <div className="flex items-center whitespace-nowrap">
+            <CheckCircle className="text-accent-500 mr-2 h-5 w-5 flex-shrink-0" />
+            <span className="text-primary-600 font-medium">5-Star Rated</span>
+          </div>
+          <div className="mx-4 h-6 w-px bg-gray-300 hidden sm:block"></div>
+          <div className="flex items-center whitespace-nowrap hidden sm:flex">
+            <CheckCircle className="text-accent-500 mr-2 h-5 w-5 flex-shrink-0" />
+            <span className="text-primary-600 font-medium">100% Satisfaction</span>
+          </div>
+          <div className="mx-4 h-6 w-px bg-gray-300 hidden sm:block"></div>
+          <div className="flex items-center whitespace-nowrap">
+            <CheckCircle className="text-accent-500 mr-2 h-5 w-5 flex-shrink-0" />
+            <span className="text-primary-600 font-medium">24/7 Service</span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
           {/* Left Column - Content */}
-          <div className="max-w-xl">
-            <h1 className="text-4xl md:text-5xl font-bold text-primary-600 leading-tight mb-6">
-              Garage Door Repair South Florida
+          <div>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 leading-tight text-white">
+              <span className="text-accent-500">Fast & Reliable</span> Garage Door Repair in South Florida
             </h1>
-            <p className="text-xl text-gray-700 mb-6">
-              Fast, reliable service from certified technicians. Available 24/7 for all your garage door needs.
+
+            <p className="text-lg sm:text-xl text-white mb-8">
+              24/7 emergency service with expert technicians. We fix all garage door problems quickly and affordably.
             </p>
 
-            <ul className="space-y-3 mb-8">
-              <li className="flex items-center">
-                <span className="flex-shrink-0 text-accent-500 mr-2">✓</span>
-                <span className="text-lg">24/7 Emergency Service</span>
-              </li>
-              <li className="flex items-center">
-                <span className="flex-shrink-0 text-accent-500 mr-2">✓</span>
-                <span className="text-lg">Same-Day Repairs</span>
-              </li>
-              <li className="flex items-center">
-                <span className="flex-shrink-0 text-accent-500 mr-2">✓</span>
-                <span className="text-lg">Licensed & Certified Technicians</span>
-              </li>
-              <li className="flex items-center">
-                <span className="flex-shrink-0 text-accent-500 mr-2">✓</span>
-                <span className="text-lg">All Work Guaranteed with Warranty</span>
-              </li>
-            </ul>
+            <div className="space-y-4 mb-10">
+              <div className="flex items-center">
+                <div className="bg-accent-500/20 p-2 rounded-full mr-3 flex-shrink-0">
+                  <Clock className="h-5 w-5 text-accent-500" />
+                </div>
+                <span className="text-base sm:text-lg text-white">Same-Day Service Available</span>
+              </div>
+
+              <div className="flex items-center">
+                <div className="bg-accent-500/20 p-2 rounded-full mr-3 flex-shrink-0">
+                  <Shield className="h-5 w-5 text-accent-500" />
+                </div>
+                <span className="text-base sm:text-lg text-white">All Work Guaranteed</span>
+              </div>
+
+              <div className="flex items-center">
+                <div className="bg-accent-500/20 p-2 rounded-full mr-3 flex-shrink-0">
+                  <Award className="h-5 w-5 text-accent-500" />
+                </div>
+                <span className="text-base sm:text-lg text-white">Licensed & Insured Technicians</span>
+              </div>
+            </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
               <a
-                href="tel:+17722753721"
-                className="bg-accent-500 hover:bg-accent-600 text-primary-900 font-bold py-3 px-6 rounded-md transition-colors inline-flex items-center justify-center"
+                href="tel:+13213669723"
+                className="bg-accent-500 hover:bg-accent-600 text-primary-900 font-bold py-3 px-6 rounded-md transition-all duration-300 flex items-center justify-center"
+                onClick={handlePhoneClick}
+                data-call-tracking="true"
               >
                 <Phone className="mr-2 h-5 w-5" />
-                Call Now
+                <span>Call Now</span>
               </a>
 
-              <a
-                href="#lead-form"
-                className="bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 px-6 rounded-md transition-colors inline-flex items-center justify-center"
+              <Link
+                href="#booking"
+                className="bg-white hover:bg-gray-100 text-primary-900 font-bold py-3 px-6 rounded-md transition-all duration-300 flex items-center justify-center"
               >
-                Get Instant Quote
+                Book Online
                 <ArrowRight className="ml-2 h-5 w-5" />
-              </a>
+              </Link>
             </div>
           </div>
 
-          {/* Right Column - Booking Form */}
-          <div>
-            <BookingForm />
+          {/* Right Column - Form */}
+          <div className="bg-white rounded-lg shadow-xl p-6 border-l-4 border-accent-500 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-accent-500/10 rounded-full -mr-8 -mt-8"></div>
+            <div className="absolute bottom-0 left-0 w-16 h-16 bg-primary-600/10 rounded-full -ml-8 -mb-8"></div>
+            <QuickContactForm showBookingForm={showBookingForm} setShowBookingForm={setShowBookingForm} />
           </div>
         </div>
       </div>

@@ -1,0 +1,174 @@
+"use client"
+
+import { Modal } from "@/components/ui/Modal"
+
+interface PrivacyPolicyModalProps {
+  isOpen: boolean
+  onClose: () => void
+}
+
+export function PrivacyPolicyModal({ isOpen, onClose }: PrivacyPolicyModalProps) {
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} title="Privacy Policy" size="lg">
+      <div className="prose prose-sm max-w-none">
+        <p className="mb-4 text-gray-600">Last Updated: May 14, 2025</p>
+
+        <section className="mb-8">
+          <h3 className="text-xl font-semibold text-primary-800 mb-4">1. Introduction</h3>
+          <p className="mb-3 text-gray-700">
+            Palm Tree Garage Door Repair ("we," "our," or "us") respects your privacy and is committed to protecting
+            your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your
+            information when you visit our website or use our garage door repair services.
+          </p>
+          <p className="mb-3 text-gray-700">
+            Please read this Privacy Policy carefully. By accessing or using our website or services, you acknowledge
+            that you have read, understood, and agree to be bound by all the terms of this Privacy Policy.
+          </p>
+        </section>
+
+        <section className="mb-8">
+          <h3 className="text-xl font-semibold text-primary-800 mb-4">2. Information We Collect</h3>
+
+          <h4 className="text-lg font-medium text-primary-700 mb-2">Personal Information</h4>
+          <p className="mb-3 text-gray-700">
+            We may collect personal information that you voluntarily provide to us when you:
+          </p>
+          <ul className="list-disc pl-6 mb-4 text-gray-700">
+            <li>Fill out forms on our website</li>
+            <li>Request a quote or schedule a service</li>
+            <li>Contact us via phone, email, or contact form</li>
+            <li>Subscribe to our newsletter</li>
+            <li>Participate in surveys or promotions</li>
+          </ul>
+          <p className="mb-3 text-gray-700">
+            This information may include your name, email address, phone number, mailing address, and service details.
+          </p>
+
+          <h4 className="text-lg font-medium text-primary-700 mb-2">Automatically Collected Information</h4>
+          <p className="mb-3 text-gray-700">
+            When you visit our website, we may automatically collect certain information about your device, including:
+          </p>
+          <ul className="list-disc pl-6 mb-4 text-gray-700">
+            <li>IP address</li>
+            <li>Browser type and version</li>
+            <li>Operating system</li>
+            <li>Pages visited and time spent</li>
+            <li>Referring website</li>
+            <li>Click patterns</li>
+          </ul>
+        </section>
+
+        <section className="mb-8">
+          <h3 className="text-xl font-semibold text-primary-800 mb-4">3. How We Use Your Information</h3>
+          <p className="mb-3 text-gray-700">We may use the information we collect for various purposes, including:</p>
+          <ul className="list-disc pl-6 mb-4 text-gray-700">
+            <li>Providing and maintaining our services</li>
+            <li>Processing and fulfilling service requests</li>
+            <li>Communicating with you about appointments and services</li>
+            <li>Sending promotional materials and newsletters (with your consent)</li>
+            <li>Improving our website and services</li>
+            <li>Analyzing usage patterns and trends</li>
+            <li>Protecting against fraudulent or unauthorized activity</li>
+            <li>Complying with legal obligations</li>
+          </ul>
+        </section>
+
+        <section className="mb-8">
+          <h3 className="text-xl font-semibold text-primary-800 mb-4">4. Cookies and Tracking Technologies</h3>
+          <p className="mb-3 text-gray-700">
+            We use cookies and similar tracking technologies to track activity on our website and store certain
+            information. Cookies are files with a small amount of data that may include an anonymous unique identifier.
+          </p>
+          <p className="mb-3 text-gray-700">
+            You can instruct your browser to refuse all cookies or to indicate when a cookie is being sent. However, if
+            you do not accept cookies, you may not be able to use some portions of our website.
+          </p>
+          <p className="mb-3 text-gray-700">We use the following types of cookies:</p>
+          <ul className="list-disc pl-6 mb-4 text-gray-700">
+            <li>Essential cookies: Necessary for the website to function properly</li>
+            <li>Analytical/performance cookies: Allow us to recognize and count visitors</li>
+            <li>Functionality cookies: Enable enhanced functionality and personalization</li>
+            <li>Targeting cookies: Record your visit, pages visited, and links followed</li>
+          </ul>
+        </section>
+
+        <section className="mb-8">
+          <h3 className="text-xl font-semibold text-primary-800 mb-4">5. Third-Party Disclosure</h3>
+          <p className="mb-3 text-gray-700">We may share your information with:</p>
+          <ul className="list-disc pl-6 mb-4 text-gray-700">
+            <li>Service providers who perform services on our behalf</li>
+            <li>Professional advisors, such as lawyers and accountants</li>
+            <li>Government bodies when required by law</li>
+            <li>Business partners with your consent</li>
+          </ul>
+          <p className="mb-3 text-gray-700">
+            We do not sell, trade, or otherwise transfer your personally identifiable information to outside parties
+            without your consent, except as described in this Privacy Policy.
+          </p>
+        </section>
+
+        <section className="mb-8">
+          <h3 className="text-xl font-semibold text-primary-800 mb-4">6. Data Security</h3>
+          <p className="mb-3 text-gray-700">
+            We implement appropriate technical and organizational measures to protect your personal information against
+            unauthorized access, alteration, disclosure, or destruction.
+          </p>
+          <p className="mb-3 text-gray-700">
+            However, no method of transmission over the Internet or electronic storage is 100% secure. While we strive
+            to use commercially acceptable means to protect your personal information, we cannot guarantee its absolute
+            security.
+          </p>
+        </section>
+
+        <section className="mb-8">
+          <h3 className="text-xl font-semibold text-primary-800 mb-4">7. Your Rights</h3>
+          <p className="mb-3 text-gray-700">
+            Depending on your location, you may have certain rights regarding your personal information, including:
+          </p>
+          <ul className="list-disc pl-6 mb-4 text-gray-700">
+            <li>The right to access your personal information</li>
+            <li>The right to correct inaccurate information</li>
+            <li>The right to request deletion of your information</li>
+            <li>The right to restrict or object to processing</li>
+            <li>The right to data portability</li>
+            <li>The right to withdraw consent</li>
+          </ul>
+          <p className="mb-3 text-gray-700">
+            To exercise these rights, please contact us using the information provided in the "Contact Us" section.
+          </p>
+        </section>
+
+        <section className="mb-8">
+          <h3 className="text-xl font-semibold text-primary-800 mb-4">8. Children's Privacy</h3>
+          <p className="mb-3 text-gray-700">
+            Our services are not intended for individuals under the age of 18. We do not knowingly collect personal
+            information from children. If you are a parent or guardian and believe your child has provided us with
+            personal information, please contact us, and we will take steps to remove that information.
+          </p>
+        </section>
+
+        <section className="mb-8">
+          <h3 className="text-xl font-semibold text-primary-800 mb-4">9. Changes to This Privacy Policy</h3>
+          <p className="mb-3 text-gray-700">
+            We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new
+            Privacy Policy on this page and updating the "Last Updated" date.
+          </p>
+          <p className="mb-3 text-gray-700">
+            You are advised to review this Privacy Policy periodically for any changes. Changes to this Privacy Policy
+            are effective when they are posted on this page.
+          </p>
+        </section>
+
+        <section>
+          <h3 className="text-xl font-semibold text-primary-800 mb-4">10. Contact Us</h3>
+          <p className="mb-3 text-gray-700">If you have any questions about this Privacy Policy, please contact us:</p>
+          <ul className="list-none mb-4 text-gray-700">
+            <li>By email: info@palmtreegaragedoor.com</li>
+            <li>By phone: (321) 366-9723</li>
+            <li>By mail: 123 Palm Tree Lane, South Florida, FL 33301</li>
+          </ul>
+        </section>
+      </div>
+    </Modal>
+  )
+}
