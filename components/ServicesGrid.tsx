@@ -1,7 +1,9 @@
 "use client"
+
+import type React from "react"
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { ArrowRight, X, Phone, Calendar, Wrench, Cog, PenToolIcon as Tool, Home } from "lucide-react"
+import { ArrowRight, X, Phone, Calendar, Wrench, Cog, PenTool, Home } from "lucide-react"
 import ServiceCard from "./ServiceCard"
 import OptimizedImage from "./OptimizedImage"
 
@@ -13,6 +15,7 @@ interface ServicePopupProps {
     longDescription?: string
     benefits?: string[]
     pricing?: string
+    icon?: React.ReactNode
   }
   isOpen: boolean
   onClose: () => void
@@ -53,8 +56,7 @@ const ServicePopup = ({ service, isOpen, onClose }: ServicePopupProps) => {
             alt={`${service.title} service`}
             width={600}
             height={300}
-            className="w-full h-full"
-            objectFit="cover"
+            className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-primary-600/90 to-transparent"></div>
           <button
@@ -124,7 +126,7 @@ const ServicePopup = ({ service, isOpen, onClose }: ServicePopupProps) => {
 export default function ServicesGrid() {
   const [openServiceIndex, setOpenServiceIndex] = useState<number | null>(null)
 
-  // Direct URLs for the service images
+  // Use the original image URLs that were working before
   const doorRepairImageUrl =
     "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/IMG_9140.JPG-zZvo0fWK5tefuFBOFyW6pc5KGYaHwR.jpeg"
   const springImageUrl =
@@ -177,7 +179,7 @@ export default function ServicesGrid() {
         "Advice on repair vs. replacement options",
       ],
       pricing: "Repairs start at $95. New opener installation from $275-$450 depending on model.",
-      icon: <Tool className="h-5 w-5 text-primary-900" />,
+      icon: <PenTool className="h-5 w-5 text-primary-900" />,
       image: openerImageUrl,
     },
     {

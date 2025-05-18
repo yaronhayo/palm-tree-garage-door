@@ -1,13 +1,12 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useEffect, useRef, useCallback } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { Menu, X, Phone, Calendar, Wrench, AlertTriangle, Star, HelpCircle, ChevronRight } from "lucide-react"
 import { usePathname } from "next/navigation"
-import { trackPhoneCall } from "@/lib/dataLayer" // Updated import
+import { trackPhoneCall } from "@/lib/dataLayer"
 import { SkipToContent, FocusTrap } from "./A11y"
 
 export default function Header() {
@@ -50,11 +49,12 @@ export default function Header() {
     }
 
     window.addEventListener("scroll", handleScroll)
+    // Initial check
+    handleScroll()
     return () => window.removeEventListener("scroll", handleScroll)
   }, [pathname])
 
   const handlePhoneClick = useCallback(() => {
-    // Updated to use trackPhoneCall from dataLayer
     trackPhoneCall("3213669723", "header")
   }, [])
 
@@ -111,7 +111,7 @@ export default function Header() {
     [pathname, isMenuOpen],
   )
 
-  // Update the navItems array to include icons and link to homepage sections
+  // Navigation items with icons
   const navItems = [
     {
       name: "Garage Door Repair",
@@ -147,7 +147,6 @@ export default function Header() {
         window.scrollTo({ top: 0, behavior: "smooth" })
         setActiveSection(null)
       }
-      // Otherwise, let the Link component handle navigation to homepage
     },
     [pathname],
   )
@@ -249,13 +248,14 @@ export default function Header() {
         <div
           id="mobile-menu"
           ref={menuRef}
-          className={`md:hidden fixed inset-0 z-50 pt-20 pb-6 bg-primary-700/95 backdrop-blur-sm overflow-y-auto transition-all duration-300 ${
+          className={`md:hidden fixed inset-0 top-0 z-50 bg-primary-700/95 backdrop-blur-sm overflow-y-auto transition-all duration-300 ${
             isMenuOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-full pointer-events-none"
           }`}
           aria-hidden={!isMenuOpen}
           role="navigation"
+          style={{ paddingTop: "5rem" }}
         >
-          <div className="container mx-auto px-4">
+          <div className="container mx-auto px-4 pt-4 pb-6">
             <nav className="flex flex-col space-y-1">
               {navItems.map((item) => (
                 <Link
@@ -264,9 +264,7 @@ export default function Header() {
                   className={`text-white hover:bg-primary-600/50 font-medium flex items-center justify-between p-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-300 active:scale-98 transition-all ${
                     activeSection === item.id ? "bg-primary-600/50 border-l-4 border-accent-300" : ""
                   }`}
-                  onClick={(e) => {
-                    handleAnchorClick(e, item.path)
-                  }}
+                  onClick={(e) => handleAnchorClick(e, item.path)}
                 >
                   <div className="flex items-center">
                     <div className="bg-primary-600/50 p-2 rounded-full mr-3">{item.icon}</div>
@@ -282,9 +280,7 @@ export default function Header() {
                   className={`flex items-center justify-between bg-white hover:bg-gray-100 text-primary-600 font-bold p-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-white active:scale-98 ${
                     activeSection === "booking" ? "bg-gray-100 ring-2 ring-white" : ""
                   }`}
-                  onClick={(e) => {
-                    handleAnchorClick(e, "/#booking")
-                  }}
+                  onClick={(e) => handleAnchorClick(e, "/#booking")}
                   aria-label="Book a service appointment"
                 >
                   <div className="flex items-center">

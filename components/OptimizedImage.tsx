@@ -1,33 +1,41 @@
 "use client"
 
 import { useState } from "react"
-import Image, { type ImageProps } from "next/image"
+import Image from "next/image"
 
-interface OptimizedImageProps extends Omit<ImageProps, "onError"> {
-  fallbackSrc?: string
-  objectFit?: "cover" | "contain" | "fill" | "none" | "scale-down"
+interface OptimizedImageProps {
+  src: string
+  alt: string
+  width: number
+  height: number
+  className?: string
+  objectFit?: "fill" | "contain" | "cover" | "none" | "scale-down"
+  priority?: boolean
+  lazyLoad?: boolean
 }
 
 export default function OptimizedImage({
   src,
   alt,
-  fallbackSrc = "/images/default-garage-door.png",
-  objectFit = "cover",
+  width,
+  height,
   className = "",
-  ...props
+  objectFit = "cover",
+  priority = false,
+  lazyLoad = false,
 }: OptimizedImageProps) {
-  const [imgSrc, setImgSrc] = useState<string>(typeof src === "string" ? src : fallbackSrc)
+  const [imgSrc, setImgSrc] = useState<string>(src)
   const [error, setError] = useState(false)
 
   // Handle image load error
   const handleError = () => {
-    if (imgSrc !== fallbackSrc) {
+    if (imgSrc !== "/placeholder.png") {
       console.warn(`Image failed to load: ${imgSrc}, using fallback`)
-      setImgSrc(fallbackSrc)
+      setImgSrc("/placeholder.png")
     } else {
       // If even the fallback fails, set error state
       setError(true)
-      console.error(`Fallback image also failed to load: ${fallbackSrc}`)
+      console.error(`Fallback image also failed to load: /placeholder.png`)
     }
   }
 
@@ -36,7 +44,7 @@ export default function OptimizedImage({
     return (
       <div
         className={`bg-gray-200 flex items-center justify-center ${className}`}
-        style={{ width: props.width, height: props.height }}
+        style={{ width: width, height: height }}
         role="img"
         aria-label={alt}
       >
@@ -45,27 +53,21 @@ export default function OptimizedImage({
     )
   }
 
-  // Determine object-fit style
-  const objectFitClass =
-    objectFit === "cover"
-      ? "object-cover"
-      : objectFit === "contain"
-        ? "object-contain"
-        : objectFit === "fill"
-          ? "object-fill"
-          : objectFit === "none"
-            ? "object-none"
-            : objectFit === "scale-down"
-              ? "object-scale-down"
-              : "object-cover"
+  // Determine if the image is an external URL
+  const isExternalUrl = imgSrc.startsWith("http") || imgSrc.startsWith("https")
 
   return (
     <Image
       src={imgSrc || "/placeholder.svg"}
       alt={alt}
-      className={`${objectFitClass} ${className}`}
+      width={width}
+      height={height}
+      className={className}
+      style={{ objectFit: objectFit as any }}
+      priority={priority}
+      loading={lazyLoad ? "lazy" : "eager"}
       onError={handleError}
-      {...props}
+      unoptimized={isExternalUrl} // Skip optimization for external URLs
     />
   )
 }

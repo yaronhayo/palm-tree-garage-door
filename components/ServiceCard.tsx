@@ -1,14 +1,14 @@
 "use client"
 
-import type { ReactNode } from "react"
+import type React from "react"
+import Image from "next/image"
 import { ArrowRight } from "lucide-react"
-import OptimizedImage from "./OptimizedImage"
 
 interface ServiceCardProps {
   title: string
   description: string
-  icon: ReactNode
-  image: string
+  icon?: React.ReactNode
+  image?: string
   onLearnMore: () => void
 }
 
@@ -16,15 +16,13 @@ export default function ServiceCard({ title, description, icon, image, onLearnMo
   return (
     <div className="bg-white rounded-lg shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl group h-full flex flex-col">
       <div className="relative h-48">
-        <OptimizedImage
+        <Image
           src={image || "/placeholder.png"}
           alt={`${title} service`}
           width={400}
           height={300}
-          className="w-full h-full"
-          objectFit="cover"
-          priority={false}
-          lazyLoad={true}
+          className="w-full h-full object-cover"
+          unoptimized={true} // Add this to bypass image optimization for external URLs
         />
         <div className="absolute inset-0 bg-gradient-to-t from-primary-600/80 to-transparent"></div>
         <div className="absolute bottom-4 left-4 flex items-center">

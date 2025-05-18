@@ -2,9 +2,8 @@ import type React from "react"
 import { Suspense } from "react"
 import type { Metadata } from "next"
 import { ErrorBoundary } from "@/components/ErrorBoundary"
-import FallbackPage from "./fallback-page"
 
-// Import components individually to identify which one might be causing issues
+// Import components
 import HeroSection from "@/components/HeroSection"
 import TrustBadges from "@/components/TrustBadges"
 import ServicesGrid from "@/components/ServicesGrid"
@@ -43,7 +42,7 @@ function SafeSection({ children, name }: { children: React.ReactNode; name: stri
 
 export default function Home() {
   return (
-    <ErrorBoundary fallback={<FallbackPage />}>
+    <main>
       <SafeSection name="Hero">
         <HeroSection />
       </SafeSection>
@@ -79,6 +78,6 @@ export default function Home() {
       <SafeSection name="Booking">
         <BookingSection />
       </SafeSection>
-    </ErrorBoundary>
+    </main>
   )
 }

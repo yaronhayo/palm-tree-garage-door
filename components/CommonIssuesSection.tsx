@@ -1,5 +1,15 @@
-import { CheckCircle, AlertTriangle, ArrowRight, Phone } from "lucide-react"
-import OptimizedImage from "./OptimizedImage"
+import {
+  CheckCircle,
+  AlertTriangle,
+  ArrowRight,
+  Phone,
+  Wrench,
+  SlidersHorizontal,
+  Zap,
+  Volume2,
+  Clock,
+  CloudRain,
+} from "lucide-react"
 import Link from "next/link"
 import AnimatedSection from "./AnimatedSection"
 import AnimatedElement from "./AnimatedElement"
@@ -11,42 +21,42 @@ export default function CommonIssuesSection() {
       description:
         "Springs are under high tension and can break due to wear and tear. This is one of the most common issues and requires professional repair.",
       warning: "Never attempt to repair garage door springs yourself - they can cause serious injury.",
-      icon: "/images/services/spring-replacement.png",
+      icon: <Wrench className="h-8 w-8 text-primary-600" />,
     },
     {
       title: "Door Off Track",
       description:
         "Garage doors can come off their tracks due to impact, worn rollers, or misalignment. This prevents proper operation and needs immediate attention.",
       warning: "A door off track can fall and cause damage or injury if not properly secured.",
-      icon: "/images/services/door-repair.png",
+      icon: <SlidersHorizontal className="h-8 w-8 text-primary-600" />,
     },
     {
       title: "Opener Malfunctions",
       description:
         "Issues with the garage door opener can include motor failure, remote control problems, or sensor misalignment.",
       warning: "Always ensure safety sensors are working properly to prevent door closure accidents.",
-      icon: "/images/services/opener-repair.png",
+      icon: <Zap className="h-8 w-8 text-primary-600" />,
     },
     {
       title: "Noisy Operation",
       description:
         "Excessive noise during operation often indicates worn parts, loose hardware, or lack of lubrication.",
       warning: "Ignoring unusual noises can lead to more serious mechanical failures.",
-      icon: "/images/services/door-repair.png",
+      icon: <Volume2 className="h-8 w-8 text-primary-600" />,
     },
     {
       title: "Slow Response",
       description:
         "If your door is slow to respond to controls or moves sluggishly, it may indicate motor problems or track obstructions.",
       warning: "Slow operation can worsen over time and lead to complete failure.",
-      icon: "/images/services/opener-repair.png",
+      icon: <Clock className="h-8 w-8 text-primary-600" />,
     },
     {
       title: "Weather Damage",
       description:
         "Exposure to harsh weather can damage door panels, seals, and hardware, affecting insulation and operation.",
       warning: "Water intrusion can damage your garage contents and lead to mold growth.",
-      icon: "/images/services/new-installation.png",
+      icon: <CloudRain className="h-8 w-8 text-primary-600" />,
     },
   ]
 
@@ -113,15 +123,7 @@ export default function CommonIssuesSection() {
             <AnimatedElement key={issue.title} variant="stagger" index={index} delay={0.3}>
               <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 flex flex-col h-full transform hover:-translate-y-1">
                 <div className="flex items-center mb-4">
-                  <div className="bg-primary-600/10 p-3 rounded-full mr-4 flex-shrink-0">
-                    {issue.icon ? (
-                      <div className="w-8 h-8 relative">
-                        <OptimizedImage src={issue.icon} alt="" fill className="object-contain" />
-                      </div>
-                    ) : (
-                      <CheckCircle className="h-8 w-8 text-primary-600" />
-                    )}
-                  </div>
+                  <div className="bg-primary-600/10 p-3 rounded-full mr-4 flex-shrink-0">{issue.icon}</div>
                   <h3 className="text-xl font-bold text-primary-600">{issue.title}</h3>
                 </div>
                 <p className="text-gray-600 mb-4 flex-grow">{issue.description}</p>

@@ -162,6 +162,31 @@ html {
   }
 }
 
+/* Mobile menu fixes */
+.mobile-menu-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 100%;
+  z-index: 55;
+}
+
+.mobile-menu-open {
+  overflow: hidden;
+}
+
+.mobile-menu {
+  z-index: 100;
+}
+
+/* Ensure proper positioning for fixed elements */
+.fixed-element {
+  position: fixed;
+  z-index: 50;
+}
+
 /* Optimize for Core Web Vitals */
 @media screen and (prefers-reduced-motion: reduce) {
   html {
@@ -173,4 +198,10 @@ html {
     animation: none;
     transform: none;
   }
+}
+
+.bg-pattern-grid {
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
 }

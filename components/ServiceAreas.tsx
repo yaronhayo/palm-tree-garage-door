@@ -1,10 +1,9 @@
 "use client"
 
 import { useState, useRef } from "react"
-import { MapPin, ArrowRight, Building, Home, Navigation } from "lucide-react"
+import { MapPin, ArrowRight, Building, Home, Navigation, Map } from "lucide-react"
 import { serviceAreas } from "@/data/service-areas"
 import { motion, useInView } from "framer-motion"
-import OptimizedImage from "./OptimizedImage"
 import { getCityData } from "@/data/city-specific-data"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 
@@ -29,17 +28,19 @@ export default function ServiceAreas() {
 
   return (
     <section className="py-24 relative bg-gradient-to-b from-white to-gray-50" id="service-areas" ref={ref}>
-      {/* Background with map image */}
+      {/* Background with gradient and pattern */}
       <div className="absolute inset-0 z-0 overflow-hidden">
-        <OptimizedImage
-          src="/florida-map-outline.png"
-          alt=""
-          fill
-          className="object-cover opacity-5"
-          fallbackSrc="/placeholder.png" // Changed from abstract-map-background.png to placeholder.png
-          priority={true}
-        />
         <div className="absolute inset-0 bg-gradient-to-b from-white via-gray-50 to-gray-100 opacity-80 z-0"></div>
+
+        {/* Abstract pattern using CSS */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute top-0 left-0 w-full h-full">
+            <div className="absolute top-1/4 left-1/4 w-1/2 h-1/2 border-2 border-primary-200 rounded-full"></div>
+            <div className="absolute top-1/3 left-1/3 w-1/3 h-1/3 border-2 border-primary-300 rounded-full"></div>
+            <div className="absolute top-[40%] left-[40%] w-1/5 h-1/5 border-2 border-primary-400 rounded-full"></div>
+            <Map className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-24 h-24 text-primary-100" />
+          </div>
+        </div>
 
         {/* Decorative elements */}
         <div className="absolute -top-10 -right-10 w-40 h-40 bg-accent-500 opacity-10 rounded-full blur-3xl"></div>
@@ -182,23 +183,17 @@ export default function ServiceAreas() {
                   const cityData = getCityData(selectedArea)
                   return (
                     <div className="space-y-6">
-                      {/* Hero Image */}
-                      {cityData.heroImage && (
-                        <div className="relative h-48 rounded-lg overflow-hidden">
-                          <OptimizedImage
-                            src={cityData.heroImage}
-                            alt={`${selectedArea} garage door services`}
-                            fill
-                            className="object-cover"
-                            fallbackSrc="/placeholder.png"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                          <div className="absolute bottom-4 left-4 text-white">
-                            <h3 className="text-xl font-bold">{selectedArea}</h3>
-                            <p className="text-sm">Garage Door Repair Services</p>
-                          </div>
+                      {/* Area Header with Icon */}
+                      <div className="relative h-32 rounded-lg overflow-hidden bg-gradient-to-r from-primary-600 to-primary-700 flex items-center justify-center">
+                        <div className="absolute inset-0 opacity-20">
+                          <div className="absolute inset-0 bg-pattern-grid"></div>
                         </div>
-                      )}
+                        <div className="text-center text-white z-10">
+                          <MapPin className="w-12 h-12 mx-auto mb-2" />
+                          <h3 className="text-xl font-bold">{selectedArea}</h3>
+                          <p className="text-sm">Garage Door Repair Services</p>
+                        </div>
+                      </div>
 
                       {/* Neighborhoods */}
                       <div>

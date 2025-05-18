@@ -1,9 +1,9 @@
 /**
- * Data layer utilities for tracking and analytics
+ * Utility functions for interacting with Google Tag Manager dataLayer
  */
 
-// Type definitions for tracking events
-type TrackingEvent = {
+// Type definition for the dataLayer
+interface DataLayerEvent {
   event: string
   [key: string]: any
 }
@@ -15,128 +15,131 @@ export const initDataLayer = () => {
   }
 }
 
-// Push an event to the dataLayer
-export const pushToDataLayer = (data: TrackingEvent) => {
+/**
+ * Push an event to the dataLayer
+ * @param event The event object to push to the dataLayer
+ */
+export function pushToDataLayer(event: DataLayerEvent): void {
   try {
-    if (typeof window !== "undefined" && window.dataLayer) {
-      window.dataLayer.push(data)
+    if (typeof window === "undefined") return
+
+    if (!window.dataLayer) {
+      window.dataLayer = []
     }
+
+    window.dataLayer.push(event)
   } catch (error) {
     console.error("Error pushing to dataLayer:", error)
   }
 }
 
-// Track a phone call
-export const trackPhoneCall = (phoneNumber: string, location: string) => {
+/**
+ * Track a phone call event
+ * @param phoneNumber The phone number that was called
+ * @param source The source of the call (e.g. button, link, etc.)
+ */
+export function trackPhoneCall(phoneNumber: string, source: string): void {
   try {
     pushToDataLayer({
       event: "phone_call",
-      phoneNumber,
-      location,
-      timestamp: new Date().toISOString(),
+      phoneNumber: phoneNumber,
+      source: source,
     })
   } catch (error) {
     console.error("Error tracking phone call:", error)
   }
 }
 
-// Track form submission
-export const trackFormSubmission = (formId: string, formData: any) => {
+/**
+ * Track a form submission event
+ * @param formName The name of the form that was submitted
+ * @param formData The data that was submitted with the form
+ */
+export function trackFormSubmission(formName: string, formData: Record<string, any>): void {
   try {
     pushToDataLayer({
       event: "form_submission",
-      formId,
-      formData,
-      timestamp: new Date().toISOString(),
+      formName: formName,
+      formData: formData,
     })
   } catch (error) {
     console.error("Error tracking form submission:", error)
   }
 }
 
-// Track page view
-export const trackPageView = (path: string) => {
-  try {
-    pushToDataLayer({
-      event: "page_view",
-      path,
-      timestamp: new Date().toISOString(),
-    })
-  } catch (error) {
-    console.error("Error tracking page view:", error)
-  }
-}
-
-// Track engagement (clicks, interactions)
-export const trackEngagement = (elementId: string, action: string) => {
+/**
+ * Track an engagement event
+ * @param element The element that was engaged with
+ * @param interactionType The type of interaction (e.g. click, hover, etc.)
+ * @param details Optional details about the engagement
+ */
+export function trackEngagement(element: string, interactionType: string, details?: Record<string, any>): void {
   try {
     pushToDataLayer({
       event: "engagement",
-      elementId,
-      action,
-      timestamp: new Date().toISOString(),
+      element: element,
+      interactionType: interactionType,
+      ...(details && { engagementDetails: details }),
     })
   } catch (error) {
     console.error("Error tracking engagement:", error)
   }
 }
 
-// Track errors
-export const trackError = (errorMessage: string, errorStack?: string, errorComponent?: string) => {
+/**
+ * Track a page view event
+ * @param url The URL of the page that was viewed
+ */
+export function trackPageView(url: string): void {
   try {
     pushToDataLayer({
-      event: "error",
-      errorMessage,
-      errorStack,
-      errorComponent,
-      timestamp: new Date().toISOString(),
+      event: "pageview",
+      pageURL: url,
     })
   } catch (error) {
-    console.error("Error tracking error:", error)
+    console.error("Error tracking page view:", error)
   }
 }
 
-// Track generic events (MISSING EXPORT - ADDING BACK)
-export const trackEvent = (category: string, action: string, label?: string, value?: number) => {
+/**
+ * Track a generic event
+ * @param category The category of the event
+ * @param action The action that was performed
+ * @param label Optional label for the event
+ * @param value Optional value for the event
+ */
+export function trackEvent(category: string, action: string, label?: string, value?: number): void {
   try {
     pushToDataLayer({
-      event: "custom_event",
-      event_category: category,
-      event_action: action,
-      event_label: label,
-      event_value: value,
-      timestamp: new Date().toISOString(),
+      event: "event",
+      eventCategory: category,
+      eventAction: action,
+      eventLabel: label,
+      eventValue: value,
     })
   } catch (error) {
     console.error("Error tracking event:", error)
   }
 }
 
-// Form types for backward compatibility
-export const FORM_TYPES = {
-  CONTACT: "contact",
-  BOOKING: "booking",
-  NEWSLETTER: "newsletter",
-  QUOTE: "quote",
-}
-
-// Event categories for backward compatibility
-export const EVENT_CATEGORIES = {
-  ENGAGEMENT: "engagement",
-  CONVERSION: "conversion",
-  NAVIGATION: "navigation",
-  ERROR: "error",
-  FORM: "form",
-}
-
-// Event actions for backward compatibility
-export const EVENT_ACTIONS = {
-  CLICK: "click",
-  SUBMIT: "submit",
-  VIEW: "view",
-  SCROLL: "scroll",
-  CALL: "call",
+/**
+ * Track an error event
+ * @param message The error message
+ * @param details Optional details about the error
+ */
+export function trackError(message: string, details?: Record<string, any>): void {
+  try {
+    pushToDataLayer({
+      event: "error",
+      errorMessage: message,
+      ...(details && { errorDetails: details }),
+    })
+  } catch (error) {
+    console.error("Error tracking error:", error)
+  }
 }
 
 // Initialize dataLayer on module import
-initDataLayer()
+if (typeof window !== "undefined") {
+  initDataLayer()
+}

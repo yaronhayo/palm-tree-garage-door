@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import Link from "next/link"
 import Image from "next/image"
 import {
@@ -44,7 +43,6 @@ export default function Footer() {
       e.preventDefault()
       window.scrollTo({ top: 0, behavior: "smooth" })
     }
-    // Otherwise, let the Link component handle navigation to homepage
   }
 
   // Handle smooth scrolling for anchor links
@@ -74,7 +72,7 @@ export default function Footer() {
         <div className="hidden lg:block absolute -right-24 top-2/3 transform -translate-y-1/2 w-80 h-80 rounded-full bg-primary-600 opacity-5"></div>
 
         <div className="container mx-auto px-4 relative z-10">
-          {/* Newsletter signup - New section */}
+          {/* Newsletter signup */}
           <div className="bg-primary-700 rounded-xl p-8 mb-12 shadow-lg">
             <div className="grid md:grid-cols-2 gap-8 items-center">
               <div>
