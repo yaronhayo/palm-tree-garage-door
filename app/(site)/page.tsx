@@ -1,15 +1,19 @@
+import type React from "react"
+import { Suspense } from "react"
+import type { Metadata } from "next"
+import { ErrorBoundary } from "@/components/ErrorBoundary"
+import FallbackPage from "./fallback-page"
+
+// Import components individually to identify which one might be causing issues
 import HeroSection from "@/components/HeroSection"
+import TrustBadges from "@/components/TrustBadges"
 import ServicesGrid from "@/components/ServicesGrid"
 import CommonIssuesSection from "@/components/CommonIssuesSection"
-import FAQSection from "@/components/FAQSection"
 import TestimonialsSection from "@/components/TestimonialsSection"
-import TrustBadges from "@/components/TrustBadges"
+import FAQSection from "@/components/FAQSection"
 import CallToAction from "@/components/CallToAction"
-import BookingSection from "@/components/BookingSection"
 import ServiceAreas from "@/components/ServiceAreas"
-import type { Metadata } from "next"
-import ResourcePreloader from "@/components/ResourcePreloader"
-import { ErrorBoundary } from "@/components/ErrorBoundary"
+import BookingSection from "@/components/BookingSection"
 
 export const metadata: Metadata = {
   title: "Palm Tree Garage Door Repair | South Florida's Trusted Experts",
@@ -17,19 +21,64 @@ export const metadata: Metadata = {
     "Fast, reliable garage door repair in South Florida. 24/7 emergency service, free estimates, and expert technicians. Call now!",
 }
 
+// Simple component to display loading state
+function LoadingFallback() {
+  return <div className="p-8 text-center">Loading...</div>
+}
+
+// Wrap each section in its own error boundary to isolate issues
+function SafeSection({ children, name }: { children: React.ReactNode; name: string }) {
+  return (
+    <ErrorBoundary
+      fallback={
+        <div className="p-4 m-4 border border-red-300 bg-red-50 rounded-lg">
+          <p className="text-red-700">Error loading {name} section</p>
+        </div>
+      }
+    >
+      <Suspense fallback={<LoadingFallback />}>{children}</Suspense>
+    </ErrorBoundary>
+  )
+}
+
 export default function Home() {
   return (
-    <ErrorBoundary fallback={<div className="p-8 text-center">Something went wrong. Please refresh the page.</div>}>
-      <ResourcePreloader />
-      <HeroSection />
-      <TrustBadges />
-      <ServicesGrid />
-      <CommonIssuesSection />
-      <TestimonialsSection />
-      <FAQSection />
-      <CallToAction />
-      <ServiceAreas />
-      <BookingSection />
+    <ErrorBoundary fallback={<FallbackPage />}>
+      <SafeSection name="Hero">
+        <HeroSection />
+      </SafeSection>
+
+      <SafeSection name="TrustBadges">
+        <TrustBadges />
+      </SafeSection>
+
+      <SafeSection name="ServicesGrid">
+        <ServicesGrid />
+      </SafeSection>
+
+      <SafeSection name="CommonIssues">
+        <CommonIssuesSection />
+      </SafeSection>
+
+      <SafeSection name="Testimonials">
+        <TestimonialsSection />
+      </SafeSection>
+
+      <SafeSection name="FAQ">
+        <FAQSection />
+      </SafeSection>
+
+      <SafeSection name="CallToAction">
+        <CallToAction />
+      </SafeSection>
+
+      <SafeSection name="ServiceAreas">
+        <ServiceAreas />
+      </SafeSection>
+
+      <SafeSection name="Booking">
+        <BookingSection />
+      </SafeSection>
     </ErrorBoundary>
   )
 }

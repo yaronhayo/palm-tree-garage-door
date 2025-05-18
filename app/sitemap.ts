@@ -1,5 +1,8 @@
 import type { MetadataRoute } from "next"
 
+// Force static generation for this route
+export const dynamic = "force-static"
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = process.env.SITE_URL || "https://palmtreegaragedoor.com"
 

@@ -1,42 +1,18 @@
 "use server"
 
-import { verifyRecaptchaToken } from "@/lib/recaptcha"
+import { verifyRecaptchaToken, getRecaptchaSiteKey } from "../server/recaptcha-server"
 
 /**
- * Server action to get a reCAPTCHA token
- * This keeps the site key on the server side
+ * Server action to get the reCAPTCHA site key
+ * This keeps the key secure on the server
  */
-export async function getRecaptchaToken(action: string): Promise<string> {
-  // In a real implementation, you would generate a token on the server
-  // For now, we'll return a placeholder since we can't actually generate tokens server-side
-  if (process.env.NODE_ENV === "development") {
-    return "development-mode-token"
-  }
-
-  // In production, we'll need to handle this differently
-  // This is a placeholder that will be replaced with actual implementation
-  return "server-generated-token"
+export async function getRecaptchaKey(): Promise<string> {
+  return getRecaptchaSiteKey()
 }
 
 /**
- * Server action to verify a reCAPTCHA response
+ * Server action to verify a reCAPTCHA token
  */
-export async function verifyRecaptchaAction(
-  token: string,
-  action: string,
-): Promise<{
-  success: boolean
-  score?: number
-  error?: string
-}> {
-  try {
-    const result = await verifyRecaptchaToken(token, action)
-    return result
-  } catch (error) {
-    console.error("Error verifying reCAPTCHA:", error)
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error verifying reCAPTCHA",
-    }
-  }
+export async function verifyToken(token: string): Promise<boolean> {
+  return verifyRecaptchaToken(token)
 }

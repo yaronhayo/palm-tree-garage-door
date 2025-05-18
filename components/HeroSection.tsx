@@ -9,14 +9,15 @@ import QuickContactForm from "./forms/QuickContactForm"
 
 export default function HeroSection() {
   const [showBookingForm, setShowBookingForm] = useState(false)
+  const [imageLoaded, setImageLoaded] = useState(false)
   const [imageError, setImageError] = useState(false)
 
+  // Safe tracking function
   const handlePhoneClick = () => {
     try {
       trackPhoneCall("3213669723", "hero_section")
     } catch (error) {
       console.error("Error tracking phone call:", error)
-      // Continue execution even if tracking fails
     }
   }
 
@@ -25,16 +26,19 @@ export default function HeroSection() {
       {/* Background Image with Overlay */}
       <div className="absolute inset-0 z-0">
         {!imageError ? (
-          <Image
-            src="/images/service-truck.png"
-            alt="Palm Tree Garage Door Repairs service truck"
-            fill
-            priority
-            className="object-cover"
-            sizes="100vw"
-            quality={85}
-            onError={() => setImageError(true)}
-          />
+          <div className="w-full h-full relative">
+            <Image
+              src="/images/service-truck.png"
+              alt="Palm Tree Garage Door Repairs service truck"
+              fill
+              priority
+              className={`object-cover transition-opacity duration-300 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
+              sizes="100vw"
+              quality={85}
+              onLoad={() => setImageLoaded(true)}
+              onError={() => setImageError(true)}
+            />
+          </div>
         ) : (
           <div className="w-full h-full bg-primary-800"></div>
         )}
@@ -119,7 +123,19 @@ export default function HeroSection() {
           <div className="bg-white rounded-lg shadow-xl p-6 border-l-4 border-accent-500 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-24 h-24 bg-accent-500/10 rounded-full -mr-8 -mt-8"></div>
             <div className="absolute bottom-0 left-0 w-16 h-16 bg-primary-600/10 rounded-full -ml-8 -mb-8"></div>
-            <QuickContactForm showBookingForm={showBookingForm} setShowBookingForm={setShowBookingForm} />
+            {typeof QuickContactForm === "function" ? (
+              <QuickContactForm showBookingForm={showBookingForm} setShowBookingForm={setShowBookingForm} />
+            ) : (
+              <div className="p-4 text-center">
+                <p className="text-gray-700">Contact form is currently unavailable.</p>
+                <a
+                  href="tel:+13213669723"
+                  className="mt-4 inline-block bg-accent-500 hover:bg-accent-600 text-primary-900 font-bold py-2 px-4 rounded-md"
+                >
+                  Call Us Instead
+                </a>
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -33,6 +33,10 @@ const nextConfig = {
     optimizePackageImports: ['lucide-react', 'framer-motion'],
     serverActions: true,
   },
+  // Ensure these routes are excluded from static generation
+  skipTrailingSlashRedirect: true,
+  // Ensure static files in public directory are properly handled
+  distDir: '.next',
 };
 
 const pwaConfig = {

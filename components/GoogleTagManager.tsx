@@ -2,46 +2,56 @@
 
 import { useEffect } from "react"
 import Script from "next/script"
-import { getRequiredEnvVar } from "@/lib/env-client"
+import { clientEnv } from "@/lib/env-client"
 
 interface GoogleTagManagerProps {
   gtmId?: string
 }
 
-export default function GoogleTagManager({ gtmId }: GoogleTagManagerProps) {
-  const gtmTrackingId = gtmId || getRequiredEnvVar("NEXT_PUBLIC_GTM_ID", "GTM-XXXX")
+export function GoogleTagManager({ gtmId }: GoogleTagManagerProps) {
+  const id = gtmId || clientEnv.GTM_ID
 
   useEffect(() => {
-    if (!gtmTrackingId || gtmTrackingId === "GTM-XXXX") {
-      console.warn("GTM ID is missing or using fallback value. Google Tag Manager will not work correctly.")
+    if (!id || id === "GTM-XXXX") {
+      console.warn("GTM ID not provided or using fallback. Google Tag Manager will not be loaded.")
+      return
     }
-  }, [gtmTrackingId])
 
-  if (!gtmTrackingId || gtmTrackingId === "GTM-XXXX") {
-    // Return empty fragment if GTM ID is missing or using fallback
+    try {
+      // Initialize dataLayer if it doesn't exist
+      window.dataLayer = window.dataLayer || []
+    } catch (error) {
+      console.error("Error initializing dataLayer:", error)
+    }
+  }, [id])
+
+  // Don't render anything if GTM ID is missing or is the fallback value
+  if (!id || id === "GTM-XXXX") {
     return null
   }
 
   return (
     <>
-      {/* Google Tag Manager - Script */}
       <Script
         id="gtm-script"
         strategy="afterInteractive"
         dangerouslySetInnerHTML={{
           __html: `
-            (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-            })(window,document,'script','dataLayer','${gtmTrackingId}');
+            try {
+              (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+              new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+              j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+              'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+              })(window,document,'script','dataLayer','${id}');
+            } catch(e) {
+              console.error("Error initializing GTM:", e);
+            }
           `,
         }}
       />
-      {/* Google Tag Manager - NoScript */}
       <noscript>
         <iframe
-          src={`https://www.googletagmanager.com/ns.html?id=${gtmTrackingId}`}
+          src={`https://www.googletagmanager.com/ns.html?id=${id}`}
           height="0"
           width="0"
           style={{ display: "none", visibility: "hidden" }}

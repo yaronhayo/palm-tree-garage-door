@@ -1,50 +1,75 @@
 /**
  * Safe client-side environment variable access
- * Only exposes variables that start with NEXT_PUBLIC_
+ * Only exposes non-sensitive public variables
  */
 
-type ClientEnv = {
-  [key: string]: string | undefined
-}
+// Safe list of allowed public environment variables - MUST be defined first
+const SAFE_PUBLIC_VARS = [
+  "NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME",
+  "NEXT_PUBLIC_CALLRAIL_ACCOUNT_ID",
+  "NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET",
+  "NEXT_PUBLIC_SUPABASE_URL",
+  "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+  "GTM_ID",
+]
 
-// Cache the environment variables to avoid recalculating on every call
-let clientEnvCache: ClientEnv | null = null
-
-export function getClientEnv(): ClientEnv {
-  if (clientEnvCache) {
-    return clientEnvCache
-  }
-
-  // Create a new object with only NEXT_PUBLIC_ variables
-  const env: ClientEnv = {}
-
+// Helper function to safely get environment variables
+function getEnvVar(name: string): string {
   try {
-    if (typeof process !== "undefined" && process.env) {
-      Object.keys(process.env).forEach((key) => {
-        if (key.startsWith("NEXT_PUBLIC_")) {
-          env[key] = process.env[key]
-        }
-      })
+    // Only allow access to safe variables
+    if (!SAFE_PUBLIC_VARS.includes(name)) {
+      return ""
+    }
+
+    // For client-side, we need to check if the variable exists and is accessible
+    if (typeof window !== "undefined") {
+      // Client-side: only NEXT_PUBLIC_ variables are accessible
+      if (name.startsWith("NEXT_PUBLIC_")) {
+        return process.env[name] || ""
+      }
+      // Non-NEXT_PUBLIC_ variables are not accessible client-side
+      return ""
+    } else {
+      // Server-side: all variables are accessible
+      return process.env[name] || ""
     }
   } catch (error) {
-    console.error("Error accessing environment variables:", error)
-    // Return empty object rather than throwing
+    console.error(`Error accessing environment variable:`, error)
+    return ""
   }
-
-  clientEnvCache = env
-  return env
 }
 
-export function getEnvVar(key: string): string | undefined {
-  const env = getClientEnv()
-  return env[key]
-}
-
-export function getRequiredEnvVar(key: string, fallback = ""): string {
-  const value = getEnvVar(key)
-  if (!value && process.env.NODE_ENV === "production") {
-    console.warn(`Required environment variable ${key} is missing`)
-    return fallback
+function getRequiredEnvVar(name: string, defaultValue: string): string {
+  const value = getEnvVar(name)
+  if (!value) {
+    if (defaultValue) {
+      console.warn(`Environment variable is not defined, using default value`)
+      return defaultValue
+    }
+    throw new Error(`Missing required environment variable`)
   }
-  return value || fallback
+  return value
 }
+
+// Define a type for safe client environment variables
+export type ClientEnv = {
+  GTM_ID: string
+  NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: string
+  NEXT_PUBLIC_CALLRAIL_ACCOUNT_ID: string
+  NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET: string
+  NEXT_PUBLIC_SUPABASE_URL: string
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: string
+}
+
+// Create a safe client environment object with fallbacks
+export const clientEnv: ClientEnv = {
+  GTM_ID: getEnvVar("GTM_ID") || "GTM-XXXX",
+  NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: getEnvVar("NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME") || "",
+  NEXT_PUBLIC_CALLRAIL_ACCOUNT_ID: getEnvVar("NEXT_PUBLIC_CALLRAIL_ACCOUNT_ID") || "",
+  NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET: getEnvVar("NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET") || "",
+  NEXT_PUBLIC_SUPABASE_URL: getEnvVar("NEXT_PUBLIC_SUPABASE_URL") || "",
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: getEnvVar("NEXT_PUBLIC_SUPABASE_ANON_KEY") || "",
+}
+
+// Export the getEnvVar function for direct use
+export { getEnvVar, getRequiredEnvVar }
