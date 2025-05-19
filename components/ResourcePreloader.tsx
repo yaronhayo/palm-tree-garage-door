@@ -1,55 +1,66 @@
 "use client"
 
 import { useEffect } from "react"
+import Head from "next/head"
 
 // List of critical resources to preload
 const criticalResources = [
-  // Hero section image
-  { url: "/images/service-truck.png", type: "image" },
+  { type: "image", url: "/logo.png" },
+  { type: "image", url: "/images/garage-door-repair-service.png" },
+  { type: "font", url: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" },
+]
 
-  // Service images (first 2 are most important)
-  {
-    url: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/IMG_9140.JPG-zZvo0fWK5tefuFBOFyW6pc5KGYaHwR.jpeg",
-    type: "image",
-  },
-  {
-    url: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/IMG_9142.JPG-eOeOz7t0rhU5GzYTwLLD8nCYNZW0V9.jpeg",
-    type: "image",
-  },
-
-  // Logo
-  { url: "/logo.png", type: "image" },
-
-  // Fallback image
-  { url: "/placeholder.png", type: "image" },
+// List of domains to preconnect to
+const preconnectDomains = [
+  "https://res.cloudinary.com",
+  "https://www.googletagmanager.com",
+  "https://www.google-analytics.com",
 ]
 
 export default function ResourcePreloader() {
   useEffect(() => {
-    // Only preload in production or if not on a slow connection
-    if (
-      process.env.NODE_ENV !== "production" ||
-      (navigator.connection &&
-        (navigator.connection.saveData ||
-          (navigator.connection.effectiveType && navigator.connection.effectiveType.includes("2g"))))
-    ) {
-      return
-    }
+    // Preload images after critical content is loaded
+    const timer = setTimeout(() => {
+      const preloadImages = [
+        "/images/services/door-repair.png",
+        "/images/services/spring-replacement.png",
+        "/images/services/opener-repair.png",
+        "/images/services/new-installation.png",
+      ]
 
-    // Check if the browser supports requestIdleCallback
-    const requestIdleCallback = window.requestIdleCallback || ((cb) => setTimeout(cb, 1))
-
-    // Preload resources during browser idle time
-    requestIdleCallback(() => {
-      criticalResources.forEach((resource) => {
-        if (resource.type === "image") {
-          const img = new Image()
-          img.src = resource.url
-        }
+      preloadImages.forEach((src) => {
+        const img = new Image()
+        img.src = src
       })
-    })
+    }, 1000) // Delay non-critical preloads
+
+    return () => clearTimeout(timer)
   }, [])
 
-  // This component doesn't render anything
-  return null
+  return (
+    <Head>
+      {/* Preconnect to important domains */}
+      {preconnectDomains.map((domain, index) => (
+        <link key={`preconnect-${index}`} rel="preconnect" href={domain} crossOrigin="anonymous" />
+      ))}
+
+      {/* Preload critical resources */}
+      {criticalResources.map((resource, index) => {
+        if (resource.type === "image") {
+          return (
+            <link
+              key={`preload-${index}`}
+              rel="preload"
+              href={resource.url}
+              as="image"
+              type={resource.url.endsWith(".png") ? "image/png" : "image/jpeg"}
+            />
+          )
+        } else if (resource.type === "font") {
+          return <link key={`preload-${index}`} rel="preload" href={resource.url} as="style" />
+        }
+        return null
+      })}
+    </Head>
+  )
 }

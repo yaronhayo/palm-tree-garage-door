@@ -1,6 +1,18 @@
-// Re-export all types from this file
-export * from "./common"
-export * from "./components"
-export * from "./forms"
-export * from "./services"
-export * from "./api"
+export type ServiceArea = {
+  id: string
+  name: string
+  county: string
+  population: string
+  description: string
+  zipCodes?: string[]
+}
+
+export type Testimonial = {
+  id: number
+  name: string
+  location: string
+  rating: number
+  quote: string
+  date?: string
+  serviceType?: string
+}

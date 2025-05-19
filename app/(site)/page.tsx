@@ -1,92 +1,59 @@
 import type React from "react"
-import { Suspense } from "react"
-import type { Metadata } from "next"
-
-// Import components
+import { Suspense, lazy } from "react"
 import HeroSection from "@/components/HeroSection"
-import TrustBadges from "@/components/TrustBadges"
 import ServicesGrid from "@/components/ServicesGrid"
-import CommonIssuesSection from "@/components/CommonIssuesSection"
-import TestimonialsSection from "@/components/TestimonialsSection"
-import FAQSection from "@/components/FAQSection"
-import CallToAction from "@/components/CallToAction"
-import ServiceAreas from "@/components/ServiceAreas"
-import BookingSection from "@/components/BookingSection"
 
-export const metadata: Metadata = {
-  title: "Palm Tree Garage Door Repair | South Florida's Trusted Experts",
-  description:
-    "Fast, reliable garage door repair in South Florida. 24/7 emergency service, free estimates, and expert technicians. Call now!",
-}
+// Lazy load below-the-fold components
+const WhyChooseUs = lazy(() => import("@/components/WhyChooseUs"))
+const CommonIssuesSection = lazy(() => import("@/components/CommonIssuesSection"))
+const TestimonialsSection = lazy(() => import("@/components/TestimonialsSection"))
+const ServiceAreas = lazy(() => import("@/components/ServiceAreas"))
+const FAQSection = lazy(() => import("@/components/FAQSection"))
+const BookingSection = lazy(() => import("@/components/BookingSection"))
+import EmergencyServiceSection from "@/components/EmergencyServiceSection"
 
-// Simple error boundary component
-function ErrorBoundary({ children, fallback }: { children: React.ReactNode; fallback: React.ReactNode }) {
-  try {
-    return <>{children}</>
-  } catch (error) {
-    console.error("Error in component:", error)
-    return <>{fallback}</>
-  }
-}
+// Simple loading placeholders
+const SectionPlaceholder = () => <div className="w-full h-96 bg-gray-100 animate-pulse rounded-lg"></div>
 
-// Simple component to display loading state
-function LoadingFallback() {
-  return <div className="p-8 text-center">Loading...</div>
-}
-
-// Wrap each section in its own error boundary to isolate issues
-function SafeSection({ children, name }: { children: React.ReactNode; name: string }) {
-  return (
-    <ErrorBoundary
-      fallback={
-        <div className="p-4 m-4 border border-red-300 bg-red-50 rounded-lg">
-          <p className="text-red-700">Error loading {name} section</p>
-        </div>
-      }
-    >
-      <Suspense fallback={<LoadingFallback />}>{children}</Suspense>
-    </ErrorBoundary>
-  )
-}
+const SafeSection = ({ children, name }: { children: React.ReactNode; name: string }) => (
+  <Suspense fallback={<SectionPlaceholder />}>{children}</Suspense>
+)
 
 export default function Home() {
   return (
-    <main>
-      <SafeSection name="Hero">
-        <HeroSection />
-      </SafeSection>
+    <>
+      {/* Critical above-the-fold content loaded immediately */}
+      <HeroSection />
+      <ServicesGrid />
 
-      <SafeSection name="TrustBadges">
-        <TrustBadges />
-      </SafeSection>
-
-      <SafeSection name="ServicesGrid">
-        <ServicesGrid />
+      {/* Lazy load below-the-fold content */}
+      <SafeSection name="WhyChooseUs">
+        <WhyChooseUs />
       </SafeSection>
 
       <SafeSection name="CommonIssues">
         <CommonIssuesSection />
       </SafeSection>
 
+      <SafeSection name="EmergencyService">
+        <EmergencyServiceSection />
+      </SafeSection>
+
       <SafeSection name="Testimonials">
         <TestimonialsSection />
-      </SafeSection>
-
-      <SafeSection name="FAQ">
-        <FAQSection />
-      </SafeSection>
-
-      <SafeSection name="CallToAction">
-        <CallToAction />
       </SafeSection>
 
       <SafeSection name="ServiceAreas">
         <ServiceAreas />
       </SafeSection>
 
-      <SafeSection name="Booking">
+      <SafeSection name="FAQSection">
+        <FAQSection />
+      </SafeSection>
+
+      <SafeSection name="BookingSection">
         <BookingSection />
       </SafeSection>
-    </main>
+    </>
   )
 }

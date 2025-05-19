@@ -15,6 +15,8 @@ export const testimonialsData = [
     rating: 5,
     quote:
       "Palm Tree Garage Door came to my rescue when my door suddenly stopped working. They arrived within an hour and fixed the issue quickly. Great service at a fair price!",
+    date: "2023-06-15",
+    serviceType: "Emergency Repair",
   },
   {
     id: 2,
@@ -23,6 +25,8 @@ export const testimonialsData = [
     rating: 5,
     quote:
       "I needed a new garage door and Palm Tree made the process so easy. They helped me choose the perfect door for my home and installed it flawlessly. Highly recommend!",
+    date: "2023-05-22",
+    serviceType: "New Installation",
   },
   {
     id: 3,
@@ -31,6 +35,8 @@ export const testimonialsData = [
     rating: 5,
     quote:
       "Professional, punctual, and reasonably priced. The technician explained everything clearly and fixed my garage door spring quickly. I'll definitely use them again!",
+    date: "2023-07-03",
+    serviceType: "Spring Replacement",
   },
   {
     id: 4,
@@ -39,6 +45,8 @@ export const testimonialsData = [
     rating: 5,
     quote:
       "Palm Tree installed a new smart garage door opener for me, and I couldn't be happier. The technician took the time to show me how to use all the features. The door operates so much quieter now!",
+    date: "2023-04-18",
+    serviceType: "Opener Installation",
   },
 ]
 
@@ -77,7 +85,7 @@ export default function Testimonials() {
   })
 
   return (
-    <section className="py-16 bg-primary-600" ref={ref}>
+    <section className="py-16 bg-primary-600" ref={ref} id="testimonials">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <motion.h2
@@ -122,6 +130,12 @@ export default function Testimonials() {
                   <div className="mt-auto">
                     <p className="font-bold text-primary-900">{testimonial.name}</p>
                     <p className="text-sm text-gray-500">{testimonial.location}</p>
+                    {testimonial.serviceType && (
+                      <p className="text-xs text-gray-400 mt-1">Service: {testimonial.serviceType}</p>
+                    )}
+                    <time dateTime={testimonial.date} className="sr-only">
+                      {testimonial.date}
+                    </time>
                   </div>
                 </div>
               </div>

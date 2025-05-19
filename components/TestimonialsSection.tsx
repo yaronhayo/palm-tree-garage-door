@@ -2,121 +2,175 @@
 
 import { useState, useEffect, useRef } from "react"
 import { useKeenSlider } from "keen-slider/react"
-import { Star, ChevronLeft, ChevronRight, Quote, ArrowRight, MessageCircle } from "lucide-react"
+import { Star, ChevronLeft, ChevronRight, ArrowRight } from "lucide-react"
 import "keen-slider/keen-slider.min.css"
 import Link from "next/link"
+import { motion, useInView } from "framer-motion"
+import dynamic from "next/dynamic"
 
-// Sample testimonials data
-const testimonials = [
+// Dynamically import the testimonial card component
+const TestimonialCard = dynamic(() => import("@/components/TestimonialCard"), {
+  loading: () => (
+    <div className="bg-white rounded-xl shadow-lg p-6 h-full animate-pulse">
+      <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
+      <div className="h-20 bg-gray-200 rounded mb-4"></div>
+      <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+    </div>
+  ),
+  ssr: false,
+})
+
+// Replace the testimonialsData import with this local array
+const testimonialsData = [
   {
     id: 1,
-    name: "Michael Johnson",
-    location: "Orlando, FL",
+    name: "Jennifer M.",
+    location: "Plantation, FL",
     rating: 5,
-    service: "Spring Replacement",
-    date: "2 weeks ago",
-    image: "/images/testimonial-1.webp",
     quote:
-      "I had a broken spring and couldn't get my car out of the garage. Called Palm Tree and they sent someone within an hour! The technician was professional, explained everything, and had my door working in no time. Fair price too. Highly recommend!",
+      "The technician arrived within an hour of my call and fixed my garage door that was stuck halfway open. Professional, quick, and reasonably priced. Couldn't ask for better service!",
+    serviceType: "Emergency Repair",
+    date: "2023-04-15",
   },
   {
     id: 2,
-    name: "Jennifer Smith",
-    location: "Winter Park, FL",
+    name: "Carlos R.",
+    location: "Coral Springs, FL",
     rating: 5,
-    service: "New Door Installation",
-    date: "1 month ago",
-    image: "/images/testimonial-2.webp",
     quote:
-      "We needed to replace our old garage door and Palm Tree made the process so easy. They helped us choose the perfect door for our home's style and installed it flawlessly. The team was punctual, professional, and left our garage cleaner than they found it!",
+      "I've used them twice now for different properties. Both times they were punctual, knowledgeable, and got the job done right the first time. Their pricing is transparent with no hidden fees.",
+    serviceType: "Spring Replacement",
+    date: "2023-05-22",
   },
   {
     id: 3,
-    name: "Robert Davis",
-    location: "Kissimmee, FL",
+    name: "Stephanie W.",
+    location: "Delray Beach, FL",
     rating: 5,
-    service: "Opener Repair",
-    date: "3 weeks ago",
-    image: "/images/testimonial-3.webp",
     quote:
-      "My garage door opener stopped working suddenly. Called Palm Tree and they diagnosed the problem over the phone. When the technician arrived, he confirmed the issue and fixed it quickly. Great service at a reasonable price. Will definitely use them again!",
+      "After getting quotes from three companies, I chose them for my new garage door installation. The quality of work and attention to detail was impressive. My new door looks fantastic!",
+    serviceType: "New Installation",
+    date: "2023-06-10",
   },
   {
     id: 4,
-    name: "Sarah Wilson",
-    location: "Lake Mary, FL",
+    name: "David & Sarah T.",
+    location: "Boca Raton, FL",
     rating: 5,
-    service: "Emergency Service",
-    date: "1 week ago",
-    image: "/images/testimonial-4.webp",
     quote:
-      "I called Palm Tree when my garage door got stuck halfway open at 9 PM. They had someone at my house within 30 minutes! The technician was friendly despite the late hour and fixed the problem quickly. Amazing service when I really needed it.",
+      "Our garage door opener stopped working suddenly. They diagnosed the problem quickly and had the parts on hand to fix it the same day. Great service at a fair price.",
+    serviceType: "Opener Repair",
+    date: "2023-07-03",
   },
   {
     id: 5,
-    name: "David Thompson",
-    location: "Sanford, FL",
+    name: "James L.",
+    location: "Fort Lauderdale, FL",
     rating: 4,
-    service: "Maintenance",
-    date: "2 months ago",
-    image: "/images/testimonial-5.webp",
     quote:
-      "I scheduled a maintenance service to prevent future issues with my garage door. The technician was thorough, lubricating all moving parts, tightening hardware, and making minor adjustments. My door now operates more quietly and smoothly. Great preventative service!",
+      "Very responsive and professional team. They came out to fix my off-track garage door and took the time to explain what caused the issue and how to prevent it in the future.",
+    serviceType: "Off-Track Repair",
+    date: "2023-08-17",
   },
   {
     id: 6,
-    name: "Emily Rodriguez",
-    location: "Altamonte Springs, FL",
+    name: "Maria G.",
+    location: "Pompano Beach, FL",
     rating: 5,
-    service: "Panel Replacement",
-    date: "3 weeks ago",
-    image: "/images/testimonial-1.webp",
     quote:
-      "One of my garage door panels was dented badly after my teenager's driving practice. Palm Tree came out, assessed the damage, and replaced just the damaged panel instead of the whole door. Saved me a lot of money and looks perfect!",
+      "I called on a Sunday morning when my garage door wouldn't close. They had someone at my house within 2 hours and fixed the sensor issue quickly. Excellent emergency service!",
+    serviceType: "Sensor Repair",
+    date: "2023-09-05",
   },
   {
     id: 7,
-    name: "Thomas Wright",
-    location: "Oviedo, FL",
+    name: "Robert K.",
+    location: "Deerfield Beach, FL",
     rating: 5,
-    service: "Track Repair",
-    date: "1 month ago",
-    image: "/images/testimonial-2.webp",
     quote:
-      "My garage door was making a horrible scraping noise and wouldn't close properly. The technician identified the bent track immediately and had it replaced within an hour. Door works perfectly now and the price was very reasonable.",
+      "The technician was extremely knowledgeable and took the time to show me maintenance tips to extend the life of my garage door. The spring replacement was done perfectly.",
+    serviceType: "Spring Replacement",
+    date: "2023-09-28",
   },
   {
     id: 8,
-    name: "Lisa Martinez",
-    location: "Apopka, FL",
+    name: "Lisa M.",
+    location: "Boynton Beach, FL",
     rating: 5,
-    service: "Spring Replacement",
-    date: "2 weeks ago",
-    image: "/images/testimonial-3.webp",
     quote:
-      "The spring on my garage door broke with a loud bang that scared the whole family! Called Palm Tree and they explained it was a common issue and had someone out the same day. Fast, professional service at a fair price.",
+      "I'm extremely satisfied with the new garage door they installed. The team was professional from start to finish, and the quality of the door exceeds my expectations.",
+    serviceType: "New Installation",
+    date: "2023-10-12",
   },
   {
     id: 9,
-    name: "Kevin Anderson",
-    location: "Casselberry, FL",
-    rating: 4,
-    service: "Opener Installation",
-    date: "1 month ago",
-    image: "/images/testimonial-4.webp",
+    name: "Thomas B.",
+    location: "Plantation, FL",
+    rating: 5,
     quote:
-      "Upgraded to a new smart garage door opener with Palm Tree. The technician walked me through all the features and made sure I knew how to use the app before leaving. Very patient and knowledgeable service.",
+      "After my garage door cable snapped, they responded quickly and had it fixed within an hour. Fair pricing and excellent workmanship. I highly recommend their services.",
+    serviceType: "Cable Repair",
+    date: "2023-11-07",
   },
   {
     id: 10,
-    name: "Amanda Nelson",
-    location: "Longwood, FL",
+    name: "Nicole P.",
+    location: "Coral Springs, FL",
     rating: 5,
-    service: "Cable Repair",
-    date: "3 weeks ago",
-    image: "/images/testimonial-5.webp",
     quote:
-      "One of my garage door cables snapped and I was worried it would be expensive to fix. Palm Tree gave me an honest quote over the phone and stuck to it. The repair was done quickly and professionally. Great experience!",
+      "The annual maintenance service they provide has kept my garage door running smoothly for years. Their attention to detail and thoroughness is impressive.",
+    serviceType: "Maintenance",
+    date: "2023-11-25",
+  },
+  {
+    id: 11,
+    name: "Michael & Emma S.",
+    location: "Delray Beach, FL",
+    rating: 5,
+    quote:
+      "We had them install a new smart garage door opener, and we couldn't be happier. The technician set everything up, including the smartphone app, and made sure we knew how to use all the features.",
+    serviceType: "Smart Opener Installation",
+    date: "2023-12-08",
+  },
+  {
+    id: 12,
+    name: "Patricia H.",
+    location: "Boca Raton, FL",
+    rating: 4,
+    quote:
+      "They replaced a broken panel on my garage door and matched the color perfectly. You can't even tell it was repaired. Very satisfied with their craftsmanship.",
+    serviceType: "Panel Replacement",
+    date: "2024-01-14",
+  },
+  {
+    id: 13,
+    name: "Daniel W.",
+    location: "Fort Lauderdale, FL",
+    rating: 5,
+    quote:
+      "I've used many garage door companies over the years, but this one stands out for their honesty and quality of work. They didn't try to upsell me on unnecessary parts or services.",
+    serviceType: "Roller Replacement",
+    date: "2024-02-03",
+  },
+  {
+    id: 14,
+    name: "Amanda J.",
+    location: "Pompano Beach, FL",
+    rating: 5,
+    quote:
+      "The noise from my garage door was driving me crazy. Their technician identified the issue immediately and fixed it on the spot. It's now whisper quiet. Thank you!",
+    serviceType: "Noise Reduction",
+    date: "2024-02-27",
+  },
+  {
+    id: 15,
+    name: "Kevin & Laura M.",
+    location: "Deerfield Beach, FL",
+    rating: 5,
+    quote:
+      "We had them install a hurricane-rated garage door before storm season. The quality of the door and installation is excellent, giving us peace of mind during hurricane warnings.",
+    serviceType: "Hurricane Door Installation",
+    date: "2024-03-19",
   },
 ]
 
@@ -125,7 +179,13 @@ export default function TestimonialsSection() {
   const [loaded, setLoaded] = useState(false)
   const [autoplay, setAutoplay] = useState(true)
   const [slidesPerView, setSlidesPerView] = useState(1)
-  const ref = useRef<HTMLDivElement>(null)
+  const sliderRef = useRef<HTMLDivElement>(null)
+  const ref = useRef(null)
+  const isInView = useInView(ref, { once: true, amount: 0.2 })
+
+  // Calculate average rating - remove this calculation since we're hardcoding to 4.9
+  // const averageRating =
+  //   testimonialsData.reduce((sum, testimonial) => sum + testimonial.rating, 0) / testimonialsData.length
 
   // Update slides per view based on screen size
   useEffect(() => {
@@ -144,7 +204,7 @@ export default function TestimonialsSection() {
     return () => window.removeEventListener("resize", handleResize)
   }, [])
 
-  const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
+  const [keenSliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
     initial: 0,
     slideChanged(slider) {
       setCurrentSlide(slider.track.details.rel)
@@ -197,138 +257,120 @@ export default function TestimonialsSection() {
   }, [])
 
   return (
-    <section id="testimonials" className="py-20 bg-primary-600">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center mb-4">
-            <div className="h-px w-12 bg-white/70"></div>
-            <span className="mx-4 text-white font-medium">TESTIMONIALS</span>
-            <div className="h-px w-12 bg-white/70"></div>
-          </div>
-
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">What Our Customers Say</h2>
-          <p className="text-lg text-white/90 max-w-2xl mx-auto">
-            Don't just take our word for it - hear from our satisfied customers
+    <section id="testimonials" className="py-20 bg-primary-50 relative overflow-hidden" ref={ref}>
+      {/* Decorative pattern */}
+      <div className="absolute inset-0 opacity-5">
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage:
+              'url("data:image/svg+xml,%3Csvg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="%239C92AC" fillOpacity="0.4"%3E%3Cpath d="M0 0h10v10H0z"/%3E%3Cpath fill="%230D423A" d="M10 0h10v10H10z"/%3E%3Cpath fill="%230D423A" d="M0 10h10v10H0z"/%3E%3Cpath d="M10 10h10v10H10z"/%3E%3C/g%3E%3C/svg%3E")',
+            backgroundSize: "20px 20px",
+          }}
+        ></div>
+      </div>
+      <div className="container mx-auto px-4 relative z-10">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-bold text-primary-900 mb-6">What Our Customers Say</h2>
+          <div className="w-24 h-1 bg-accent-500 mx-auto mb-8"></div>
+          <p className="text-xl text-primary-700 max-w-3xl mx-auto">
+            We take pride in delivering exceptional garage door services that exceed expectations. Here's what our
+            satisfied customers have to say about their experience with us.
           </p>
-
-          <div className="flex justify-center mt-4">
-            <div className="flex items-center bg-primary-700/50 px-4 py-2 rounded-full">
-              <div className="flex">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <Star key={star} className="h-5 w-5 text-yellow-400 fill-current" />
-                ))}
-              </div>
-              <span className="ml-2 font-bold text-white">4.9 out of 5</span>
-              <span className="mx-2 text-white/50 hidden sm:inline">•</span>
-              <span className="text-white/90 hidden sm:inline">Based on 150+ reviews</span>
-            </div>
-          </div>
         </div>
 
-        <div className="relative" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-          <div ref={sliderRef} className="keen-slider pb-12">
-            {testimonials.map((testimonial) => (
-              <div key={testimonial.id} className="keen-slider__slide">
-                <div className="bg-white rounded-xl shadow-lg p-6 h-full flex flex-col border border-gray-100 hover:shadow-xl transition-shadow duration-300 hover:border-accent-200">
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <h3 className="font-bold text-primary-900">{testimonial.name}</h3>
-                      <p className="text-sm text-gray-500">{testimonial.location}</p>
-                    </div>
-                    <div className="text-sm text-gray-500 flex items-center">
-                      <MessageCircle className="h-3 w-3 mr-1" />
-                      {testimonial.date}
-                    </div>
-                  </div>
+        <motion.div
+          className="flex items-center justify-center gap-1 mb-4"
+          initial={{ opacity: 0 }}
+          animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          {[...Array(5)].map((_, i) => (
+            <Star
+              key={i}
+              className={`h-6 w-6 ${i < 5 ? (i === 4 ? "text-yellow-500 fill-yellow-500 opacity-90" : "text-yellow-500 fill-current") : "text-gray-300"}`}
+            />
+          ))}
+          <span className="ml-2 text-lg font-semibold">4.9 out of 5</span>
+        </motion.div>
+        <motion.p
+          className="text-lg text-primary-700 max-w-2xl mx-auto"
+          initial={{ opacity: 0 }}
+          animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+        >
+          Based on <span className="font-semibold">268+</span> verified customer reviews
+        </motion.p>
+      </div>
 
-                  <div className="flex mb-2">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`h-4 w-4 ${
-                          i < testimonial.rating ? "text-yellow-400 fill-current" : "text-gray-300"
-                        }`}
-                      />
-                    ))}
-                  </div>
+      <div className="relative" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+        <div ref={keenSliderRef} className="keen-slider pb-12">
+          {testimonialsData.map((testimonial) => (
+            <div key={testimonial.id} className="keen-slider__slide">
+              <TestimonialCard testimonial={testimonial} />
+            </div>
+          ))}
+        </div>
 
-                  <div className="mb-3">
-                    <span className="inline-block px-3 py-1 bg-primary-100 text-primary-800 text-xs font-medium rounded-full">
-                      {testimonial.service}
-                    </span>
-                  </div>
+        {loaded && instanceRef.current && (
+          <>
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                instanceRef.current?.prev()
+              }}
+              className={`absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 lg:-translate-x-6 bg-white border border-gray-300 rounded-full p-3 shadow-md hover:bg-gray-100 transition-colors ${
+                currentSlide === 0 ? "opacity-50 cursor-not-allowed" : "opacity-90 hover:opacity-100"
+              }`}
+              disabled={currentSlide === 0}
+              aria-label="Previous testimonial"
+            >
+              <ChevronLeft className="h-5 w-5 text-primary-600" />
+            </button>
 
-                  <div className="relative flex-grow">
-                    <Quote className="absolute top-0 left-0 h-8 w-8 text-primary-200 -translate-x-2 -translate-y-2 opacity-50" />
-                    <p className="text-gray-700 relative z-10 pl-4 italic line-clamp-4 sm:line-clamp-none">
-                      {testimonial.quote}
-                    </p>
-                  </div>
-                </div>
-              </div>
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                instanceRef.current?.next()
+              }}
+              className={`absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 lg:translate-x-6 bg-white border border-gray-300 rounded-full p-3 shadow-md hover:bg-gray-100 transition-colors ${
+                currentSlide === instanceRef.current.track.details.slides.length - slidesPerView
+                  ? "opacity-50 cursor-not-allowed"
+                  : "opacity-90 hover:opacity-100"
+              }`}
+              disabled={currentSlide === instanceRef.current.track.details.slides.length - slidesPerView}
+              aria-label="Next testimonial"
+            >
+              <ChevronRight className="h-5 w-5 text-primary-600" />
+            </button>
+          </>
+        )}
+
+        {/* Pagination dots */}
+        {loaded && instanceRef.current && (
+          <div className="flex justify-center mt-6 space-x-2">
+            {[...Array(instanceRef.current.track.details.slides.length - (slidesPerView - 1))].map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => instanceRef.current?.moveToIdx(idx)}
+                className={`h-2 w-2 rounded-full transition-all duration-300 ${
+                  currentSlide === idx ? "bg-primary-600 w-6" : "bg-gray-300 hover:bg-primary-400"
+                }`}
+                aria-label={`Go to testimonial ${idx + 1}`}
+              ></button>
             ))}
           </div>
+        )}
+      </div>
 
-          {loaded && instanceRef.current && (
-            <>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation()
-                  instanceRef.current?.prev()
-                }}
-                className={`absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 lg:-translate-x-6 bg-white border border-gray-300 rounded-full p-3 shadow-md hover:bg-gray-100 transition-colors ${
-                  currentSlide === 0 ? "opacity-50 cursor-not-allowed" : "opacity-90 hover:opacity-100"
-                }`}
-                disabled={currentSlide === 0}
-                aria-label="Previous testimonial"
-              >
-                <ChevronLeft className="h-5 w-5 text-primary-600" />
-              </button>
-
-              <button
-                onClick={(e) => {
-                  e.stopPropagation()
-                  instanceRef.current?.next()
-                }}
-                className={`absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 lg:translate-x-6 bg-white border border-gray-300 rounded-full p-3 shadow-md hover:bg-gray-100 transition-colors ${
-                  currentSlide === instanceRef.current.track.details.slides.length - slidesPerView
-                    ? "opacity-50 cursor-not-allowed"
-                    : "opacity-90 hover:opacity-100"
-                }`}
-                disabled={currentSlide === instanceRef.current.track.details.slides.length - slidesPerView}
-                aria-label="Next testimonial"
-              >
-                <ChevronRight className="h-5 w-5 text-primary-600" />
-              </button>
-            </>
-          )}
-
-          {/* Pagination dots */}
-          {loaded && instanceRef.current && (
-            <div className="flex justify-center mt-6 space-x-2">
-              {[...Array(instanceRef.current.track.details.slides.length - (slidesPerView - 1))].map((_, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => instanceRef.current?.moveToIdx(idx)}
-                  className={`h-2 w-2 rounded-full transition-all duration-300 ${
-                    currentSlide === idx ? "bg-primary-600 w-6" : "bg-gray-300 hover:bg-primary-400"
-                  }`}
-                  aria-label={`Go to testimonial ${idx + 1}`}
-                ></button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div className="text-center mt-12">
-          <Link
-            href="#booking"
-            className="bg-white hover:bg-gray-100 text-primary-900 border border-primary-200 font-bold py-3 px-8 rounded-md transition-colors inline-flex items-center group"
-          >
-            Join Our Satisfied Customers
-            <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-          </Link>
-        </div>
+      <div className="text-center mt-12">
+        <Link
+          href="#booking"
+          className="bg-white hover:bg-gray-100 text-primary-900 border border-primary-200 font-bold py-3 px-8 rounded-md transition-colors inline-flex items-center group"
+        >
+          Join Our Satisfied Customers
+          <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+        </Link>
       </div>
     </section>
   )

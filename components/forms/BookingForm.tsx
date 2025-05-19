@@ -180,6 +180,8 @@ export default function BookingForm({ prefilledCity }: BookingFormProps) {
         isEmergency: false,
       })
     } catch (error) {
+      console.error("Form submission error:", error)
+
       setFormStatus({
         success: false,
         message: "There was an error submitting your request. Please try again or call us directly.",

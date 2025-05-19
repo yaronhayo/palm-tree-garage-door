@@ -2,16 +2,26 @@ import type React from "react"
 import "./globals.css"
 import type { Metadata, Viewport } from "next"
 import { Inter } from "next/font/google"
-import { Analytics } from "@vercel/analytics/next"
-import { SpeedInsights } from "@vercel/speed-insights/next"
 import Header from "@/components/Header"
 import Footer from "@/components/Footer"
 import { CookieConsent } from "@/components/CookieConsent"
-import FloatingContactButton from "@/components/FloatingContactButton"
-import { SocialProofPopup } from "@/components/SocialProofPopup"
-import { Suspense } from "react"
+import { Suspense, lazy } from "react"
+import SchemaMarkup from "@/components/SchemaMarkup"
 
-const inter = Inter({ subsets: ["latin"] })
+// Lazy load non-critical components
+const FloatingContactButton = lazy(() => import("@/components/FloatingContactButton"))
+const SocialProofPopup = lazy(() =>
+  import("@/components/SocialProofPopup").then((mod) => ({
+    default: mod.SocialProofPopup,
+  })),
+)
+
+// Optimize font loading with display swap
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  preload: true,
+})
 
 export const metadata: Metadata = {
   title: {
@@ -69,19 +79,35 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth">
+      <head>
+        {/* Preload critical assets */}
+        <link rel="preload" href="/logo.png" as="image" type="image/png" />
+        <link rel="preconnect" href="https://res.cloudinary.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://res.cloudinary.com" />
+      </head>
       <body className={`${inter.className} antialiased`}>
-        <Suspense fallback={<div>Loading...</div>}>
-          <ErrorBoundary>
-            <Header />
-            <main id="main-content">{children}</main>
-            <Footer />
+        <ErrorBoundary>
+          <Header />
+          <main id="main-content">{children}</main>
+          <Footer />
+
+          {/* Lazy load non-critical UI elements */}
+          <Suspense fallback={null}>
             <FloatingContactButton />
+          </Suspense>
+
+          <Suspense fallback={null}>
             <CookieConsent />
+          </Suspense>
+
+          <Suspense fallback={null}>
             <SocialProofPopup />
-            <Analytics />
-            <SpeedInsights />
-          </ErrorBoundary>
-        </Suspense>
+          </Suspense>
+
+          <Suspense fallback={null}>
+            <SchemaMarkup page="home" />
+          </Suspense>
+        </ErrorBoundary>
       </body>
     </html>
   )
