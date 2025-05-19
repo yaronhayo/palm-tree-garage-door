@@ -26,9 +26,6 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ['lucide-react'],
     optimizeCss: true,
-    legacyBrowsers: false,
-    browsersListForSwc: true,
-    optimizeFonts: true,
     scrollRestoration: true,
   },
   compress: true,
