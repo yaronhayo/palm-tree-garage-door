@@ -161,7 +161,7 @@ export default function Header() {
     },
     {
       name: "Problems We Solve",
-      path: "/#door-problems",
+      path: "/#common-issues",
       id: "common-issues",
       icon: <AlertTriangle className="h-4 w-4 mr-2" aria-hidden="true" />,
     },
