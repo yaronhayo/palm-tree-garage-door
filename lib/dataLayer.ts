@@ -2,28 +2,60 @@
  * Utility functions for interacting with Google Tag Manager dataLayer
  */
 
+// Safe check for window object
+const isBrowser = typeof window !== "undefined"
+
 // Initialize dataLayer if it doesn't exist
 export const initDataLayer = () => {
-  if (typeof window !== "undefined") {
+  if (!isBrowser) return
+
+  try {
     window.dataLayer = window.dataLayer || []
+  } catch (error) {
+    console.error("Error initializing dataLayer:", error)
   }
 }
 
-/**
- * Push an event to the dataLayer
- * @param event The event object to push to the dataLayer
- */
-export function pushToDataLayer(event: any): void {
+// Push an event to the dataLayer
+export const pushToDataLayer = (data: any) => {
+  if (!isBrowser) return
+
   try {
-    if (typeof window === "undefined") return
-
-    if (!window.dataLayer) {
-      window.dataLayer = []
-    }
-
-    window.dataLayer.push(event)
+    window.dataLayer = window.dataLayer || []
+    window.dataLayer.push(data)
   } catch (error) {
     console.error("Error pushing to dataLayer:", error)
+  }
+}
+
+// Track page view
+export const trackPageView = (url: string) => {
+  if (!isBrowser) return
+
+  try {
+    pushToDataLayer({
+      event: "pageview",
+      page: url,
+    })
+  } catch (error) {
+    console.error("Error tracking page view:", error)
+  }
+}
+
+// Track event
+export const trackEvent = (category: string, action: string, label?: string, value?: number) => {
+  if (!isBrowser) return
+
+  try {
+    pushToDataLayer({
+      event: "event",
+      eventCategory: category,
+      eventAction: action,
+      eventLabel: label,
+      eventValue: value,
+    })
+  } catch (error) {
+    console.error("Error tracking event:", error)
   }
 }
 
@@ -33,6 +65,8 @@ export function pushToDataLayer(event: any): void {
  * @param source The source of the call (e.g. button, link, etc.)
  */
 export function trackPhoneCall(phoneNumber: string, source: string): void {
+  if (!isBrowser) return
+
   try {
     pushToDataLayer({
       event: "phone_call",
@@ -50,6 +84,8 @@ export function trackPhoneCall(phoneNumber: string, source: string): void {
  * @param formData The data that was submitted with the form
  */
 export function trackFormSubmission(formName: string, formData: Record<string, any>): void {
+  if (!isBrowser) return
+
   try {
     pushToDataLayer({
       event: "form_submission",
@@ -62,50 +98,20 @@ export function trackFormSubmission(formName: string, formData: Record<string, a
 }
 
 /**
- * Track a page view event
- * @param url The URL of the page that was viewed
- */
-export function trackPageView(url: string): void {
-  try {
-    pushToDataLayer({
-      event: "page_view",
-      pageURL: url,
-    })
-  } catch (error) {
-    console.error("Error tracking page view:", error)
-  }
-}
-
-/**
- * Track a generic event
- * @param category The category of the event
+ * Track an engagement event (e.g. click, scroll, etc.)
+ * @param category The category of the engagement
  * @param action The action that was performed
- * @param label An optional label for the event
+ * @param label Optional label for the event
  */
-export function trackEvent(category: string, action: string, label?: string): void {
-  try {
-    pushToDataLayer({
-      event: "event",
-      eventCategory: category,
-      eventAction: action,
-      eventLabel: label,
-    })
-  } catch (error) {
-    console.error("Error tracking event:", error)
-  }
-}
+export function trackEngagement(category: string, action: string, label?: string): void {
+  if (!isBrowser) return
 
-/**
- * Track user engagement events (e.g. clicks, scrolls, etc.)
- * @param element The element that was interacted with
- * @param interactionType The type of interaction (e.g. click, scroll, hover)
- */
-export function trackEngagement(element: string, interactionType: string): void {
   try {
     pushToDataLayer({
       event: "engagement",
-      element: element,
-      interactionType: interactionType,
+      engagementCategory: category,
+      engagementAction: action,
+      engagementLabel: label,
     })
   } catch (error) {
     console.error("Error tracking engagement:", error)
@@ -113,11 +119,13 @@ export function trackEngagement(element: string, interactionType: string): void 
 }
 
 /**
- * Track errors that occur on the site
+ * Track an error event
  * @param message The error message
  * @param details Optional details about the error
  */
 export function trackError(message: string, details?: Record<string, any>): void {
+  if (!isBrowser) return
+
   try {
     pushToDataLayer({
       event: "error",
@@ -130,6 +138,10 @@ export function trackError(message: string, details?: Record<string, any>): void
 }
 
 // Initialize dataLayer on module import
-if (typeof window !== "undefined") {
-  initDataLayer()
+if (isBrowser) {
+  try {
+    initDataLayer()
+  } catch (error) {
+    console.error("Error initializing dataLayer on import:", error)
+  }
 }

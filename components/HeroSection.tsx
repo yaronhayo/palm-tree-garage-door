@@ -110,8 +110,12 @@ export default function HeroSection() {
               </a>
 
               <Link
-                href="#booking"
+                href="/#booking"
                 className="bg-white hover:bg-gray-100 text-primary-900 font-bold py-3 px-6 rounded-md transition-all duration-300 flex items-center justify-center"
+                onClick={(e) => {
+                  e.preventDefault()
+                  document.getElementById("booking")?.scrollIntoView({ behavior: "smooth" })
+                }}
               >
                 Book Online
                 <ArrowRight className="ml-2 h-5 w-5" />

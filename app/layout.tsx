@@ -7,6 +7,7 @@ import Footer from "@/components/Footer"
 import { CookieConsent } from "@/components/CookieConsent"
 import { Suspense, lazy } from "react"
 import SchemaMarkup from "@/components/SchemaMarkup"
+import Script from "next/script"
 
 // Lazy load non-critical components
 const FloatingContactButton = lazy(() => import("@/components/FloatingContactButton"))
@@ -21,6 +22,7 @@ const inter = Inter({
   subsets: ["latin"],
   display: "swap",
   preload: true,
+  fallback: ["system-ui", "Arial", "sans-serif"],
 })
 
 export const metadata: Metadata = {
@@ -82,8 +84,15 @@ export default function RootLayout({
       <head>
         {/* Preload critical assets */}
         <link rel="preload" href="/logo.png" as="image" type="image/png" />
+        <link rel="preload" href="/images/garage-door-repair-service.png" as="image" type="image/png" />
         <link rel="preconnect" href="https://res.cloudinary.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://res.cloudinary.com" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+
+        {/* Preload critical CSS */}
+        <link rel="preload" href="/styles/critical.css" as="style" />
+        <link rel="stylesheet" href="/styles/critical.css" />
       </head>
       <body className={`${inter.className} antialiased`}>
         <ErrorBoundary>
@@ -107,6 +116,39 @@ export default function RootLayout({
           <Suspense fallback={null}>
             <SchemaMarkup page="home" />
           </Suspense>
+
+          {/* Google Tag Manager - moved to bottom and deferred */}
+          <Script
+            id="gtm-script"
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{
+              __html: `
+                (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+                new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+                j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+                'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+                })(window,document,'script','dataLayer','${process.env.NEXT_PUBLIC_GTM_ID || "GTM-MF948JFL"}');
+              `,
+            }}
+          />
+
+          {/* Google Tag Manager (noscript) */}
+          <noscript>
+            <iframe
+              src={`https://www.googletagmanager.com/ns.html?id=${process.env.NEXT_PUBLIC_GTM_ID || "GTM-MF948JFL"}`}
+              height="0"
+              width="0"
+              style={{ display: "none", visibility: "hidden" }}
+              title="Google Tag Manager"
+            />
+          </noscript>
+
+          {/* CallRail Tracking - deferred */}
+          <Script
+            id="callrail-tracking"
+            strategy="lazyOnload"
+            src="//cdn.callrail.com/companies/988425603/06b6d7a2f8e273d0c684/12/swap.js"
+          />
         </ErrorBoundary>
       </body>
     </html>

@@ -45,7 +45,7 @@ const ServicePopup = ({ service, isOpen, onClose }: ServicePopupProps) => {
         aria-hidden="true"
       />
       <div
-        className="fixed left-1/2 -translate-x-1/2 top-[15%] sm:top-[20%] w-[95%] sm:w-full max-w-md md:max-w-lg bg-white rounded-lg shadow-xl z-50 overflow-hidden max-h-[75vh] sm:max-h-[70vh] overflow-y-auto"
+        className="fixed left-1/2 -translate-x-1/2 top-[10%] sm:top-[20%] w-[95%] max-w-md md:max-w-lg bg-white rounded-lg shadow-xl z-50 overflow-hidden max-h-[80vh] sm:max-h-[70vh] overflow-y-auto"
         role="dialog"
         aria-modal="true"
         aria-labelledby={`service-popup-${service.title.toLowerCase().replace(/\s+/g, "-")}`}
@@ -75,7 +75,7 @@ const ServicePopup = ({ service, isOpen, onClose }: ServicePopupProps) => {
             </h3>
           </div>
         </div>
-        <div className="p-4 sm:p-6">
+        <div className="p-5 sm:p-6">
           <p className="text-gray-700 mb-4">{service.longDescription || service.description}</p>
 
           {service.benefits && (
@@ -99,10 +99,10 @@ const ServicePopup = ({ service, isOpen, onClose }: ServicePopupProps) => {
             </div>
           )}
 
-          <div className="flex flex-col sm:flex-row gap-3 mt-6">
+          <div className="flex flex-col sm:flex-row gap-4 mt-6">
             <a
               href="tel:+13213669723"
-              className="flex items-center justify-center bg-accent-500 hover:bg-accent-600 text-primary-900 font-bold py-3 px-4 rounded-md transition-colors flex-1"
+              className="flex items-center justify-center bg-accent-500 hover:bg-accent-600 text-primary-900 font-bold py-4 px-4 rounded-md transition-colors flex-1 text-base"
               data-call-tracking="true"
             >
               <Phone className="mr-2 h-4 w-4" />
@@ -110,7 +110,7 @@ const ServicePopup = ({ service, isOpen, onClose }: ServicePopupProps) => {
             </a>
             <Link
               href="/#booking"
-              className="flex items-center justify-center bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 px-4 rounded-md transition-colors flex-1"
+              className="flex items-center justify-center bg-primary-600 hover:bg-primary-700 text-white font-bold py-4 px-4 rounded-md transition-colors flex-1 text-base"
               onClick={onClose}
             >
               <Calendar className="mr-2 h-4 w-4" />
@@ -139,61 +139,65 @@ export default function ServicesGrid() {
   const services = [
     {
       title: "Door Repair",
-      description: "Fast, reliable repair for all types of garage door issues.",
+      description: "Expert solutions for noisy, stuck, or damaged garage doors with same-day service available.",
       longDescription:
-        "Our expert technicians provide comprehensive garage door repair services to fix any issue quickly and efficiently. We diagnose the problem accurately and use high-quality parts for lasting repairs.",
+        "Our certified technicians specialize in diagnosing and repairing all types of garage door issues. Whether your door is making unusual noises, moving slowly, getting stuck, or has visible damage, we'll identify the root cause and implement a lasting solution. We use premium parts and provide a satisfaction guarantee on all repairs.",
       benefits: [
         "Same-day service available for emergency repairs",
         "Experienced technicians with proper tools and parts",
         "All work backed by our satisfaction guarantee",
         "Transparent pricing with no hidden fees",
       ],
-      pricing: "Starting at $89 for basic repairs. We provide free estimates for all services.",
+      pricing:
+        "We provide free estimates for all services. Contact us for a personalized quote based on your specific needs.",
       icon: <Wrench className="h-5 w-5 text-primary-900" />,
       image: doorRepairImageUrl,
     },
     {
       title: "Spring Replacement",
-      description: "Expert replacement of broken or worn garage door springs.",
+      description: "Safe and reliable replacement of broken or worn garage door springs by certified technicians.",
       longDescription:
-        "Broken garage door springs are dangerous and require professional replacement. Our technicians are trained to safely remove old springs and install new ones that match your door's specifications exactly.",
+        "Garage door springs are under extreme tension and require professional handling. Our certified technicians are specially trained to safely remove damaged springs and install high-quality replacements calibrated to your door's exact specifications. We'll also inspect related components to ensure your entire door system operates smoothly and safely.",
       benefits: [
         "High-quality springs rated for 10,000+ cycles",
         "Proper tensioning for smooth door operation",
         "Inspection of other components for potential issues",
         "Lubrication of all moving parts included",
       ],
-      pricing: "Torsion springs from $175-$250. Extension springs from $150-$200. Includes parts and labor.",
+      pricing:
+        "We offer competitive rates for both torsion and extension spring replacements. Contact us for a free estimate tailored to your specific door system.",
       icon: <Cog className="h-5 w-5 text-primary-900" />,
       image: springImageUrl,
     },
     {
       title: "Opener Repair",
-      description: "Troubleshooting and repair of garage door openers.",
+      description: "Comprehensive diagnostics and repair for all major garage door opener brands and models.",
       longDescription:
-        "We repair all major brands of garage door openers, including Chamberlain, LiftMaster, Genie, and more. From motor issues to sensor alignment, we can diagnose and fix your opener problems.",
+        "From motor issues and circuit board failures to sensor misalignments and remote programming, our technicians are equipped to handle all garage door opener problems. We service all major brands including Chamberlain, LiftMaster, Genie, Craftsman, and more. Our thorough diagnostic process ensures we identify and fix the actual problem, not just the symptoms.",
       benefits: [
         "Comprehensive diagnosis of opener issues",
         "Repair of motor, circuit board, and sensor problems",
         "Remote programming and keypad setup",
         "Advice on repair vs. replacement options",
       ],
-      pricing: "Repairs start at $95. New opener installation from $275-$450 depending on model.",
+      pricing:
+        "We provide transparent pricing based on the specific repair needed. Ask about our opener maintenance packages to extend the life of your system.",
       icon: <PenTool className="h-5 w-5 text-primary-900" />,
       image: openerImageUrl,
     },
     {
       title: "New Installation",
-      description: "Professional installation of new garage doors.",
+      description: "Transform your home's appearance and security with our custom garage door installation services.",
       longDescription:
-        "Transform your home's appearance and improve security with a new garage door. We offer a wide selection of styles, materials, and features to match your home and budget.",
+        "A new garage door is one of the most impactful home improvements you can make, enhancing both curb appeal and security. Our installation process begins with a free consultation to understand your needs and preferences. We offer a wide selection of styles, materials, and features to match your home's architecture and your personal taste. Our certified installers ensure precise fitting and optimal operation.",
       benefits: [
         "Free in-home consultation and measurement",
         "Wide selection of styles and materials",
         "Professional installation by certified technicians",
         "Removal and disposal of old door included",
       ],
-      pricing: "New doors start at $900 installed. Premium options with insulation and windows from $1,200-$3,000.",
+      pricing:
+        "We offer various door options to fit different budgets. Contact us for a free consultation and personalized quote based on your specific requirements and preferences.",
       icon: <Home className="h-5 w-5 text-primary-900" />,
       image: newInstallationImageUrl,
     },
@@ -238,6 +242,7 @@ export default function ServicesGrid() {
             scroll={true}
             aria-label="Schedule a service appointment"
           >
+            <Calendar className="mr-2 h-5 w-5" />
             Schedule Service
             <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-all duration-300" />
           </Link>

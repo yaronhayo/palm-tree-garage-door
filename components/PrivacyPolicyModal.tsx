@@ -240,9 +240,8 @@ export function PrivacyPolicyModal({ isOpen, onClose }: PrivacyPolicyModalProps)
                 If you have any questions about this Privacy Policy, please contact us:
               </p>
               <ul className="list-none mb-4 text-gray-700">
-                <li>By email: info@palmtreegaragedoor.com</li>
+                <li>By email: palmtreegaragedoor@gmail.com</li>
                 <li>By phone: (321) 366-9723</li>
-                <li>By mail: 123 Palm Tree Lane, South Florida, FL 33301</li>
               </ul>
             </section>
           </div>

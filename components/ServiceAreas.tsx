@@ -21,7 +21,7 @@ const serviceAreas: ServiceArea[] = [
     county: "Palm Beach County",
     population: "65,000+",
     description:
-      "Delray Beach is a coastal city in Palm Beach County known for its vibrant downtown and beautiful beaches.",
+      "Delray Beach combines coastal charm with urban amenities, featuring award-winning beaches, a vibrant arts scene, and a walkable downtown with exceptional dining and shopping options.",
   },
   {
     id: "boca-raton",
@@ -29,21 +29,23 @@ const serviceAreas: ServiceArea[] = [
     county: "Palm Beach County",
     population: "100,000+",
     description:
-      "Boca Raton is an affluent city known for its beautiful parks, golf courses, and upscale shopping centers.",
+      "Boca Raton offers a luxurious lifestyle with pristine beaches, world-class golf courses, upscale shopping at Mizner Park, and beautiful Mediterranean-inspired architecture throughout the city.",
   },
   {
     id: "coral-springs",
     name: "Coral Springs",
     county: "Broward County",
     population: "130,000+",
-    description: "Coral Springs is a family-friendly city with excellent schools, parks, and recreational facilities.",
+    description:
+      "Coral Springs is a meticulously planned community known for its top-rated schools, abundant parks, family-friendly neighborhoods, and strong emphasis on arts and recreation.",
   },
   {
     id: "plantation",
     name: "Plantation",
     county: "Broward County",
     population: "90,000+",
-    description: "Plantation is a suburban city known for its tree-lined streets, parks, and diverse community.",
+    description:
+      "Plantation offers a perfect blend of suburban tranquility and urban convenience with its lush landscaping, diverse neighborhoods, excellent schools, and proximity to major business centers.",
   },
   {
     id: "fort-lauderdale",
@@ -51,7 +53,7 @@ const serviceAreas: ServiceArea[] = [
     county: "Broward County",
     population: "180,000+",
     description:
-      "Fort Lauderdale is known as the 'Venice of America' due to its extensive canal system and beautiful beaches.",
+      "Fort Lauderdale, the 'Venice of America,' features an intricate canal system, stunning beaches, a sophisticated downtown, and a booming cultural scene with museums, galleries, and performing arts.",
   },
   {
     id: "pompano-beach",
@@ -59,21 +61,23 @@ const serviceAreas: ServiceArea[] = [
     county: "Broward County",
     population: "110,000+",
     description:
-      "Pompano Beach is a coastal city with beautiful beaches, a fishing pier, and excellent boating facilities.",
+      "Pompano Beach is undergoing exciting revitalization with its newly developed beachfront, historic downtown, excellent fishing and boating facilities, and growing culinary and arts districts.",
   },
   {
     id: "deerfield-beach",
     name: "Deerfield Beach",
     county: "Broward County",
     population: "80,000+",
-    description: "Deerfield Beach is known for its clean beaches, fishing pier, and family-friendly atmosphere.",
+    description:
+      "Deerfield Beach is treasured for its Blue Wave certified beach, historic fishing pier, family-friendly atmosphere, and the popular Quiet Waters Park offering camping and water activities.",
   },
   {
     id: "boynton-beach",
     name: "Boynton Beach",
     county: "Palm Beach County",
     population: "75,000+",
-    description: "Boynton Beach offers beautiful beaches, nature preserves, and a growing downtown area.",
+    description:
+      "Boynton Beach balances coastal living with natural beauty, featuring pristine beaches, the Loxahatchee National Wildlife Refuge, a revitalized downtown, and excellent waterfront dining options.",
   },
 ]
 
@@ -94,7 +98,7 @@ const getCityData = (cityId: string) => {
       },
     ],
     commonIssues: ["Broken springs", "Door off track", "Opener malfunctions"],
-    responseTime: "Same-day service available",
+    serviceCapabilities: "Full-service garage door repair and installation",
   }
 
   // City-specific overrides
@@ -113,7 +117,7 @@ const getCityData = (cityId: string) => {
         },
       ],
       commonIssues: ["Spring replacements", "Sensor alignment", "Noisy operation"],
-      responseTime: "Usually within 2-3 hours in Plantation",
+      serviceCapabilities: "Comprehensive garage door services throughout Plantation and surrounding neighborhoods",
     },
     "coral-springs": {
       testimonials: [
@@ -129,7 +133,7 @@ const getCityData = (cityId: string) => {
         },
       ],
       commonIssues: ["Opener repairs", "Track alignment", "Weather stripping"],
-      responseTime: "Fast response times throughout Coral Springs",
+      serviceCapabilities: "Complete garage door solutions for residential and commercial properties in Coral Springs",
     },
     "fort-lauderdale": {
       testimonials: [
@@ -145,7 +149,8 @@ const getCityData = (cityId: string) => {
         },
       ],
       commonIssues: ["Commercial door repairs", "Hurricane reinforcement", "Smart opener installation"],
-      responseTime: "Serving all Fort Lauderdale neighborhoods promptly",
+      serviceCapabilities:
+        "Specialized garage door services for Fort Lauderdale's residential, commercial, and marine properties",
     },
   }
 
@@ -229,29 +234,29 @@ export default function ServiceAreas() {
 
         {/* City Modal */}
         {isModalOpen && selectedCity && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start justify-center p-2 sm:p-4 pt-12 sm:pt-16">
-            <div className="bg-white rounded-xl max-w-3xl w-[95%] sm:w-full max-h-[85vh] sm:max-h-[80vh] overflow-y-auto mt-10 sm:mt-20">
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center sm:items-start justify-center p-2 sm:p-4 pt-4 sm:pt-16">
+            <div className="bg-white rounded-xl max-w-3xl w-[95%] sm:w-full max-h-[90vh] sm:max-h-[80vh] overflow-y-auto mt-0 sm:mt-20">
               <div className="sticky top-0 bg-white border-b border-gray-200 rounded-t-xl">
-                <div className="flex justify-between items-center p-3 sm:p-4">
+                <div className="flex justify-between items-center p-4">
                   <h3 className="text-lg sm:text-xl font-bold text-primary-600 flex items-center">
-                    <MapPin className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2 text-accent-500" />
+                    <MapPin className="h-5 w-5 mr-2 text-accent-500" />
                     {selectedCity.name}
                   </h3>
                   <button
                     onClick={closeCityModal}
-                    className="text-gray-500 hover:text-gray-700 focus:outline-none p-2"
+                    className="text-gray-500 hover:text-gray-700 focus:outline-none p-2 -mr-1"
                     aria-label="Close"
                   >
-                    <X className="h-6 w-6" />
+                    <X className="h-7 w-7" />
                   </button>
                 </div>
               </div>
 
-              <div className="p-4 sm:p-6">
+              <div className="p-5 sm:p-6">
                 <div className="mb-6">
                   <h4 className="text-lg font-semibold text-primary-600 mb-2">About {selectedCity.name}</h4>
                   <p className="text-gray-600 mb-4">{selectedCity.description}</p>
-                  <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                     <div className="bg-gray-50 p-3 rounded-lg">
                       <p className="text-sm text-gray-500">County</p>
                       <p className="font-medium text-gray-700">{selectedCity.county}</p>
@@ -283,10 +288,12 @@ export default function ServiceAreas() {
                       </div>
 
                       <div className="mb-6">
-                        <h4 className="text-lg font-semibold text-primary-600 mb-2">Response Time</h4>
+                        <h4 className="text-lg font-semibold text-primary-600 mb-2">
+                          Our Services in {selectedCity.name}
+                        </h4>
                         <p className="flex items-center text-gray-600">
                           <Clock className="h-5 w-5 text-accent-500 mr-2 flex-shrink-0" />
-                          {cityData.responseTime}
+                          {cityData.serviceCapabilities}
                         </p>
                       </div>
 
@@ -296,7 +303,7 @@ export default function ServiceAreas() {
                         </h4>
                         <div className="space-y-4">
                           {cityData.testimonials.map((testimonial: any, index: number) => (
-                            <div key={index} className="bg-gray-50 p-4 rounded-lg">
+                            <div key={index} className="bg-gray-50 p-4 sm:p-4 rounded-lg">
                               <div className="flex items-center mb-2">
                                 <div className="flex">
                                   {[...Array(testimonial.rating)].map((_, i) => (
@@ -317,12 +324,12 @@ export default function ServiceAreas() {
                 <div className="mt-6 flex flex-col sm:flex-row gap-4">
                   <a
                     href="tel:+13213669723"
-                    className="bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 px-6 rounded-md transition-all duration-300 flex items-center justify-center"
+                    className="bg-primary-600 hover:bg-primary-700 text-white font-bold py-4 sm:py-3 px-6 rounded-md transition-all duration-300 flex items-center justify-center"
                     onClick={handlePhoneClick}
                     data-call-tracking="true"
                   >
                     <Phone className="mr-2 h-5 w-5" />
-                    <span className="text-sm sm:text-base">Call For Service in {selectedCity.name}</span>
+                    <span className="text-base">Call For Service in {selectedCity.name}</span>
                   </a>
                   <button
                     onClick={() => {
@@ -331,10 +338,10 @@ export default function ServiceAreas() {
                         document.getElementById("booking")?.scrollIntoView({ behavior: "smooth" })
                       }, 100)
                     }}
-                    className="bg-accent-500 hover:bg-accent-600 text-primary-900 font-bold py-3 px-6 rounded-md transition-all duration-300 flex items-center justify-center"
+                    className="bg-accent-500 hover:bg-accent-600 text-primary-900 font-bold py-4 sm:py-3 px-6 rounded-md transition-all duration-300 flex items-center justify-center"
                   >
                     <ArrowRight className="mr-2 h-5 w-5" />
-                    <span className="text-sm sm:text-base">Book Service</span>
+                    <span className="text-base">Book Service</span>
                   </button>
                 </div>
               </div>

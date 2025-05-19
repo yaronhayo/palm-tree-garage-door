@@ -114,7 +114,7 @@ export default function FAQSection() {
                 Call Us
               </a>
               <Link
-                href="#booking"
+                href="/#booking"
                 className="bg-accent-500 hover:bg-accent-600 text-primary-900 font-bold py-3 px-6 rounded-md transition-all duration-300 flex items-center justify-center"
               >
                 <Calendar className="mr-2 h-5 w-5" />

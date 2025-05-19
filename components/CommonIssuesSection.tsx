@@ -8,6 +8,7 @@ import {
   Volume2,
   Clock,
   CloudRain,
+  Calendar,
 } from "lucide-react"
 import Link from "next/link"
 
@@ -108,9 +109,10 @@ export default function CommonIssuesSection() {
                 Call Now
               </a>
               <Link
-                href="#booking"
+                href="/#booking"
                 className="bg-accent-500 hover:bg-accent-600 text-primary-900 font-bold py-4 px-8 rounded-lg transition-all duration-300 inline-flex items-center justify-center"
               >
+                <Calendar className="mr-2 h-5 w-5" />
                 Schedule Service
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>

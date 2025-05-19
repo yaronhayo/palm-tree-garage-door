@@ -28,9 +28,19 @@ const nextConfig = {
     optimizeCss: true,
     legacyBrowsers: false,
     browsersListForSwc: true,
+    optimizeFonts: true,
+    optimizeServerReact: true,
+    scrollRestoration: true,
   },
   compress: true,
   poweredByHeader: false,
+  webpack: (config, { dev, isServer }) => {
+    // Optimize only in production
+    if (!dev && !isServer) {
+      // Add optimizations here
+    }
+    return config;
+  },
 };
 
 export default nextConfig;
