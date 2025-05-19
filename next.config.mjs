@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',  // Keep static export
+  output: 'export',  // Static export for Netlify
   reactStrictMode: true,
   eslint: {
     ignoreDuringBuilds: true,
@@ -25,10 +25,10 @@ const nextConfig = {
   trailingSlash: true, // Add trailing slashes for cleaner URLs
   experimental: {
     optimizePackageImports: ['lucide-react'],
-    // Removed: optimizeCss: true - causing issues with critters
-    // Removed invalid options: legacyBrowsers, browsersListForSwc, optimizeFonts
-    // Keeping valid options:
-    optimizeServerReact: true,
+    optimizeCss: true,
+    legacyBrowsers: false,
+    browsersListForSwc: true,
+    optimizeFonts: true,
     scrollRestoration: true,
   },
   compress: true,

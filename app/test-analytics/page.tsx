@@ -6,7 +6,7 @@ export default function TestAnalyticsPage() {
       <h1 className="text-3xl font-bold mb-6">Analytics Test Page</h1>
       <p className="mb-4">This page is used to test Vercel Analytics and Speed Insights.</p>
 
-      {/* Use the client component for analytics scripts */}
+      {/* Use the client component to handle dynamic imports */}
       <AnalyticsClient />
     </div>
   )
