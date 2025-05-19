@@ -25,7 +25,7 @@ const nextConfig = {
   trailingSlash: true, // Add trailing slashes for cleaner URLs
   experimental: {
     optimizePackageImports: ['lucide-react'],
-    optimizeCss: true,
+    // Removed optimizeCss: true to fix the critters dependency issue
     scrollRestoration: true,
   },
   compress: true,

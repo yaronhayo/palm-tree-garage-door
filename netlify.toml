@@ -1,5 +1,5 @@
 [build]
-  command = "npm run build"
+  command = "npm install critters && npm run build"
   publish = "out"
 
 # Handle SPA routing
@@ -27,3 +27,4 @@
 # Environment variable configuration
 [build.environment]
   NEXT_PUBLIC_SITE_URL = "https://palmtreegaragedoor.com"
+  NODE_VERSION = "18"
