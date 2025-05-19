@@ -1,8 +1,6 @@
 "use client"
 
 import type React from "react"
-
-import type { ReactNode } from "react"
 import { useState, useEffect, useRef, useCallback } from "react"
 import Link from "next/link"
 import Image from "next/image"
@@ -20,62 +18,22 @@ const SkipToContent = ({ contentId }: { contentId: string }) => (
   </a>
 )
 
-// Enhanced FocusTrap component with improved focus management
+// Simple FocusTrap component
 const FocusTrap = ({
   children,
   isActive,
   onEscape,
-  initialFocusRef,
 }: {
-  children: ReactNode
+  children: React.ReactNode
   isActive: boolean
   onEscape: () => void
-  initialFocusRef?: React.RefObject<HTMLElement>
 }) => {
   useEffect(() => {
     if (!isActive) return
 
-    // Handle escape key and tab navigation
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         onEscape()
-      } else if (e.key === "Tab") {
-        // Get all focusable elements
-        const container = document.getElementById("mobile-menu")
-        if (!container) return
-
-        const focusableElements = container.querySelectorAll(
-          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
-        )
-
-        const firstElement = focusableElements[0] as HTMLElement
-        const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement
-
-        // If shift+tab on first element, move to last element
-        if (e.shiftKey && document.activeElement === firstElement) {
-          e.preventDefault()
-          lastElement.focus()
-        }
-        // If tab on last element, move to first element
-        else if (!e.shiftKey && document.activeElement === lastElement) {
-          e.preventDefault()
-          firstElement.focus()
-        }
-      }
-    }
-
-    // Set focus to the first focusable element when menu opens
-    if (initialFocusRef?.current) {
-      initialFocusRef.current.focus()
-    } else {
-      const container = document.getElementById("mobile-menu")
-      if (container) {
-        const firstFocusable = container.querySelector(
-          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
-        ) as HTMLElement
-        if (firstFocusable) {
-          firstFocusable.focus()
-        }
       }
     }
 
@@ -83,11 +41,10 @@ const FocusTrap = ({
     return () => {
       document.removeEventListener("keydown", handleKeyDown)
     }
-  }, [isActive, onEscape, initialFocusRef])
+  }, [isActive, onEscape])
 
   return <>{children}</>
 }
-FocusTrap.displayName = "FocusTrap"
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -96,7 +53,6 @@ export default function Header() {
   const pathname = usePathname()
   const menuRef = useRef<HTMLDivElement>(null)
   const headerRef = useRef<HTMLElement>(null)
-  const closeButtonRef = useRef<HTMLButtonElement>(null)
 
   // Track scroll position for transparency effect and active section
   useEffect(() => {
@@ -356,24 +312,36 @@ export default function Header() {
         }`}
         onClick={() => setIsMenuOpen(false)}
         aria-hidden="true"
+        style={{
+          height: "100vh",
+          width: "100%",
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+        }}
       />
 
       {/* Mobile menu */}
-      <FocusTrap isActive={isMenuOpen} onEscape={() => setIsMenuOpen(false)} initialFocusRef={closeButtonRef}>
+      <FocusTrap isActive={isMenuOpen} onEscape={() => setIsMenuOpen(false)}>
         <div
           id="mobile-menu"
           ref={menuRef}
           className={`md:hidden fixed inset-0 z-[9999] bg-primary-700/95 backdrop-blur-sm overflow-y-auto transition-all duration-300 ${
-            isMenuOpen ? "opacity-100 mobile-menu-enter" : "opacity-0 pointer-events-none mobile-menu-exit"
+            isMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none"
           }`}
           aria-hidden={!isMenuOpen}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="mobile-menu-heading"
+          role="navigation"
           style={{
-            height: "100%",
+            height: "100vh",
+            width: "100%",
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
             transform: isMenuOpen ? "none" : "translateY(-100%)",
-            willChange: "transform, opacity",
           }}
         >
           {/* Close button at the top */}
@@ -389,7 +357,6 @@ export default function Header() {
             </div>
             <button
               type="button"
-              ref={closeButtonRef}
               className="p-2 text-white hover:text-accent-300 focus:outline-none focus:ring-2 focus:ring-accent-300 rounded-md"
               onClick={() => setIsMenuOpen(false)}
               aria-label="Close menu"
@@ -399,15 +366,12 @@ export default function Header() {
           </div>
 
           <div className="container mx-auto px-4 py-6">
-            <h2 id="mobile-menu-heading" className="sr-only">
-              Mobile Navigation Menu
-            </h2>
-            <nav className="flex flex-col space-y-1" aria-label="Mobile Navigation">
+            <nav className="flex flex-col space-y-1">
               {navItems.map((item) => (
                 <Link
                   key={item.path}
                   href={item.path}
-                  className={`text-white hover:bg-primary-600/50 font-medium flex items-center justify-between p-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-300 active:bg-primary-600/70 touch-action-manipulation ${
+                  className={`text-white hover:bg-primary-600/50 font-medium flex items-center justify-between p-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-300 active:scale-98 transition-all ${
                     activeSection === item.id ? "bg-primary-600/50 border-l-4 border-accent-300" : ""
                   }`}
                   onClick={(e) => {
@@ -427,7 +391,7 @@ export default function Header() {
               <div className="pt-6 space-y-4">
                 <Link
                   href="#booking"
-                  className={`flex items-center justify-between bg-white hover:bg-gray-100 text-primary-600 font-bold p-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-white active:bg-gray-200 touch-action-manipulation ${
+                  className={`flex items-center justify-between bg-white hover:bg-gray-100 text-primary-600 font-bold p-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-white active:scale-98 ${
                     activeSection === "booking" ? "bg-gray-100 ring-2 ring-white" : ""
                   }`}
                   onClick={(e) => {
@@ -448,7 +412,7 @@ export default function Header() {
 
                 <Link
                   href="tel:+13213669723"
-                  className="flex items-center justify-between bg-accent-500 hover:bg-accent-600 text-primary-900 font-bold p-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-accent-300 active:bg-accent-700 touch-action-manipulation"
+                  className="flex items-center justify-between bg-accent-500 hover:bg-accent-600 text-primary-900 font-bold p-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-accent-300 active:scale-98"
                   onClick={() => {
                     handlePhoneClick()
                     setIsMenuOpen(false)
