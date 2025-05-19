@@ -47,11 +47,18 @@ export function PrivacyPolicyModal({ isOpen, onClose }: PrivacyPolicyModalProps)
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-      <div ref={modalRef} className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white z-10 flex items-center justify-between p-4 border-b">
-          <h2 className="text-2xl font-bold text-primary-800">Privacy Policy</h2>
-          <button onClick={onClose} className="p-2 rounded-full hover:bg-gray-100" aria-label="Close">
+    <div className="fixed inset-0 z-50 flex items-start justify-center bg-black bg-opacity-50 p-2 sm:p-4 pt-12 sm:pt-16">
+      <div
+        ref={modalRef}
+        className="bg-white rounded-lg shadow-xl w-[95%] sm:max-w-4xl max-h-[85vh] sm:max-h-[80vh] overflow-y-auto mt-10 sm:mt-20"
+      >
+        <div className="sticky top-0 bg-white z-10 flex items-center justify-between p-3 sm:p-4 border-b">
+          <h2 className="text-xl sm:text-2xl font-bold text-primary-800">Privacy Policy</h2>
+          <button
+            onClick={onClose}
+            className="p-2 rounded-full hover:bg-gray-100 touch-manipulation"
+            aria-label="Close"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"
@@ -69,12 +76,12 @@ export function PrivacyPolicyModal({ isOpen, onClose }: PrivacyPolicyModalProps)
           </button>
         </div>
 
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           <div className="prose prose-sm max-w-none">
             <p className="mb-4 text-gray-600">Last Updated: May 14, 2025</p>
 
             <section className="mb-8">
-              <h3 className="text-xl font-semibold text-primary-800 mb-4">1. Introduction</h3>
+              <h3 className="text-lg sm:text-xl font-semibold text-primary-800 mb-4">1. Introduction</h3>
               <p className="mb-3 text-gray-700">
                 Palm Tree Garage Door Repair ("we," "our," or "us") respects your privacy and is committed to protecting
                 your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard
@@ -88,9 +95,9 @@ export function PrivacyPolicyModal({ isOpen, onClose }: PrivacyPolicyModalProps)
             </section>
 
             <section className="mb-8">
-              <h3 className="text-xl font-semibold text-primary-800 mb-4">2. Information We Collect</h3>
+              <h3 className="text-lg sm:text-xl font-semibold text-primary-800 mb-4">2. Information We Collect</h3>
 
-              <h4 className="text-lg font-medium text-primary-700 mb-2">Personal Information</h4>
+              <h4 className="text-base sm:text-lg font-medium text-primary-700 mb-2">Personal Information</h4>
               <p className="mb-3 text-gray-700">
                 We may collect personal information that you voluntarily provide to us when you:
               </p>
@@ -106,7 +113,9 @@ export function PrivacyPolicyModal({ isOpen, onClose }: PrivacyPolicyModalProps)
                 details.
               </p>
 
-              <h4 className="text-lg font-medium text-primary-700 mb-2">Automatically Collected Information</h4>
+              <h4 className="text-base sm:text-lg font-medium text-primary-700 mb-2">
+                Automatically Collected Information
+              </h4>
               <p className="mb-3 text-gray-700">
                 When you visit our website, we may automatically collect certain information about your device,
                 including:

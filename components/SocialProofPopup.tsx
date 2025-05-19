@@ -97,6 +97,19 @@ export function SocialProofPopup() {
   const [isHovering, setIsHovering] = useState(false)
   const popupRef = useRef<HTMLDivElement>(null)
   const shownProofsRef = useRef<Set<string>>(new Set())
+  const [isDismissed, setIsDismissed] = useState<boolean>(false)
+
+  // Check if notifications were previously dismissed in this session
+  useEffect(() => {
+    try {
+      const dismissed = sessionStorage.getItem("socialProofDismissed")
+      if (dismissed === "true") {
+        setIsDismissed(true)
+      }
+    } catch (e) {
+      console.error("Error accessing sessionStorage:", e)
+    }
+  }, [])
 
   // Get a unique social proof that hasn't been shown in this session
   const getUniqueProof = (): SocialProofData => {
@@ -145,6 +158,9 @@ export function SocialProofPopup() {
   }
 
   useEffect(() => {
+    // Don't show popups if they've been dismissed
+    if (isDismissed) return
+
     // Show popup after 15 seconds
     const timer = setTimeout(() => {
       const newProof = getUniqueProof()
@@ -155,7 +171,7 @@ export function SocialProofPopup() {
     return () => {
       clearTimeout(timer)
     }
-  }, [])
+  }, [isDismissed])
 
   useEffect(() => {
     let hideTimer: NodeJS.Timeout | null = null
@@ -174,6 +190,9 @@ export function SocialProofPopup() {
 
   // Show next notification after current one is hidden
   useEffect(() => {
+    // Don't show more popups if they've been dismissed
+    if (isDismissed) return
+
     if (!isVisible) {
       const nextTimer = setTimeout(() => {
         // Only show next if we've shown at least one before
@@ -182,15 +201,21 @@ export function SocialProofPopup() {
           setCurrentProof(newProof)
           setIsVisible(true)
         }
-      }, 15000) // Updated to 15 seconds
+      }, 15000) // 15 seconds
 
       return () => clearTimeout(nextTimer)
     }
-  }, [isVisible, currentProof])
+  }, [isVisible, currentProof, isDismissed])
 
-  // Close the popup
+  // Close the popup and prevent further notifications this session
   const handleClose = () => {
     setIsVisible(false)
+    setIsDismissed(true)
+    try {
+      sessionStorage.setItem("socialProofDismissed", "true")
+    } catch (e) {
+      console.error("Error writing to sessionStorage:", e)
+    }
   }
 
   // Handle mouse events for hover detection

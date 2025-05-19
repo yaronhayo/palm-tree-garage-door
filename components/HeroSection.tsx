@@ -22,7 +22,7 @@ export default function HeroSection() {
   }
 
   return (
-    <section className="relative pt-28 pb-20">
+    <section className="relative pt-24 sm:pt-28 pb-20">
       {/* Background Image with Overlay */}
       <div className="absolute inset-0 z-0">
         {!imageError ? (
@@ -47,7 +47,7 @@ export default function HeroSection() {
 
       <div className="container mx-auto px-4 relative z-10">
         {/* Trust badges */}
-        <div className="bg-white rounded-full inline-flex items-center px-6 py-3 mb-16 shadow-md max-w-full overflow-x-auto md:overflow-visible">
+        <div className="hidden sm:inline-flex bg-white rounded-full items-center px-6 py-3 mb-8 sm:mb-16 shadow-md max-w-full overflow-x-auto md:overflow-visible">
           <div className="flex items-center whitespace-nowrap">
             <CheckCircle className="text-accent-500 mr-2 h-5 w-5 flex-shrink-0" />
             <span className="text-primary-600 font-medium">5-Star Rated</span>

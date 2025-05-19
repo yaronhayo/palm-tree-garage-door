@@ -47,11 +47,18 @@ export function TermsOfServiceModal({ isOpen, onClose }: TermsOfServiceModalProp
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-      <div ref={modalRef} className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white z-10 flex items-center justify-between p-4 border-b">
-          <h2 className="text-2xl font-bold text-primary-800">Terms of Service</h2>
-          <button onClick={onClose} className="p-2 rounded-full hover:bg-gray-100" aria-label="Close">
+    <div className="fixed inset-0 z-50 flex items-start justify-center bg-black bg-opacity-50 p-2 sm:p-4 pt-12 sm:pt-16">
+      <div
+        ref={modalRef}
+        className="bg-white rounded-lg shadow-xl w-[95%] sm:max-w-4xl max-h-[85vh] sm:max-h-[80vh] overflow-y-auto mt-10 sm:mt-20"
+      >
+        <div className="sticky top-0 bg-white z-10 flex items-center justify-between p-3 sm:p-4 border-b">
+          <h2 className="text-xl sm:text-2xl font-bold text-primary-800">Terms of Service</h2>
+          <button
+            onClick={onClose}
+            className="p-2 rounded-full hover:bg-gray-100 touch-manipulation"
+            aria-label="Close"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"
@@ -69,12 +76,12 @@ export function TermsOfServiceModal({ isOpen, onClose }: TermsOfServiceModalProp
           </button>
         </div>
 
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           <div className="prose prose-sm max-w-none">
             <p className="mb-4 text-gray-600">Last Updated: May 14, 2025</p>
 
             <section className="mb-8">
-              <h3 className="text-xl font-semibold text-primary-800 mb-4">1. Acceptance of Terms</h3>
+              <h3 className="text-lg sm:text-xl font-semibold text-primary-800 mb-4">1. Acceptance of Terms</h3>
               <p className="mb-3 text-gray-700">
                 By accessing or using the services provided by Palm Tree Garage Door Repair ("we," "our," or "us"),
                 including our website, you agree to be bound by these Terms of Service ("Terms"). If you do not agree to
@@ -87,7 +94,7 @@ export function TermsOfServiceModal({ isOpen, onClose }: TermsOfServiceModalProp
             </section>
 
             <section className="mb-8">
-              <h3 className="text-xl font-semibold text-primary-800 mb-4">2. Services</h3>
+              <h3 className="text-lg sm:text-xl font-semibold text-primary-800 mb-4">2. Services</h3>
               <p className="mb-3 text-gray-700">
                 Palm Tree Garage Door Repair provides garage door repair, installation, and maintenance services for
                 residential and commercial properties in South Florida.

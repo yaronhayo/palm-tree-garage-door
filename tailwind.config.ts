@@ -25,18 +25,18 @@ const config: Config = {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "#0D423A",
-          50: "#E6EFEE",
-          100: "#CCDEDD",
-          200: "#99BDBB",
-          300: "#669C98",
-          400: "#337B76",
-          500: "#005A54",
-          600: "#0D423A", // Main brand color
-          700: "#0A3530",
-          800: "#072925",
-          900: "#031C1A",
-          950: "#021311",
+          DEFAULT: "#1A5A50", // Updated to be lighter
+          50: "#E8F2F0",
+          100: "#D1E5E2",
+          200: "#A3CBC5",
+          300: "#75B1A8",
+          400: "#47978B",
+          500: "#1A7D6E", // Lighter mid-tone
+          600: "#1A5A50", // Main brand color - lightened from #0D423A
+          700: "#154840",
+          800: "#103630",
+          900: "#0A2420",
+          950: "#051A17",
         },
         accent: {
           DEFAULT: "#9ADF67",

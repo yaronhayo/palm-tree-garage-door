@@ -229,17 +229,17 @@ export default function ServiceAreas() {
 
         {/* City Modal */}
         {isModalOpen && selectedCity && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start justify-center p-2 sm:p-4 pt-12 sm:pt-16">
+            <div className="bg-white rounded-xl max-w-3xl w-[95%] sm:w-full max-h-[85vh] sm:max-h-[80vh] overflow-y-auto mt-10 sm:mt-20">
               <div className="sticky top-0 bg-white border-b border-gray-200 rounded-t-xl">
-                <div className="flex justify-between items-center p-4">
-                  <h3 className="text-xl font-bold text-primary-600 flex items-center">
-                    <MapPin className="h-5 w-5 mr-2 text-accent-500" />
+                <div className="flex justify-between items-center p-3 sm:p-4">
+                  <h3 className="text-lg sm:text-xl font-bold text-primary-600 flex items-center">
+                    <MapPin className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2 text-accent-500" />
                     {selectedCity.name}
                   </h3>
                   <button
                     onClick={closeCityModal}
-                    className="text-gray-500 hover:text-gray-700 focus:outline-none"
+                    className="text-gray-500 hover:text-gray-700 focus:outline-none p-2"
                     aria-label="Close"
                   >
                     <X className="h-6 w-6" />
@@ -247,7 +247,7 @@ export default function ServiceAreas() {
                 </div>
               </div>
 
-              <div className="p-6">
+              <div className="p-4 sm:p-6">
                 <div className="mb-6">
                   <h4 className="text-lg font-semibold text-primary-600 mb-2">About {selectedCity.name}</h4>
                   <p className="text-gray-600 mb-4">{selectedCity.description}</p>
@@ -275,7 +275,7 @@ export default function ServiceAreas() {
                         <ul className="space-y-2">
                           {cityData.commonIssues.map((issue: string, index: number) => (
                             <li key={index} className="flex items-start">
-                              <CheckCircle className="h-5 w-5 text-accent-500 mr-2 mt-0.5" />
+                              <CheckCircle className="h-5 w-5 text-accent-500 mr-2 mt-0.5 flex-shrink-0" />
                               <span className="text-gray-600">{issue}</span>
                             </li>
                           ))}
@@ -285,7 +285,7 @@ export default function ServiceAreas() {
                       <div className="mb-6">
                         <h4 className="text-lg font-semibold text-primary-600 mb-2">Response Time</h4>
                         <p className="flex items-center text-gray-600">
-                          <Clock className="h-5 w-5 text-accent-500 mr-2" />
+                          <Clock className="h-5 w-5 text-accent-500 mr-2 flex-shrink-0" />
                           {cityData.responseTime}
                         </p>
                       </div>
@@ -322,7 +322,7 @@ export default function ServiceAreas() {
                     data-call-tracking="true"
                   >
                     <Phone className="mr-2 h-5 w-5" />
-                    Call For Service in {selectedCity.name}
+                    <span className="text-sm sm:text-base">Call For Service in {selectedCity.name}</span>
                   </a>
                   <button
                     onClick={() => {
@@ -334,7 +334,7 @@ export default function ServiceAreas() {
                     className="bg-accent-500 hover:bg-accent-600 text-primary-900 font-bold py-3 px-6 rounded-md transition-all duration-300 flex items-center justify-center"
                   >
                     <ArrowRight className="mr-2 h-5 w-5" />
-                    Book Service
+                    <span className="text-sm sm:text-base">Book Service</span>
                   </button>
                 </div>
               </div>

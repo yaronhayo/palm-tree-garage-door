@@ -265,14 +265,24 @@ export default function Header() {
 
           <div className="md:hidden flex items-center">
             <Link
+              href="#booking"
+              className="mr-2 flex items-center bg-white hover:bg-gray-100 text-primary-600 font-bold py-2 px-3 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary-600"
+              onClick={(e) => handleAnchorClick(e, "/#booking")}
+              aria-label="Book a service appointment"
+            >
+              <Calendar className="mr-1 h-4 w-4" aria-hidden="true" />
+              <span className="text-sm">Book</span>
+            </Link>
+
+            <Link
               href="tel:+13213669723"
-              className="mr-3 flex items-center bg-accent-500 hover:bg-accent-600 text-primary-900 font-bold py-2 px-3 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-accent-300"
+              className="mr-2 flex items-center bg-accent-500 hover:bg-accent-600 text-primary-900 font-bold py-2 px-3 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-accent-300"
               onClick={handlePhoneClick}
               data-call-tracking="true"
               aria-label="Call us at (321) 366-9723"
             >
-              <Phone className="h-4 w-4" aria-hidden="true" />
-              <span className="sr-only">Call Now</span>
+              <Phone className="mr-1 h-4 w-4" aria-hidden="true" />
+              <span className="text-sm">Call</span>
             </Link>
 
             <button
