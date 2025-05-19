@@ -118,11 +118,6 @@ export default function Header() {
       document.body.style.overflow = ""
       document.body.classList.remove("mobile-menu-open")
     }
-
-    return () => {
-      document.body.style.overflow = ""
-      document.body.classList.remove("mobile-menu-open")
-    }
   }, [isMenuOpen])
 
   // Handle smooth scrolling for anchor links
@@ -136,17 +131,21 @@ export default function Header() {
 
         if (targetElement) {
           // Close mobile menu if open
-          if (isMenuOpen) {
+          const wasMenuOpen = isMenuOpen
+          if (wasMenuOpen) {
             setIsMenuOpen(false)
           }
 
           // Small delay to ensure menu closes before scrolling
-          setTimeout(() => {
-            // Scroll to the element
-            targetElement.scrollIntoView({ behavior: "smooth" })
-            // Set active section
-            setActiveSection(targetId)
-          }, 100)
+          setTimeout(
+            () => {
+              // Scroll to the element
+              targetElement.scrollIntoView({ behavior: "smooth" })
+              // Set active section
+              setActiveSection(targetId)
+            },
+            wasMenuOpen ? 100 : 0,
+          )
         }
       }
     },
@@ -359,11 +358,7 @@ export default function Header() {
                   className={`text-white hover:bg-primary-600/50 font-medium flex items-center justify-between p-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-300 active:scale-98 transition-all ${
                     activeSection === item.id ? "bg-primary-600/50 border-l-4 border-accent-300" : ""
                   }`}
-                  onClick={(e) => {
-                    handleAnchorClick(e, item.path)
-                    // Force close the menu
-                    setIsMenuOpen(false)
-                  }}
+                  onClick={(e) => handleAnchorClick(e, item.path)}
                 >
                   <div className="flex items-center">
                     <div className="bg-primary-600/50 p-2 rounded-full mr-3">{item.icon}</div>
@@ -379,11 +374,7 @@ export default function Header() {
                   className={`flex items-center justify-between bg-white hover:bg-gray-100 text-primary-600 font-bold p-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-white active:scale-98 ${
                     activeSection === "booking" ? "bg-gray-100 ring-2 ring-white" : ""
                   }`}
-                  onClick={(e) => {
-                    handleAnchorClick(e, "/#booking")
-                    // Force close the menu
-                    setIsMenuOpen(false)
-                  }}
+                  onClick={(e) => handleAnchorClick(e, "/#booking")}
                   aria-label="Book a service appointment"
                 >
                   <div className="flex items-center">
