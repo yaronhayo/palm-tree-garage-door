@@ -2,12 +2,6 @@
  * Utility functions for interacting with Google Tag Manager dataLayer
  */
 
-// Type definition for the dataLayer
-interface DataLayerEvent {
-  event: string
-  [key: string]: any
-}
-
 // Initialize dataLayer if it doesn't exist
 export const initDataLayer = () => {
   if (typeof window !== "undefined") {
@@ -19,7 +13,7 @@ export const initDataLayer = () => {
  * Push an event to the dataLayer
  * @param event The event object to push to the dataLayer
  */
-export function pushToDataLayer(event: DataLayerEvent): void {
+export function pushToDataLayer(event: any): void {
   try {
     if (typeof window === "undefined") return
 
@@ -68,32 +62,13 @@ export function trackFormSubmission(formName: string, formData: Record<string, a
 }
 
 /**
- * Track an engagement event
- * @param element The element that was engaged with
- * @param interactionType The type of interaction (e.g. click, hover, etc.)
- * @param details Optional details about the engagement
- */
-export function trackEngagement(element: string, interactionType: string, details?: Record<string, any>): void {
-  try {
-    pushToDataLayer({
-      event: "engagement",
-      element: element,
-      interactionType: interactionType,
-      ...(details && { engagementDetails: details }),
-    })
-  } catch (error) {
-    console.error("Error tracking engagement:", error)
-  }
-}
-
-/**
  * Track a page view event
  * @param url The URL of the page that was viewed
  */
 export function trackPageView(url: string): void {
   try {
     pushToDataLayer({
-      event: "pageview",
+      event: "page_view",
       pageURL: url,
     })
   } catch (error) {
@@ -105,17 +80,15 @@ export function trackPageView(url: string): void {
  * Track a generic event
  * @param category The category of the event
  * @param action The action that was performed
- * @param label Optional label for the event
- * @param value Optional value for the event
+ * @param label An optional label for the event
  */
-export function trackEvent(category: string, action: string, label?: string, value?: number): void {
+export function trackEvent(category: string, action: string, label?: string): void {
   try {
     pushToDataLayer({
       event: "event",
       eventCategory: category,
       eventAction: action,
       eventLabel: label,
-      eventValue: value,
     })
   } catch (error) {
     console.error("Error tracking event:", error)
@@ -123,7 +96,24 @@ export function trackEvent(category: string, action: string, label?: string, val
 }
 
 /**
- * Track an error event
+ * Track user engagement events (e.g. clicks, scrolls, etc.)
+ * @param element The element that was interacted with
+ * @param interactionType The type of interaction (e.g. click, scroll, hover)
+ */
+export function trackEngagement(element: string, interactionType: string): void {
+  try {
+    pushToDataLayer({
+      event: "engagement",
+      element: element,
+      interactionType: interactionType,
+    })
+  } catch (error) {
+    console.error("Error tracking engagement:", error)
+  }
+}
+
+/**
+ * Track errors that occur on the site
  * @param message The error message
  * @param details Optional details about the error
  */
@@ -132,7 +122,7 @@ export function trackError(message: string, details?: Record<string, any>): void
     pushToDataLayer({
       event: "error",
       errorMessage: message,
-      ...(details && { errorDetails: details }),
+      errorDetails: details,
     })
   } catch (error) {
     console.error("Error tracking error:", error)

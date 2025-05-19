@@ -249,3 +249,34 @@ html {
     linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
   background-size: 20px 20px;
 }
+
+/* Social proof popup animations */
+@keyframes slide-in-bottom-left {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-out-bottom-left {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+.social-proof-enter {
+  animation: slide-in-bottom-left 0.5s ease forwards;
+}
+
+.social-proof-exit {
+  animation: slide-out-bottom-left 0.5s ease forwards;
+}

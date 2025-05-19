@@ -1,7 +1,4 @@
 interface Window {
-  dataLayer?: Array<{
-    event: string
-    [key: string]: any
-  }>
+  dataLayer?: any[]
   gtag: (...args: any[]) => void
 }

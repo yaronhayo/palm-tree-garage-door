@@ -99,7 +99,7 @@ export function CookieConsent() {
 
   return (
     <>
-      <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/70 backdrop-blur-sm shadow-lg border-t border-gray-200 transition-transform duration-300 ease-in-out">
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-green-50/90 backdrop-blur-sm shadow-lg border-t border-green-100 transition-transform duration-300 ease-in-out">
         <div className="container mx-auto py-2 px-3">
           {!showDetails ? (
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2">

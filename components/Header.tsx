@@ -7,7 +7,44 @@ import Image from "next/image"
 import { Menu, X, Phone, Calendar, Wrench, AlertTriangle, Star, HelpCircle, ChevronRight } from "lucide-react"
 import { usePathname } from "next/navigation"
 import { trackPhoneCall } from "@/lib/dataLayer"
-import { SkipToContent, FocusTrap } from "./A11y"
+
+// Simple SkipToContent component
+const SkipToContent = ({ contentId }: { contentId: string }) => (
+  <a
+    href={`#${contentId}`}
+    className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[9999] focus:px-4 focus:py-2 focus:bg-white focus:text-primary-600 focus:font-bold focus:rounded-md focus:shadow-md"
+  >
+    Skip to content
+  </a>
+)
+
+// Simple FocusTrap component
+const FocusTrap = ({
+  children,
+  isActive,
+  onEscape,
+}: {
+  children: React.ReactNode
+  isActive: boolean
+  onEscape: () => void
+}) => {
+  useEffect(() => {
+    if (!isActive) return
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onEscape()
+      }
+    }
+
+    document.addEventListener("keydown", handleKeyDown)
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown)
+    }
+  }, [isActive, onEscape])
+
+  return <>{children}</>
+}
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)

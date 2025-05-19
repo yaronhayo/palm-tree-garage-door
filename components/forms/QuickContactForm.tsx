@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
@@ -24,9 +23,13 @@ import {
   Building,
   KeyRound,
   Info,
+  Phone,
+  ArrowRight,
+  CheckCircle,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { serviceAreas } from "@/data/service-areas"
+import { trackPhoneCall } from "@/lib/dataLayer"
 
 interface QuickContactFormProps {
   showBookingForm: boolean
@@ -52,6 +55,7 @@ export default function QuickContactForm({ showBookingForm, setShowBookingForm }
     success?: boolean
     message?: string
   } | null>(null)
+  const [isSubmitted, setIsSubmitted] = useState(false)
 
   // City lookup state
   const [cityLookupStatus, setCityLookupStatus] = useState<"idle" | "found" | "not_found">("idle")
@@ -165,6 +169,7 @@ export default function QuickContactForm({ showBookingForm, setShowBookingForm }
       setFoundCityInfo(null)
       setCityConfirmed(false)
       setShowGateCodeQuestion(false)
+      setIsSubmitted(false)
     }
   }, [showBookingForm])
 
@@ -407,10 +412,56 @@ export default function QuickContactForm({ showBookingForm, setShowBookingForm }
 
   const progressPercentage = (currentStep / 4) * 100
 
+  const handlePhoneClick = () => {
+    trackPhoneCall("3213669723", "quick_contact_form")
+  }
+
+  if (isSubmitted) {
+    return (
+      <div className="text-center py-6">
+        <div className="bg-green-100 text-green-700 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+          <CheckCircle className="h-8 w-8" />
+        </div>
+        <h3 className="text-xl font-bold text-primary-600 mb-2">Thank You!</h3>
+        <p className="text-gray-600 mb-6">
+          We've received your request and will contact you shortly to schedule your service.
+        </p>
+        <button
+          onClick={() => setIsSubmitted(false)}
+          className="bg-primary-600 hover:bg-primary-700 text-white font-bold py-2 px-6 rounded-md transition-all duration-300 inline-flex items-center"
+        >
+          <ArrowRight className="mr-2 h-5 w-5 rotate-180" />
+          Submit Another Request
+        </button>
+      </div>
+    )
+  }
+
   return (
     <div className="w-full">
       <h2 className="text-2xl font-bold text-primary-600 mb-2">Schedule Your Service</h2>
       <p className="text-gray-600 mb-6">Tell us about your garage door issue and we'll get back to you quickly.</p>
+
+      <div className="mb-6">
+        <a
+          href="tel:+13213669723"
+          className="bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 px-6 rounded-md transition-all duration-300 flex items-center justify-center w-full"
+          onClick={handlePhoneClick}
+          data-call-tracking="true"
+        >
+          <Phone className="mr-2 h-5 w-5" />
+          Call (321) 366-9723
+        </a>
+      </div>
+
+      <div className="relative mb-6">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-gray-300"></div>
+        </div>
+        <div className="relative flex justify-center text-sm">
+          <span className="px-2 bg-white text-gray-500">OR</span>
+        </div>
+      </div>
 
       {formStatus ? (
         <motion.div

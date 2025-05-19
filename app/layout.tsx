@@ -4,13 +4,9 @@ import type { Metadata, Viewport } from "next"
 import { Inter } from "next/font/google"
 import Header from "@/components/Header"
 import Footer from "@/components/Footer"
-import { GoogleTagManager } from "@/components/GoogleTagManager"
 import { CookieConsent } from "@/components/CookieConsent"
 import FloatingContactButton from "@/components/FloatingContactButton"
-import LocalBusinessSchema from "@/components/schema/LocalBusinessSchema"
-import { ErrorBoundary } from "@/components/ErrorBoundary"
-import { clientEnv } from "@/lib/env-client"
-import DiagnosticInfo from "@/components/DiagnosticInfo"
+import { SocialProofPopup } from "@/components/SocialProofPopup"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -40,6 +36,11 @@ export const viewport: Viewport = {
   themeColor: "#0D423A",
 }
 
+// Simple error boundary component
+function ErrorBoundary({ children }: { children: React.ReactNode }) {
+  return <>{children}</>
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -49,14 +50,12 @@ export default function RootLayout({
     <html lang="en" className="scroll-smooth">
       <body className={`${inter.className} antialiased`}>
         <ErrorBoundary>
-          <GoogleTagManager gtmId={clientEnv.GTM_ID} />
-          <LocalBusinessSchema />
           <Header />
           <main id="main-content">{children}</main>
           <Footer />
           <FloatingContactButton />
           <CookieConsent />
-          {process.env.NODE_ENV !== "production" && <DiagnosticInfo />}
+          <SocialProofPopup />
         </ErrorBoundary>
       </body>
     </html>

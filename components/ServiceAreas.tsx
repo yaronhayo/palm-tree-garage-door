@@ -1,276 +1,347 @@
 "use client"
 
-import { useState, useRef } from "react"
-import { MapPin, ArrowRight, Building, Home, Navigation, Map } from "lucide-react"
-import { serviceAreas } from "@/data/service-areas"
-import { motion, useInView } from "framer-motion"
-import { getCityData } from "@/data/city-specific-data"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
+import { useState } from "react"
+import { MapPin, X, Phone, ArrowRight, Info, CheckCircle, Clock, Star } from "lucide-react"
+import { trackPhoneCall } from "@/lib/dataLayer"
+
+// Define types for our data
+type ServiceArea = {
+  id: string
+  name: string
+  county: string
+  population: string
+  description: string
+}
+
+// Inline service areas data
+const serviceAreas: ServiceArea[] = [
+  {
+    id: "delray-beach",
+    name: "Delray Beach",
+    county: "Palm Beach County",
+    population: "65,000+",
+    description:
+      "Delray Beach is a coastal city in Palm Beach County known for its vibrant downtown and beautiful beaches.",
+  },
+  {
+    id: "boca-raton",
+    name: "Boca Raton",
+    county: "Palm Beach County",
+    population: "100,000+",
+    description:
+      "Boca Raton is an affluent city known for its beautiful parks, golf courses, and upscale shopping centers.",
+  },
+  {
+    id: "coral-springs",
+    name: "Coral Springs",
+    county: "Broward County",
+    population: "130,000+",
+    description: "Coral Springs is a family-friendly city with excellent schools, parks, and recreational facilities.",
+  },
+  {
+    id: "plantation",
+    name: "Plantation",
+    county: "Broward County",
+    population: "90,000+",
+    description: "Plantation is a suburban city known for its tree-lined streets, parks, and diverse community.",
+  },
+  {
+    id: "fort-lauderdale",
+    name: "Fort Lauderdale",
+    county: "Broward County",
+    population: "180,000+",
+    description:
+      "Fort Lauderdale is known as the 'Venice of America' due to its extensive canal system and beautiful beaches.",
+  },
+  {
+    id: "pompano-beach",
+    name: "Pompano Beach",
+    county: "Broward County",
+    population: "110,000+",
+    description:
+      "Pompano Beach is a coastal city with beautiful beaches, a fishing pier, and excellent boating facilities.",
+  },
+  {
+    id: "deerfield-beach",
+    name: "Deerfield Beach",
+    county: "Broward County",
+    population: "80,000+",
+    description: "Deerfield Beach is known for its clean beaches, fishing pier, and family-friendly atmosphere.",
+  },
+  {
+    id: "boynton-beach",
+    name: "Boynton Beach",
+    county: "Palm Beach County",
+    population: "75,000+",
+    description: "Boynton Beach offers beautiful beaches, nature preserves, and a growing downtown area.",
+  },
+]
+
+// Function to get city-specific data
+const getCityData = (cityId: string) => {
+  // Default data
+  const defaultData = {
+    testimonials: [
+      {
+        name: "John D.",
+        text: "Excellent service! Fixed my garage door quickly and professionally.",
+        rating: 5,
+      },
+      {
+        name: "Sarah M.",
+        text: "Very responsive and reasonably priced. Would recommend to anyone!",
+        rating: 5,
+      },
+    ],
+    commonIssues: ["Broken springs", "Door off track", "Opener malfunctions"],
+    responseTime: "Same-day service available",
+  }
+
+  // City-specific overrides
+  const cityData: Record<string, any> = {
+    plantation: {
+      testimonials: [
+        {
+          name: "Jennifer L.",
+          text: "The technician arrived promptly and fixed our garage door spring in no time. Great service!",
+          rating: 5,
+        },
+        {
+          name: "Carlos R.",
+          text: "I've used Palm Tree Garage Door twice now in Plantation and they never disappoint. Fair pricing and quality work.",
+          rating: 5,
+        },
+      ],
+      commonIssues: ["Spring replacements", "Sensor alignment", "Noisy operation"],
+      responseTime: "Usually within 2-3 hours in Plantation",
+    },
+    "coral-springs": {
+      testimonials: [
+        {
+          name: "David & Sarah K.",
+          text: "Our garage door was stuck open on a Sunday. They came out within an hour and fixed it. Excellent emergency service!",
+          rating: 5,
+        },
+        {
+          name: "James T.",
+          text: "Very professional team. They installed a new garage door opener and took the time to explain how everything works.",
+          rating: 5,
+        },
+      ],
+      commonIssues: ["Opener repairs", "Track alignment", "Weather stripping"],
+      responseTime: "Fast response times throughout Coral Springs",
+    },
+    "fort-lauderdale": {
+      testimonials: [
+        {
+          name: "Michael P.",
+          text: "Best garage door service in Fort Lauderdale! Fixed my commercial garage door quickly and at a reasonable price.",
+          rating: 5,
+        },
+        {
+          name: "Lisa R.",
+          text: "I've recommended Palm Tree to all my neighbors in Fort Lauderdale. They're reliable and do quality work.",
+          rating: 5,
+        },
+      ],
+      commonIssues: ["Commercial door repairs", "Hurricane reinforcement", "Smart opener installation"],
+      responseTime: "Serving all Fort Lauderdale neighborhoods promptly",
+    },
+  }
+
+  return cityData[cityId] || defaultData
+}
 
 export default function ServiceAreas() {
-  const [hoveredArea, setHoveredArea] = useState<string | null>(null)
-  const [selectedArea, setSelectedArea] = useState<string | null>(null)
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, amount: 0.2 })
+  const [selectedCity, setSelectedCity] = useState<ServiceArea | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
-  // Get featured areas (first 8)
-  const featuredAreas = serviceAreas.slice(0, 8)
+  const openCityModal = (city: ServiceArea) => {
+    setSelectedCity(city)
+    setIsModalOpen(true)
+    document.body.style.overflow = "hidden" // Prevent scrolling when modal is open
+  }
 
-  // Get a random icon for each area
-  const getRandomIcon = (city: string) => {
-    const icons = [MapPin, Building, Home, Navigation]
-    // Use the city name to deterministically select an icon
-    const index = city.charCodeAt(0) % icons.length
-    const Icon = icons[index]
-    return <Icon className="w-6 h-6" />
+  const closeCityModal = () => {
+    setIsModalOpen(false)
+    document.body.style.overflow = "" // Re-enable scrolling
+  }
+
+  const handlePhoneClick = () => {
+    trackPhoneCall("3213669723", "service_areas")
   }
 
   return (
-    <section className="py-24 relative bg-gradient-to-b from-white to-gray-50" id="service-areas" ref={ref}>
-      {/* Background with gradient and pattern */}
-      <div className="absolute inset-0 z-0 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-white via-gray-50 to-gray-100 opacity-80 z-0"></div>
+    <section id="service-areas" className="py-16 bg-white">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold text-primary-600 mb-4">Our Service Areas</h2>
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+            We provide garage door repair and installation services throughout South Florida. Click on a city to learn
+            more about our services in your area.
+          </p>
+        </div>
 
-        {/* Abstract pattern using CSS */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute top-0 left-0 w-full h-full">
-            <div className="absolute top-1/4 left-1/4 w-1/2 h-1/2 border-2 border-primary-200 rounded-full"></div>
-            <div className="absolute top-1/3 left-1/3 w-1/3 h-1/3 border-2 border-primary-300 rounded-full"></div>
-            <div className="absolute top-[40%] left-[40%] w-1/5 h-1/5 border-2 border-primary-400 rounded-full"></div>
-            <Map className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-24 h-24 text-primary-100" />
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+          {serviceAreas.map((city) => (
+            <div
+              key={city.id}
+              onClick={() => openCityModal(city)}
+              className="bg-gray-50 hover:bg-primary-50 border border-gray-200 rounded-lg p-4 text-center cursor-pointer transition-all duration-300 transform hover:-translate-y-1 hover:shadow-md"
+            >
+              <div className="flex flex-col items-center">
+                <MapPin className="h-6 w-6 text-primary-600 mb-2" />
+                <h3 className="font-bold text-primary-700">{city.name}</h3>
+                <p className="text-sm text-gray-500">{city.county}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-12 bg-primary-50 border border-primary-100 rounded-xl p-6 md:p-8">
+          <div className="flex flex-col md:flex-row items-center justify-between">
+            <div className="mb-6 md:mb-0 md:mr-6">
+              <h3 className="text-xl md:text-2xl font-bold text-primary-600 mb-2">Don't see your city listed?</h3>
+              <p className="text-gray-600">
+                We serve many more areas throughout South Florida. Contact us to check if we service your location.
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <a
+                href="tel:+13213669723"
+                className="bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 px-6 rounded-md transition-all duration-300 flex items-center justify-center"
+                onClick={handlePhoneClick}
+                data-call-tracking="true"
+              >
+                <Phone className="mr-2 h-5 w-5" />
+                Call Us
+              </a>
+              <button
+                onClick={() => (window.location.href = "#booking")}
+                className="bg-accent-500 hover:bg-accent-600 text-primary-900 font-bold py-3 px-6 rounded-md transition-all duration-300 flex items-center justify-center"
+              >
+                <Info className="mr-2 h-5 w-5" />
+                Request Information
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Decorative elements */}
-        <div className="absolute -top-10 -right-10 w-40 h-40 bg-accent-500 opacity-10 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-20 -left-20 w-60 h-60 bg-primary-600 opacity-10 rounded-full blur-3xl"></div>
-      </div>
-
-      {/* Top decorative bar */}
-      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary-600 via-accent-500 to-primary-600"></div>
-
-      <div className="container mx-auto px-4 relative z-10">
-        <motion.div
-          className="text-center mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-          transition={{ duration: 0.5 }}
-        >
-          <div className="inline-flex items-center justify-center mb-4">
-            <div className="h-px w-12 bg-accent-500"></div>
-            <span className="mx-4 text-accent-500 font-semibold tracking-wider">SERVICE AREAS</span>
-            <div className="h-px w-12 bg-accent-500"></div>
-          </div>
-
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-primary-600 leading-tight">
-            Our Service <span className="text-accent-500">Areas</span>
-          </h2>
-          <p className="text-lg max-w-2xl mx-auto text-gray-700 leading-relaxed">
-            We provide fast, reliable garage door repair services throughout South Florida. Our technicians are
-            strategically located to ensure quick response times in all these areas.
-          </p>
-        </motion.div>
-
-        {/* Featured Areas Section */}
-        <motion.div
-          className="mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-        >
-          <h3 className="text-2xl font-semibold mb-8 text-center text-primary-700">Featured Service Areas</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {featuredAreas.map((area) => (
-              <div
-                key={area.city}
-                className="group relative overflow-hidden rounded-xl cursor-pointer"
-                onMouseEnter={() => setHoveredArea(area.city)}
-                onMouseLeave={() => setHoveredArea(null)}
-                onClick={() => {
-                  setSelectedArea(area.city)
-                  setIsDialogOpen(true)
-                }}
-              >
-                <div
-                  className={`
-                    flex flex-col items-center justify-center p-6 rounded-xl transition-all duration-300
-                    ${
-                      hoveredArea === area.city
-                        ? "bg-gradient-to-br from-primary-600 to-primary-700 text-white shadow-lg transform scale-[1.03]"
-                        : "bg-white text-gray-800 hover:shadow-md hover:bg-gray-50 shadow"
-                    }
-                  `}
-                >
-                  <div
-                    className={`
-                        w-14 h-14 rounded-full flex items-center justify-center mb-4
-                        ${hoveredArea === area.city ? "bg-white text-accent-500" : "bg-primary-50 text-primary-600"}
-                      `}
+        {/* City Modal */}
+        {isModalOpen && selectedCity && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="sticky top-0 bg-white border-b border-gray-200 rounded-t-xl">
+                <div className="flex justify-between items-center p-4">
+                  <h3 className="text-xl font-bold text-primary-600 flex items-center">
+                    <MapPin className="h-5 w-5 mr-2 text-accent-500" />
+                    {selectedCity.name}
+                  </h3>
+                  <button
+                    onClick={closeCityModal}
+                    className="text-gray-500 hover:text-gray-700 focus:outline-none"
+                    aria-label="Close"
                   >
-                    {getRandomIcon(area.city)}
-                  </div>
-                  <span className="font-bold text-lg mb-1">{area.city}</span>
-                  <span
-                    className={`text-xs px-3 py-1 rounded-full ${
-                      hoveredArea === area.city ? "bg-white/20 text-white" : "bg-primary-50 text-primary-600"
-                    }`}
-                  >
-                    {area.zipCodes.length} zip codes
-                  </span>
-
-                  <div
-                    className={`
-                      absolute bottom-0 left-0 w-full h-0 bg-accent-500 transition-all duration-300 flex items-center justify-center
-                      ${hoveredArea === area.city ? "h-10" : "h-0"}
-                    `}
-                  >
-                    <span className="text-white text-sm font-medium flex items-center">
-                      View Details <ArrowRight className="w-4 h-4 ml-1" />
-                    </span>
-                  </div>
+                    <X className="h-6 w-6" />
+                  </button>
                 </div>
               </div>
-            ))}
-          </div>
-        </motion.div>
 
-        {/* Service Guarantee */}
-        <motion.div
-          className="mt-16 bg-white p-8 rounded-xl shadow-lg max-w-3xl mx-auto border-l-4 border-accent-500 relative overflow-hidden"
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-          transition={{ duration: 0.5, delay: 0.5 }}
-        >
-          {/* Decorative background element */}
-          <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-primary-50 rounded-full opacity-50"></div>
-
-          <h3 className="text-2xl font-bold mb-3 text-primary-600">Our Service Area Guarantee</h3>
-          <p className="text-gray-700 mb-5 leading-relaxed relative z-10">
-            Don't see your area listed? We likely still service your location! Our service area is constantly expanding
-            to meet the needs of our customers throughout South Florida.
-          </p>
-          <div className="flex items-center text-primary-600 font-medium relative z-10">
-            <a
-              href="#booking"
-              className="flex items-center px-5 py-2 bg-primary-50 rounded-full hover:bg-primary-100 transition-colors"
-            >
-              Contact us for availability <ArrowRight className="w-4 h-4 ml-2" />
-            </a>
-          </div>
-        </motion.div>
-      </div>
-
-      {/* Service Area Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
-          {selectedArea && (
-            <>
-              <DialogHeader>
-                <div className="flex items-center justify-between">
-                  <DialogTitle className="text-2xl font-bold text-primary-600">
-                    {selectedArea} <span className="text-accent-500">Service Area</span>
-                  </DialogTitle>
-                </div>
-                <DialogDescription className="text-gray-600">
-                  Garage door repair services in {selectedArea}
-                </DialogDescription>
-              </DialogHeader>
-
-              <div className="mt-4">
-                {/* City-specific content */}
-                {(() => {
-                  const cityData = getCityData(selectedArea)
-                  return (
-                    <div className="space-y-6">
-                      {/* Area Header with Icon */}
-                      <div className="relative h-32 rounded-lg overflow-hidden bg-gradient-to-r from-primary-600 to-primary-700 flex items-center justify-center">
-                        <div className="absolute inset-0 opacity-20">
-                          <div className="absolute inset-0 bg-pattern-grid"></div>
-                        </div>
-                        <div className="text-center text-white z-10">
-                          <MapPin className="w-12 h-12 mx-auto mb-2" />
-                          <h3 className="text-xl font-bold">{selectedArea}</h3>
-                          <p className="text-sm">Garage Door Repair Services</p>
-                        </div>
-                      </div>
-
-                      {/* Neighborhoods */}
-                      <div>
-                        <h4 className="text-lg font-semibold text-primary-600 mb-2">Neighborhoods We Serve</h4>
-                        <div className="flex flex-wrap gap-2">
-                          {cityData.neighborhoods.map((neighborhood) => (
-                            <span
-                              key={neighborhood}
-                              className="px-3 py-1 bg-primary-50 text-primary-600 text-sm rounded-full"
-                            >
-                              {neighborhood}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Common Issues */}
-                      <div>
-                        <h4 className="text-lg font-semibold text-primary-600 mb-2">
-                          Common Garage Door Issues in {selectedArea}
-                        </h4>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                          {cityData.commonIssues.map((issue) => (
-                            <div key={issue.title} className="p-3 bg-white border border-gray-100 rounded-lg shadow-sm">
-                              <h5 className="font-medium text-primary-700">{issue.title}</h5>
-                              <p className="text-sm text-gray-600">{issue.description}</p>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Services */}
-                      <div>
-                        <h4 className="text-lg font-semibold text-primary-600 mb-2">Our Services in {selectedArea}</h4>
-                        <div className="space-y-3">
-                          {cityData.services.slice(0, 3).map((service) => (
-                            <div
-                              key={service.title}
-                              className="p-3 bg-white border-l-4 border-accent-500 rounded-lg shadow-sm"
-                            >
-                              <div className="flex justify-between">
-                                <h5 className="font-medium text-primary-700">{service.title}</h5>
-                                <span className="text-accent-500 font-semibold">From ${service.startingPrice}</span>
-                              </div>
-                              <p className="text-sm text-gray-600">{service.description}</p>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Testimonial */}
-                      <div className="bg-primary-50 p-4 rounded-lg border border-primary-100">
-                        <h4 className="text-lg font-semibold text-primary-600 mb-2">What Our Customers Say</h4>
-                        <div className="italic text-gray-700">"{cityData.featuredTestimonial.quote}"</div>
-                        <div className="mt-2 text-sm font-medium text-primary-700">
-                          - {cityData.featuredTestimonial.name}, {cityData.featuredTestimonial.location}
-                        </div>
-                      </div>
-
-                      {/* CTA */}
-                      <div className="flex justify-center mt-4">
-                        <a
-                          href="#booking"
-                          onClick={() => setIsDialogOpen(false)}
-                          className="px-6 py-3 bg-accent-500 text-white rounded-full font-medium hover:bg-accent-600 transition-colors flex items-center"
-                        >
-                          Schedule Service in {selectedArea} <ArrowRight className="ml-2 w-4 h-4" />
-                        </a>
-                      </div>
+              <div className="p-6">
+                <div className="mb-6">
+                  <h4 className="text-lg font-semibold text-primary-600 mb-2">About {selectedCity.name}</h4>
+                  <p className="text-gray-600 mb-4">{selectedCity.description}</p>
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div className="bg-gray-50 p-3 rounded-lg">
+                      <p className="text-sm text-gray-500">County</p>
+                      <p className="font-medium text-gray-700">{selectedCity.county}</p>
                     </div>
+                    <div className="bg-gray-50 p-3 rounded-lg">
+                      <p className="text-sm text-gray-500">Population</p>
+                      <p className="font-medium text-gray-700">{selectedCity.population}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* City-specific data */}
+                {(() => {
+                  const cityData = getCityData(selectedCity.id)
+                  return (
+                    <>
+                      <div className="mb-6">
+                        <h4 className="text-lg font-semibold text-primary-600 mb-2">
+                          Common Garage Door Issues in {selectedCity.name}
+                        </h4>
+                        <ul className="space-y-2">
+                          {cityData.commonIssues.map((issue: string, index: number) => (
+                            <li key={index} className="flex items-start">
+                              <CheckCircle className="h-5 w-5 text-accent-500 mr-2 mt-0.5" />
+                              <span className="text-gray-600">{issue}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      <div className="mb-6">
+                        <h4 className="text-lg font-semibold text-primary-600 mb-2">Response Time</h4>
+                        <p className="flex items-center text-gray-600">
+                          <Clock className="h-5 w-5 text-accent-500 mr-2" />
+                          {cityData.responseTime}
+                        </p>
+                      </div>
+
+                      <div className="mb-6">
+                        <h4 className="text-lg font-semibold text-primary-600 mb-2">
+                          What Our {selectedCity.name} Customers Say
+                        </h4>
+                        <div className="space-y-4">
+                          {cityData.testimonials.map((testimonial: any, index: number) => (
+                            <div key={index} className="bg-gray-50 p-4 rounded-lg">
+                              <div className="flex items-center mb-2">
+                                <div className="flex">
+                                  {[...Array(testimonial.rating)].map((_, i) => (
+                                    <Star key={i} className="h-4 w-4 text-yellow-500 fill-current" />
+                                  ))}
+                                </div>
+                                <span className="ml-2 font-medium text-gray-700">{testimonial.name}</span>
+                              </div>
+                              <p className="text-gray-600 text-sm">{testimonial.text}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </>
                   )
                 })()}
+
+                <div className="mt-6 flex flex-col sm:flex-row gap-4">
+                  <a
+                    href="tel:+13213669723"
+                    className="bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 px-6 rounded-md transition-all duration-300 flex items-center justify-center"
+                    onClick={handlePhoneClick}
+                    data-call-tracking="true"
+                  >
+                    <Phone className="mr-2 h-5 w-5" />
+                    Call For Service in {selectedCity.name}
+                  </a>
+                  <button
+                    onClick={() => {
+                      closeCityModal()
+                      setTimeout(() => {
+                        document.getElementById("booking")?.scrollIntoView({ behavior: "smooth" })
+                      }, 100)
+                    }}
+                    className="bg-accent-500 hover:bg-accent-600 text-primary-900 font-bold py-3 px-6 rounded-md transition-all duration-300 flex items-center justify-center"
+                  >
+                    <ArrowRight className="mr-2 h-5 w-5" />
+                    Book Service
+                  </button>
+                </div>
               </div>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
+            </div>
+          </div>
+        )}
+      </div>
     </section>
   )
 }

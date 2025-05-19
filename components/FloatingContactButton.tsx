@@ -1,10 +1,9 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Phone, X, MessageSquare } from "lucide-react"
+import { Phone, X, Calendar } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
-// Make sure the import is correct
 import { trackPhoneCall } from "@/lib/dataLayer"
 
 export default function FloatingContactButton() {
@@ -69,8 +68,8 @@ export default function FloatingContactButton() {
                     className="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-md transition-all duration-300 flex items-center justify-center w-full"
                     onClick={() => setIsOpen(false)}
                   >
-                    <MessageSquare className="mr-2 h-4 w-4" />
-                    <span>Send a Message</span>
+                    <Calendar className="mr-2 h-4 w-4" />
+                    <span>Schedule Service</span>
                   </Link>
                 </div>
               </motion.div>

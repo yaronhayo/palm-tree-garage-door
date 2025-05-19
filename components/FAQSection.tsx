@@ -1,152 +1,129 @@
 "use client"
 
 import { useState } from "react"
-import { ChevronDown, ChevronUp, HelpCircle, Plus, Minus } from "lucide-react"
-import AnimatedSection from "./AnimatedSection"
-import AnimatedElement from "./AnimatedElement"
+import { ChevronDown, ChevronUp, Phone, Calendar } from "lucide-react"
+import Link from "next/link"
+import { trackPhoneCall } from "@/lib/dataLayer"
 
-interface FAQItem {
+type FAQ = {
   question: string
   answer: string
 }
 
 export default function FAQSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(0)
-  const [showAllFaqs, setShowAllFaqs] = useState(false)
 
-  const faqs: FAQItem[] = [
+  const handleToggle = (index: number) => {
+    setOpenIndex(openIndex === index ? null : index)
+  }
+
+  const handlePhoneClick = () => {
+    trackPhoneCall("3213669723", "faq_section")
+  }
+
+  const faqs: FAQ[] = [
     {
       question: "How much does garage door repair cost?",
       answer:
-        "Garage door repair costs vary depending on the issue, parts needed, and service required. Minor repairs like sensor alignment or track adjustments typically range from $150-$250. Spring replacements usually cost $200-$300, while opener repairs range from $150-$350. For an accurate quote, we offer free estimates tailored to your specific situation.",
+        "Garage door repair costs vary depending on the issue, parts needed, and labor required. Minor repairs like sensor alignment or track adjustments typically range from $100-$200, while spring replacements usually cost $150-$350. Opener repairs range from $150-$450 depending on the problem. We always provide a detailed estimate before beginning any work.",
     },
     {
       question: "How long does a typical garage door repair take?",
       answer:
-        "Most standard garage door repairs can be completed in 1-2 hours. Simple issues like sensor adjustments might take 30 minutes, while more complex repairs like spring replacements or opener installations typically take 1-3 hours. Our technicians arrive with fully-stocked service vehicles to complete most repairs in a single visit.",
+        "Most standard garage door repairs can be completed in 1-2 hours. Spring replacements, opener repairs, and track adjustments typically take 60-90 minutes. More complex issues or full door replacements may take 3-5 hours. Our technicians work efficiently to minimize disruption to your day.",
     },
     {
-      question: "Do you offer emergency garage door repair?",
+      question: "Do you offer emergency garage door repair services?",
       answer:
-        "Yes, we offer 24/7 emergency garage door repair services throughout South Florida. Whether your door is stuck open, won't close, or has another urgent issue, our technicians are available around the clock to help secure your property and restore functionality to your garage door.",
+        "Yes, we offer 24/7 emergency garage door repair services throughout South Florida. If your door is stuck open, won't close, or poses a security risk, we consider it an emergency and will prioritize your service call. Our technicians are available evenings, weekends, and holidays for urgent repairs.",
     },
     {
-      question: "How long do garage door springs last?",
+      question: "How often should garage door springs be replaced?",
       answer:
-        "Garage door springs typically last 7-10 years or approximately 10,000 cycles (open/close operations). Factors affecting lifespan include the quality of the springs, frequency of use, door weight, and maintenance. Regular lubrication and professional tune-ups can extend spring life. We recommend replacing both springs even if only one breaks to ensure balanced operation.",
+        "Garage door springs typically last 7-10 years or approximately 10,000 cycles (opening and closing). If you use your garage door multiple times daily, springs may need replacement sooner. Signs that springs need replacement include visible gaps or stretching in the springs, door closing unevenly, or difficulty opening manually.",
     },
     {
       question: "Can I repair my garage door myself?",
       answer:
-        "While minor maintenance like lubricating parts or tightening hardware can be done yourself, most garage door repairs should be handled by professionals. Springs are under high tension and can cause serious injury if mishandled. Additionally, improper repairs can lead to further damage or safety issues. Our trained technicians have the proper tools, parts, and expertise to safely repair your garage door.",
-    },
-    // Additional FAQs that will show when expanded
-    {
-      question: "What are the signs that my garage door needs repair?",
-      answer:
-        "Common signs include unusual noises (grinding, scraping, or popping), slow or uneven movement, the door reversing unexpectedly, visible damage to panels or hardware, gaps when closed, and the door becoming stuck or unresponsive. If you notice any of these issues, it's best to schedule a professional inspection to prevent further damage.",
+        "While minor maintenance like lubricating parts or replacing weather stripping can be DIY projects, we strongly advise against attempting to repair springs, cables, or openers yourself. These components are under high tension and can cause serious injury if mishandled. Professional technicians have the proper tools, parts, and training to safely repair garage doors.",
     },
     {
-      question: "How often should I service my garage door?",
+      question: "Do you provide warranties on your repairs?",
       answer:
-        "We recommend professional garage door maintenance at least once a year to ensure safe and reliable operation. Regular maintenance includes lubricating moving parts, tightening hardware, checking spring tension, testing safety features, and inspecting for wear and tear. More frequent servicing may be needed for doors used multiple times daily.",
-    },
-    {
-      question: "What's the difference between chain drive and belt drive garage door openers?",
-      answer:
-        "Chain drive openers use a metal chain to move the door and are typically more affordable and durable, but they tend to be noisier. Belt drive openers use a rubber belt that provides quieter operation, making them ideal for homes with living spaces above or adjacent to the garage. Belt drives are generally more expensive but offer smoother operation and require less maintenance.",
-    },
-    {
-      question: "Why won't my garage door close completely?",
-      answer:
-        "Several issues can prevent a garage door from closing completely: misaligned safety sensors, obstructions in the door's path, damaged tracks, broken springs, worn rollers, or opener limit switch problems. Our technicians can quickly diagnose and resolve these issues to restore proper door function.",
-    },
-    {
-      question: "Are your technicians certified and insured?",
-      answer:
-        "Yes, all our technicians are fully certified, trained, and insured. They undergo rigorous training on the latest garage door systems and safety protocols. We carry comprehensive liability insurance and workers' compensation coverage for your peace of mind. Our team follows industry best practices and adheres to all local building codes and safety standards.",
+        "Yes, we stand behind our work with solid warranties. All our repairs come with a 90-day labor warranty. Additionally, most replacement parts carry manufacturer warranties ranging from 1-5 years depending on the component. New garage door installations include comprehensive warranties on both parts and labor. We'll explain all warranty details before completing your repair.",
     },
   ]
 
-  const toggleFAQ = (index: number) => {
-    setOpenIndex(openIndex === index ? null : index)
-  }
-
-  const toggleShowAllFaqs = () => {
-    setShowAllFaqs(!showAllFaqs)
-  }
-
   return (
-    <AnimatedSection id="faq" className="py-16 bg-gray-50" variant="fade">
+    <section id="faq" className="py-16 bg-white">
       <div className="container mx-auto px-4">
-        <AnimatedElement variant="slide-up" delay={0.1}>
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-primary-600 mb-4">Frequently Asked Questions</h2>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Get answers to common questions about our garage door repair services.
-            </p>
-          </div>
-        </AnimatedElement>
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold text-primary-600 mb-4">Frequently Asked Questions</h2>
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+            Find answers to common questions about our garage door repair services.
+          </p>
+        </div>
 
         <div className="max-w-3xl mx-auto">
           <div className="space-y-4">
-            {faqs.slice(0, showAllFaqs ? faqs.length : 5).map((faq, index) => (
-              <AnimatedElement key={index} variant="stagger" index={index} delay={0.2}>
-                <div className="border border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm">
-                  <button
-                    className="flex justify-between items-center w-full p-5 text-left focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50"
-                    onClick={() => toggleFAQ(index)}
-                    aria-expanded={openIndex === index}
-                    aria-controls={`faq-answer-${index}`}
-                  >
-                    <div className="flex items-center">
-                      <HelpCircle className="h-5 w-5 text-accent-500 mr-3 flex-shrink-0" />
-                      <span className="font-medium text-primary-600">{faq.question}</span>
-                    </div>
-                    <div className="flex-shrink-0">
-                      {openIndex === index ? (
-                        <ChevronUp className="h-5 w-5 text-primary-600" />
-                      ) : (
-                        <ChevronDown className="h-5 w-5 text-primary-600" />
-                      )}
-                    </div>
-                  </button>
-                  <div
-                    id={`faq-answer-${index}`}
-                    className={`px-5 pb-5 transition-all duration-300 ease-in-out ${
-                      openIndex === index ? "max-h-96 opacity-100" : "max-h-0 opacity-0 overflow-hidden"
-                    }`}
-                  >
+            {faqs.map((faq, index) => (
+              <div
+                key={index}
+                className="border border-gray-200 rounded-lg overflow-hidden transition-all duration-300"
+              >
+                <button
+                  onClick={() => handleToggle(index)}
+                  className={`flex justify-between items-center w-full p-4 text-left font-medium transition-colors ${
+                    openIndex === index ? "bg-primary-50 text-primary-700" : "bg-white text-gray-700 hover:bg-gray-50"
+                  }`}
+                  aria-expanded={openIndex === index}
+                >
+                  <span>{faq.question}</span>
+                  {openIndex === index ? (
+                    <ChevronUp className="h-5 w-5 flex-shrink-0" />
+                  ) : (
+                    <ChevronDown className="h-5 w-5 flex-shrink-0" />
+                  )}
+                </button>
+                <div
+                  className={`overflow-hidden transition-all duration-300 ${
+                    openIndex === index ? "max-h-96" : "max-h-0"
+                  }`}
+                >
+                  <div className="p-4 bg-white border-t border-gray-100">
                     <p className="text-gray-600">{faq.answer}</p>
                   </div>
                 </div>
-              </AnimatedElement>
+              </div>
             ))}
           </div>
 
-          <AnimatedElement variant="slide-up" delay={0.3}>
-            <div className="mt-8 text-center">
-              <button
-                onClick={toggleShowAllFaqs}
-                className="text-primary-600 font-medium hover:text-primary-700 transition-colors inline-flex items-center focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50 rounded-md px-4 py-2"
-                aria-expanded={showAllFaqs}
+          <div className="mt-12 bg-primary-50 rounded-xl p-6 border border-primary-100">
+            <h3 className="text-xl font-bold text-primary-600 mb-4 text-center">Still have questions?</h3>
+            <p className="text-gray-600 text-center mb-6">
+              Our team is ready to answer any questions you may have about our garage door services.
+            </p>
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
+              <a
+                href="tel:+13213669723"
+                className="bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 px-6 rounded-md transition-all duration-300 flex items-center justify-center"
+                onClick={handlePhoneClick}
+                data-call-tracking="true"
               >
-                {showAllFaqs ? (
-                  <>
-                    Show fewer FAQs
-                    <Minus className="ml-1 h-4 w-4" />
-                  </>
-                ) : (
-                  <>
-                    Show more FAQs
-                    <Plus className="ml-1 h-4 w-4" />
-                  </>
-                )}
-              </button>
+                <Phone className="mr-2 h-5 w-5" />
+                Call Us
+              </a>
+              <Link
+                href="#booking"
+                className="bg-accent-500 hover:bg-accent-600 text-primary-900 font-bold py-3 px-6 rounded-md transition-all duration-300 flex items-center justify-center"
+              >
+                <Calendar className="mr-2 h-5 w-5" />
+                Schedule a Consultation
+              </Link>
             </div>
-          </AnimatedElement>
+          </div>
         </div>
       </div>
-    </AnimatedSection>
+    </section>
   )
 }

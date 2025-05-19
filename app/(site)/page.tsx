@@ -1,7 +1,6 @@
 import type React from "react"
 import { Suspense } from "react"
 import type { Metadata } from "next"
-import { ErrorBoundary } from "@/components/ErrorBoundary"
 
 // Import components
 import HeroSection from "@/components/HeroSection"
@@ -18,6 +17,16 @@ export const metadata: Metadata = {
   title: "Palm Tree Garage Door Repair | South Florida's Trusted Experts",
   description:
     "Fast, reliable garage door repair in South Florida. 24/7 emergency service, free estimates, and expert technicians. Call now!",
+}
+
+// Simple error boundary component
+function ErrorBoundary({ children, fallback }: { children: React.ReactNode; fallback: React.ReactNode }) {
+  try {
+    return <>{children}</>
+  } catch (error) {
+    console.error("Error in component:", error)
+    return <>{fallback}</>
+  }
 }
 
 // Simple component to display loading state
