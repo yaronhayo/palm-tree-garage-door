@@ -365,12 +365,8 @@ export default function TestimonialsSection() {
 
       <div className="text-center mt-12">
         <Link
-          href="/#booking"
+          href="#booking"
           className="bg-white hover:bg-gray-100 text-primary-900 border border-primary-200 font-bold py-3 px-8 rounded-md transition-colors inline-flex items-center group"
-          onClick={(e) => {
-            e.preventDefault()
-            document.getElementById("booking")?.scrollIntoView({ behavior: "smooth" })
-          }}
         >
           Join Our Satisfied Customers
           <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
