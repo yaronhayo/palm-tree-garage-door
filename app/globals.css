@@ -280,3 +280,35 @@ html {
 .social-proof-exit {
   animation: slide-out-bottom-left 0.5s ease forwards;
 }
+
+/* Add this CSS class to improve touch interactions on mobile devices */
+.touch-action-manipulation {
+  touch-action: manipulation;
+}
+
+/* Add these classes to improve mobile menu animations */
+.mobile-menu-enter {
+  animation: mobile-menu-slide-in 0.3s ease forwards;
+}
+
+.mobile-menu-exit {
+  animation: mobile-menu-slide-out 0.3s ease forwards;
+}
+
+@keyframes mobile-menu-slide-in {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes mobile-menu-slide-out {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-100%);
+  }
+}

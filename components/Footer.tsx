@@ -217,9 +217,9 @@ export default function Footer() {
                 </li>
                 <li>
                   <Link
-                    href="/#common-issues"
+                    href="/#door-problems"
                     className="text-gray-300 hover:text-accent-500 transition-colors flex items-center"
-                    onClick={(e) => handleAnchorClick(e, "/#common-issues")}
+                    onClick={(e) => handleAnchorClick(e, "/#door-problems")}
                   >
                     <AlertTriangle className="h-4 w-4 mr-2 text-accent-500" />
                     Problems We Solve
