@@ -2,11 +2,14 @@ import type React from "react"
 import "./globals.css"
 import type { Metadata, Viewport } from "next"
 import { Inter } from "next/font/google"
+import { Analytics } from "@vercel/analytics/next"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import Header from "@/components/Header"
 import Footer from "@/components/Footer"
 import { CookieConsent } from "@/components/CookieConsent"
 import FloatingContactButton from "@/components/FloatingContactButton"
 import { SocialProofPopup } from "@/components/SocialProofPopup"
+import { Suspense } from "react"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -67,14 +70,18 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body className={`${inter.className} antialiased`}>
-        <ErrorBoundary>
-          <Header />
-          <main id="main-content">{children}</main>
-          <Footer />
-          <FloatingContactButton />
-          <CookieConsent />
-          <SocialProofPopup />
-        </ErrorBoundary>
+        <Suspense fallback={<div>Loading...</div>}>
+          <ErrorBoundary>
+            <Header />
+            <main id="main-content">{children}</main>
+            <Footer />
+            <FloatingContactButton />
+            <CookieConsent />
+            <SocialProofPopup />
+            <Analytics />
+            <SpeedInsights />
+          </ErrorBoundary>
+        </Suspense>
       </body>
     </html>
   )
