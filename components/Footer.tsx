@@ -105,12 +105,12 @@ export default function Footer() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
             <div>
               <Link href="/" className="inline-block mb-6" onClick={handleLogoClick}>
-                <div className="relative h-12 w-48">
+                <div className="relative h-12 w-40 xs:h-14 xs:w-44 sm:h-16 sm:w-52 md:h-16 md:w-56 lg:h-18 lg:w-64">
                   <Image
                     src="/logo.png"
                     alt="Palm Tree Garage Door Repair"
                     fill
-                    sizes="(max-width: 768px) 100vw, 192px"
+                    sizes="(max-width: 480px) 160px, (max-width: 640px) 176px, (max-width: 768px) 208px, (max-width: 1024px) 224px, 256px"
                     style={{ objectFit: "contain", objectPosition: "left" }}
                   />
                 </div>

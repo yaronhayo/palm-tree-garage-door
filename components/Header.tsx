@@ -206,13 +206,13 @@ export default function Header() {
             aria-label="Palm Tree Garage Door Repair - Home"
             onClick={handleLogoClick}
           >
-            <div className="relative h-14 w-14">
+            <div className="relative h-10 w-36 xs:h-12 xs:w-40 sm:h-14 sm:w-48 md:h-14 md:w-56 lg:h-16 lg:w-64">
               <Image
                 src="/logo.png"
                 alt="Palm Tree Garage Door Repair"
                 fill
-                sizes="56px"
-                style={{ objectFit: "contain" }}
+                sizes="(max-width: 480px) 144px, (max-width: 640px) 160px, (max-width: 768px) 192px, (max-width: 1024px) 224px, 256px"
+                style={{ objectFit: "contain", objectPosition: "left" }}
                 priority
               />
             </div>
@@ -329,13 +329,13 @@ export default function Header() {
         >
           {/* Close button at the top */}
           <div className="sticky top-0 left-0 right-0 bg-primary-600 p-4 flex justify-between items-center z-[100]">
-            <div className="relative h-10 w-10">
+            <div className="relative h-8 w-28 xs:h-9 xs:w-32 sm:h-10 sm:w-36">
               <Image
                 src="/logo.png"
                 alt="Palm Tree Garage Door Repair"
                 fill
-                sizes="40px"
-                style={{ objectFit: "contain" }}
+                sizes="(max-width: 480px) 112px, (max-width: 640px) 128px, 144px"
+                style={{ objectFit: "contain", objectPosition: "left" }}
               />
             </div>
             <button

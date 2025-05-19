@@ -45,7 +45,7 @@ const ServicePopup = ({ service, isOpen, onClose }: ServicePopupProps) => {
         aria-hidden="true"
       />
       <div
-        className="fixed left-1/2 -translate-x-1/2 top-[5%] sm:top-[10%] w-[95%] sm:w-full max-w-md md:max-w-lg bg-white rounded-lg shadow-xl z-50 overflow-hidden max-h-[90vh] sm:max-h-[80vh] overflow-y-auto"
+        className="fixed left-1/2 -translate-x-1/2 top-[15%] sm:top-[20%] w-[95%] sm:w-full max-w-md md:max-w-lg bg-white rounded-lg shadow-xl z-50 overflow-hidden max-h-[75vh] sm:max-h-[70vh] overflow-y-auto"
         role="dialog"
         aria-modal="true"
         aria-labelledby={`service-popup-${service.title.toLowerCase().replace(/\s+/g, "-")}`}
@@ -61,7 +61,7 @@ const ServicePopup = ({ service, isOpen, onClose }: ServicePopupProps) => {
           <div className="absolute inset-0 bg-gradient-to-t from-primary-600/90 to-transparent"></div>
           <button
             onClick={onClose}
-            className="absolute top-2 right-2 bg-white/90 p-2 rounded-full hover:bg-white transition-colors"
+            className="absolute top-2 right-2 bg-white/90 p-2 rounded-full hover:bg-white transition-colors shadow-md"
             aria-label="Close popup"
           >
             <X className="h-6 w-6 text-primary-600" />

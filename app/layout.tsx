@@ -26,6 +26,24 @@ export const metadata: Metadata = {
     "garage door spring replacement",
     "garage door opener repair",
   ],
+  icons: {
+    icon: "/logo.png",
+    apple: "/logo.png",
+  },
+  openGraph: {
+    images: [
+      {
+        url: "/logo.png",
+        width: 1200,
+        height: 630,
+        alt: "Palm Tree Garage Door Repair",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: ["/logo.png"],
+  },
     generator: 'v0.dev'
 }
 
