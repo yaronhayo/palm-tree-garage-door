@@ -4,6 +4,7 @@
 import { Resend } from "resend"
 import LeadNotificationEmail from "@/components/emails/LeadNotificationEmail"
 import ClientAutoresponderEmail from "@/components/emails/ClientAutoresponderEmail"
+import { formatDateTimeET } from "./date-utils"
 import type { UserInfo } from "./user-info"
 
 // Initialize Resend with API key
@@ -78,38 +79,52 @@ export async function sendFormSubmissionEmails(
 /**
  * Send a lead notification email to the business
  */
-export async function sendLeadNotificationEmail(formData: FormData, userInfo?: UserInfo) {
+export async function sendLeadNotificationEmail(data: any, userInfo?: any) {
   try {
-    const result = await resend.emails.send({
-      from: `Palm Tree Garage Door <notifications@palmtreegaragedoor.com>`,
-      to: BUSINESS_EMAIL,
-      subject: `New Lead: ${formData.name} - ${formData.service || "Service Request"}`,
-      react: LeadNotificationEmail({ formData, userInfo }),
-      reply_to: formData.email,
+    const timestamp = formatDateTimeET(new Date())
+
+    const response = await resend.emails.send({
+      from: "Palm Tree Garage Door <notifications@palmtreegaragedoor.com>",
+      to: [BUSINESS_EMAIL],
+      subject: `New Lead: ${data.name} - ${data.service || "Service Request"}`,
+      react: LeadNotificationEmail({
+        formData: data,
+        userInfo: {
+          ...userInfo,
+          submissionTimeEastern: timestamp,
+        },
+      }),
     })
 
-    return { id: result.id, error: null }
+    return { success: true, id: response.id }
   } catch (error) {
-    console.error("Error sending notification email:", error)
-    return { id: null, error: error instanceof Error ? error.message : "Unknown error" }
+    console.error("Error sending lead notification email:", error)
+    return { success: false, error }
   }
 }
 
 /**
  * Send an autoresponder email to the client
  */
-export async function sendClientAutoresponderEmail(formData: FormData) {
+export async function sendClientAutoresponderEmail(data: any) {
   try {
-    const result = await resend.emails.send({
-      from: `Palm Tree Garage Door <support@palmtreegaragedoor.com>`,
-      to: formData.email,
-      subject: `Thank You for Contacting Palm Tree Garage Door`,
-      react: ClientAutoresponderEmail({ formData }),
+    const timestamp = formatDateTimeET(new Date())
+
+    const response = await resend.emails.send({
+      from: "Palm Tree Garage Door <support@palmtreegaragedoor.com>",
+      to: [data.email],
+      subject: "Thank You for Contacting Palm Tree Garage Door",
+      react: ClientAutoresponderEmail({
+        formData: {
+          ...data,
+          timestamp,
+        },
+      }),
     })
 
-    return { id: result.id, error: null }
+    return { success: true, id: response.id }
   } catch (error) {
-    console.error("Error sending autoresponder email:", error)
-    return { id: null, error: error instanceof Error ? error.message : "Unknown error" }
+    console.error("Error sending client autoresponder email:", error)
+    return { success: false, error }
   }
 }

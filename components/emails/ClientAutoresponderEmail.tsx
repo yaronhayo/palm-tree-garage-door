@@ -1,4 +1,5 @@
 import type { FormData } from "@/lib/email"
+import { formatEasternTime } from "@/lib/date-utils"
 
 interface ClientAutoresponderEmailProps {
   formData: FormData
@@ -6,15 +7,7 @@ interface ClientAutoresponderEmailProps {
 
 export default function ClientAutoresponderEmail({ formData }: ClientAutoresponderEmailProps) {
   // Format the current time in Eastern Time
-  const currentTime = new Date().toLocaleString("en-US", {
-    timeZone: "America/New_York",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true,
-  })
+  const currentTime = formatEasternTime(new Date())
 
   return (
     <div
@@ -148,3 +141,6 @@ export default function ClientAutoresponderEmail({ formData }: ClientAutorespond
     </div>
   )
 }
+
+// Also export as named export for backward compatibility
+export { ClientAutoresponderEmail }

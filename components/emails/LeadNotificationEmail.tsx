@@ -1,4 +1,5 @@
 import type { FormData } from "@/lib/email"
+import { formatEasternTime } from "@/lib/date-utils"
 
 interface LeadNotificationEmailProps {
   formData: FormData
@@ -7,17 +8,7 @@ interface LeadNotificationEmailProps {
 
 export default function LeadNotificationEmail({ formData, userInfo }: LeadNotificationEmailProps) {
   // Format the submission time in Eastern Time
-  const submissionTime =
-    userInfo?.submissionTimeEastern ||
-    new Date().toLocaleString("en-US", {
-      timeZone: "America/New_York",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    })
+  const submissionTime = userInfo?.submissionTimeEastern || formatEasternTime(new Date())
 
   return (
     <div
@@ -284,3 +275,6 @@ export default function LeadNotificationEmail({ formData, userInfo }: LeadNotifi
     </div>
   )
 }
+
+// Also export as named export for backward compatibility
+export { LeadNotificationEmail }

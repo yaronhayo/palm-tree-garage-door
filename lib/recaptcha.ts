@@ -1,21 +1,40 @@
 /**
  * reCAPTCHA utilities
+ * Server-side implementation to protect sensitive keys
  */
-
-interface RecaptchaVerificationResult {
-  success: boolean
-  score?: number
-  action?: string
-  error?: string
-}
 
 /**
  * Verify a reCAPTCHA token on the server
  */
-export async function verifyRecaptcha(
+export async function verifyRecaptchaToken(token: string): Promise<boolean> {
+  try {
+    const response = await fetch("/api/verify-recaptcha", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ token }),
+    })
+
+    const data = await response.json()
+    return data.success === true
+  } catch (error) {
+    console.error("Error verifying reCAPTCHA token:", error)
+    return false
+  }
+}
+
+/**
+ * Validate reCAPTCHA token
+ */
+export async function validateRecaptcha(
   token: string | null | undefined,
   action?: string,
-): Promise<RecaptchaVerificationResult> {
+): Promise<{
+  success: boolean
+  score?: number
+  error?: string
+}> {
   // Skip verification in development mode if no token is provided
   if (process.env.NODE_ENV === "development" && !token) {
     console.log("Development mode: Skipping reCAPTCHA verification")
@@ -82,13 +101,3 @@ export async function verifyRecaptcha(
     }
   }
 }
-
-/**
- * Validate reCAPTCHA token (alias for verifyRecaptcha)
- */
-export const validateRecaptcha = verifyRecaptcha
-
-/**
- * Alias for backward compatibility
- */
-export const verifyRecaptchaToken = verifyRecaptcha

@@ -32,7 +32,6 @@ declare namespace NodeJS {
   interface ProcessEnv {
     NEXT_PUBLIC_GTM_ID?: string
     NEXT_PUBLIC_CALLRAIL_ACCOUNT_ID?: string
-    RECAPTCHA_SITE_KEY?: string
     RECAPTCHA_SECRET_KEY?: string
     NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME?: string
     CLOUDINARY_API_KEY?: string

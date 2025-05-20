@@ -99,10 +99,6 @@ export function SocialProofPopup() {
   const shownProofsRef = useRef<Set<string>>(new Set())
   const [isDismissed, setIsDismissed] = useState<boolean>(false)
 
-  // Constants for timing
-  const DISPLAY_DURATION = 5000 // 5 seconds
-  const NOTIFICATION_INTERVAL = 35000 // 35 seconds
-
   // Check if notifications were previously dismissed in this session
   useEffect(() => {
     try {
@@ -165,12 +161,12 @@ export function SocialProofPopup() {
     // Don't show popups if they've been dismissed
     if (isDismissed) return
 
-    // Show popup after initial delay (35 seconds)
+    // Show popup after 15 seconds
     const timer = setTimeout(() => {
       const newProof = getUniqueProof()
       setCurrentProof(newProof)
       setIsVisible(true)
-    }, NOTIFICATION_INTERVAL)
+    }, 15000)
 
     return () => {
       clearTimeout(timer)
@@ -180,11 +176,11 @@ export function SocialProofPopup() {
   useEffect(() => {
     let hideTimer: NodeJS.Timeout | null = null
 
-    // Auto-hide after 5 seconds if not hovering
+    // Auto-hide after 3 seconds if not hovering
     if (isVisible && !isHovering) {
       hideTimer = setTimeout(() => {
         setIsVisible(false)
-      }, DISPLAY_DURATION)
+      }, 3000) // Updated to 3 seconds
     }
 
     return () => {
@@ -205,7 +201,7 @@ export function SocialProofPopup() {
           setCurrentProof(newProof)
           setIsVisible(true)
         }
-      }, NOTIFICATION_INTERVAL) // 35 seconds
+      }, 15000) // 15 seconds
 
       return () => clearTimeout(nextTimer)
     }
@@ -232,7 +228,7 @@ export function SocialProofPopup() {
     // Hide after leaving unless user closed it
     setTimeout(() => {
       setIsVisible(false)
-    }, DISPLAY_DURATION) // 5 seconds
+    }, 3000) // Updated to 3 seconds
   }
 
   if (!currentProof) return null
@@ -241,7 +237,7 @@ export function SocialProofPopup() {
     <div
       ref={popupRef}
       className={`fixed bottom-4 left-4 z-40 max-w-[280px] sm:max-w-[320px] transform transition-all duration-500 ease-in-out ${
-        isVisible ? "translate-x-0 opacity-100" : "-translate-x-full opacity-0"
+        isVisible ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"
       }`}
       aria-live="polite"
       onMouseEnter={handleMouseEnter}
