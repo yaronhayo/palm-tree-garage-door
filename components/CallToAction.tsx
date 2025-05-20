@@ -22,7 +22,7 @@ export default function CallToAction() {
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <a
               href="tel:+13213669723"
-              className="bg-accent-500 hover:bg-accent-600 text-primary-900 font-bold py-3 px-8 rounded-md transition-all duration-300 flex items-center justify-center"
+              className="bg-accent-500 hover:bg-accent-600 text-primary-900 font-bold py-3 px-8 rounded-md transition-all duration-300 flex items-center justify-center calltrk_numberswap calltrk_dnc"
               onClick={handlePhoneClick}
               data-call-tracking="true"
             >

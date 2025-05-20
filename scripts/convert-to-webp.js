@@ -1,6 +1,3 @@
-// This script converts all images in the public directory to WebP format
-// Run with: node scripts/convert-to-webp.js
-
 const fs = require("fs")
 const path = require("path")
 const sharp = require("sharp")

@@ -8,6 +8,7 @@ import { CookieConsent } from "@/components/CookieConsent"
 import { Suspense, lazy } from "react"
 import SchemaMarkup from "@/components/SchemaMarkup"
 import Script from "next/script"
+import GoogleTagManager from "@/components/GoogleTagManager"
 
 // Lazy load non-critical components
 const FloatingContactButton = lazy(() => import("@/components/FloatingContactButton"))
@@ -79,9 +80,23 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const gtmId = "GTM-MF948JFL"
+
   return (
     <html lang="en" className="scroll-smooth">
       <head>
+        {/* Google Tag Manager - placed as high as possible in the head */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+            })(window,document,'script','dataLayer','${gtmId}');`,
+          }}
+        />
+        {/* End Google Tag Manager */}
+
         {/* Preload critical assets */}
         <link rel="preload" href="/logo.png" as="image" type="image/png" />
         <link rel="preload" href="/images/garage-door-repair-service.png" as="image" type="image/png" />
@@ -95,6 +110,18 @@ export default function RootLayout({
         <link rel="stylesheet" href="/styles/critical.css" />
       </head>
       <body className={`${inter.className} antialiased`}>
+        {/* Google Tag Manager (noscript) - placed immediately after opening body tag */}
+        <noscript>
+          <iframe
+            src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`}
+            height="0"
+            width="0"
+            style={{ display: "none", visibility: "hidden" }}
+            title="Google Tag Manager"
+          />
+        </noscript>
+        {/* End Google Tag Manager (noscript) */}
+
         <ErrorBoundary>
           <Header />
           <main id="main-content">{children}</main>
@@ -117,31 +144,8 @@ export default function RootLayout({
             <SchemaMarkup page="home" />
           </Suspense>
 
-          {/* Google Tag Manager - moved to bottom and deferred */}
-          <Script
-            id="gtm-script"
-            strategy="afterInteractive"
-            dangerouslySetInnerHTML={{
-              __html: `
-                (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-                new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-                j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-                'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-                })(window,document,'script','dataLayer','${process.env.NEXT_PUBLIC_GTM_ID || "GTM-MF948JFL"}');
-              `,
-            }}
-          />
-
-          {/* Google Tag Manager (noscript) */}
-          <noscript>
-            <iframe
-              src={`https://www.googletagmanager.com/ns.html?id=${process.env.NEXT_PUBLIC_GTM_ID || "GTM-MF948JFL"}`}
-              height="0"
-              width="0"
-              style={{ display: "none", visibility: "hidden" }}
-              title="Google Tag Manager"
-            />
-          </noscript>
+          {/* Initialize GoogleTagManager component for dataLayer */}
+          <GoogleTagManager gtmId={gtmId} />
 
           {/* CallRail Tracking - deferred */}
           <Script

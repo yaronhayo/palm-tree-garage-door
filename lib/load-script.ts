@@ -1,22 +1,17 @@
 /**
- * Dynamically loads a script with options for async, defer, and onload callback
- * @param src - Script source URL
- * @param options - Script loading options
- * @returns Promise that resolves when the script is loaded
+ * Script loading utilities
  */
-export function loadScript(
-  src: string,
-  options: {
-    async?: boolean
-    defer?: boolean
-    id?: string
-    onLoad?: () => void
-    attributes?: Record<string, string>
-  } = {},
-): Promise<HTMLScriptElement> {
-  const { async = true, defer = false, id, onLoad, attributes = {} } = options
 
+/**
+ * Load a script dynamically
+ */
+export function loadScript(src: string, id?: string): Promise<HTMLScriptElement> {
   return new Promise((resolve, reject) => {
+    if (typeof window === "undefined") {
+      reject(new Error("Cannot load script in server environment"))
+      return
+    }
+
     // Check if script already exists
     if (id && document.getElementById(id)) {
       resolve(document.getElementById(id) as HTMLScriptElement)
@@ -25,59 +20,45 @@ export function loadScript(
 
     const script = document.createElement("script")
     script.src = src
-    script.async = async
-    script.defer = defer
-    if (id) script.id = id
+    script.async = true
 
-    // Add custom attributes
-    Object.entries(attributes).forEach(([key, value]) => {
-      script.setAttribute(key, value)
-    })
-
-    script.onload = () => {
-      if (onLoad) onLoad()
-      resolve(script)
+    if (id) {
+      script.id = id
     }
 
-    script.onerror = (error) => {
-      reject(error)
-    }
+    script.onload = () => resolve(script)
+    script.onerror = () => reject(new Error(`Failed to load script: ${src}`))
 
     document.head.appendChild(script)
   })
 }
 
 /**
- * Loads multiple scripts in parallel
- * @param scripts - Array of script sources and options
- * @returns Promise that resolves when all scripts are loaded
+ * Load multiple scripts in sequence
  */
-export function loadScripts(
-  scripts: Array<{
-    src: string
-    options?: Parameters<typeof loadScript>[1]
-  }>,
-): Promise<HTMLScriptElement[]> {
-  return Promise.all(scripts.map(({ src, options }) => loadScript(src, options)))
-}
-
-/**
- * Loads scripts in sequence, waiting for each to load before loading the next
- * @param scripts - Array of script sources and options
- * @returns Promise that resolves when all scripts are loaded
- */
-export async function loadScriptsSequentially(
-  scripts: Array<{
-    src: string
-    options?: Parameters<typeof loadScript>[1]
-  }>,
-): Promise<HTMLScriptElement[]> {
+export async function loadScriptsSequentially(scripts: string[]): Promise<HTMLScriptElement[]> {
   const loadedScripts: HTMLScriptElement[] = []
 
-  for (const { src, options } of scripts) {
-    const script = await loadScript(src, options)
+  for (const src of scripts) {
+    const script = await loadScript(src)
     loadedScripts.push(script)
   }
 
   return loadedScripts
+}
+
+/**
+ * Check if a script is already loaded
+ */
+export function isScriptLoaded(src: string): boolean {
+  if (typeof window === "undefined") return false
+
+  const scripts = document.getElementsByTagName("script")
+  for (let i = 0; i < scripts.length; i++) {
+    if (scripts[i].src === src) {
+      return true
+    }
+  }
+
+  return false
 }

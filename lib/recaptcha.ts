@@ -1,5 +1,5 @@
 /**
- * Utility functions for working with Google reCAPTCHA
+ * reCAPTCHA utilities
  */
 
 interface RecaptchaVerificationResult {
@@ -83,5 +83,12 @@ export async function verifyRecaptcha(
   }
 }
 
-// Alias for backward compatibility
+/**
+ * Validate reCAPTCHA token (alias for verifyRecaptcha)
+ */
+export const validateRecaptcha = verifyRecaptcha
+
+/**
+ * Alias for backward compatibility
+ */
 export const verifyRecaptchaToken = verifyRecaptcha

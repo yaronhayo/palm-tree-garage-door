@@ -165,7 +165,7 @@ export default function Footer() {
                     <p className="font-medium">Phone</p>
                     <a
                       href="tel:+13213669723"
-                      className="text-gray-300 hover:text-accent-500 transition-colors"
+                      className="text-gray-300 hover:text-accent-500 transition-colors calltrk_numberswap calltrk_dnc"
                       onClick={handlePhoneClick}
                       data-call-tracking="true"
                     >
@@ -298,7 +298,7 @@ export default function Footer() {
                 </p>
                 <a
                   href="tel:+13213669723"
-                  className="bg-accent-500 hover:bg-accent-600 text-primary-900 text-sm font-bold py-2 px-4 rounded-md transition-colors flex items-center justify-center"
+                  className="bg-accent-500 hover:bg-accent-600 text-primary-900 text-sm font-bold py-2 px-4 rounded-md transition-colors flex items-center justify-center calltrk_numberswap calltrk_dnc"
                   onClick={handlePhoneClick}
                   data-call-tracking="true"
                 >

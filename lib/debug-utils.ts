@@ -1,5 +1,5 @@
 /**
- * Utility functions for debugging
+ * Debugging utilities
  */
 
 // Safe check for browser environment
@@ -7,8 +7,6 @@ const isBrowser = typeof window !== "undefined"
 
 /**
  * Check if a script is loaded
- * @param src The source URL of the script
- * @returns boolean indicating if the script is loaded
  */
 export function isScriptLoaded(src: string): boolean {
   if (!isBrowser) return false
@@ -29,8 +27,6 @@ export function isScriptLoaded(src: string): boolean {
 
 /**
  * Log debug information to the console
- * @param message The message to log
- * @param data Optional data to log
  */
 export function debugLog(message: string, data?: any): void {
   if (!isBrowser) return
@@ -41,7 +37,7 @@ export function debugLog(message: string, data?: any): void {
 }
 
 /**
- * Check for JavaScript errors
+ * Setup error listener
  */
 export function setupErrorListener(): () => void {
   if (!isBrowser) return () => {}

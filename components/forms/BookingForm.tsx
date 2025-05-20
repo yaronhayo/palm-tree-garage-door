@@ -3,16 +3,19 @@
 import type React from "react"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { ArrowRight, Calendar, Clock } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useServiceAreaTracking } from "@/hooks/useServiceAreaTracking"
 import { FORM_TYPES } from "@/lib/analytics/ga-config"
+import { getCurrentEasternTime, formatEasternTime } from "@/lib/date-utils"
 
 interface BookingFormProps {
   prefilledCity?: string
 }
 
 export default function BookingForm({ prefilledCity }: BookingFormProps) {
+  const router = useRouter()
   const { trackFormWithServiceArea, setServiceArea } = useServiceAreaTracking()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [formStatus, setFormStatus] = useState<{
@@ -155,11 +158,44 @@ export default function BookingForm({ prefilledCity }: BookingFormProps) {
       trackFormWithServiceArea(FORM_TYPES.BOOKING, {
         ...formData,
         formLocation: window.location.pathname,
-        submissionTime: new Date().toISOString(),
+        submissionTime: formatEasternTime(getCurrentEasternTime()),
       })
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500))
+      // Collect client-side user information
+      const clientUserInfo = typeof window !== "undefined" ? collectClientUserInfo() : {}
+
+      // Get current Eastern Time
+      const easternTime = formatEasternTime(getCurrentEasternTime())
+
+      // Prepare form data for submission
+      const submissionData = {
+        ...formData,
+        formType: "booking",
+        submissionTime: easternTime,
+        timeZone: "America/New_York (Eastern Time)",
+      }
+
+      // Submit to our API endpoint
+      const response = await fetch("/api/submit-form", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          formData: submissionData,
+          recaptchaToken: null, // We're not using client-side reCAPTCHA in this form
+          userInfo: {
+            ...clientUserInfo,
+            submissionTimeEastern: easternTime,
+          },
+        }),
+      })
+
+      const result = await response.json()
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || "Form submission failed")
+      }
 
       setFormStatus({
         success: true,
@@ -179,6 +215,11 @@ export default function BookingForm({ prefilledCity }: BookingFormProps) {
         zipCode: "",
         isEmergency: false,
       })
+
+      // Redirect to thank you page
+      setTimeout(() => {
+        router.push("/thank-you")
+      }, 2000)
     } catch (error) {
       console.error("Form submission error:", error)
 
@@ -191,8 +232,22 @@ export default function BookingForm({ prefilledCity }: BookingFormProps) {
     }
   }
 
+  // Function to collect client-side user information
+  function collectClientUserInfo() {
+    return {
+      userAgent: navigator.userAgent,
+      language: navigator.language,
+      screen: {
+        width: window.screen.width,
+        height: window.screen.height,
+      },
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    }
+  }
+
   // Get today's date in YYYY-MM-DD format for min date attribute
-  const today = new Date().toISOString().split("T")[0]
+  // Use Eastern Time for the date
+  const today = getCurrentEasternTime().toISOString().split("T")[0]
 
   return (
     <div className="bg-white rounded-lg shadow-xl p-6 md:p-8">

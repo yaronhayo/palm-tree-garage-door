@@ -5,7 +5,9 @@ const path = require("path")
 const criticalImages = [
   "/logo.png",
   "/images/service-truck.png",
-  // Add other important images here
+  "/images/garage-door-repair-service.png",
+  "/images/default-garage-door.png",
+  "/images/tech-fixing-door.webp",
 ]
 
 // Check if the out directory exists

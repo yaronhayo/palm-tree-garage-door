@@ -1,146 +1,91 @@
 /**
- * Performance monitoring utilities that work with Vercel Speed Insights
+ * Performance monitoring utilities
  */
-
-// Safe check for browser environment
-const isBrowser = typeof window !== "undefined"
-
-// Interface for performance metric data
-interface PerformanceMetricData {
-  name: string
-  value: number
-  attribution?: Record<string, any>
-  navigationType?: string
-}
-
-/**
- * Report a custom performance metric to Vercel Speed Insights
- */
-export function reportPerformanceMetric(metricData: PerformanceMetricData): void {
-  if (!isBrowser) return
-
-  try {
-    // Check if web-vitals is available
-    if (typeof window.webVitals?.reportWebVitals === "function") {
-      window.webVitals.reportWebVitals({
-        metric: {
-          id: metricData.name,
-          value: metricData.value,
-          attribution: metricData.attribution || {},
-          navigationType: metricData.navigationType || "navigate",
-        },
-      })
-    }
-
-    // Also report to dataLayer if available
-    if (window.dataLayer) {
-      window.dataLayer.push({
-        event: "performance_metric",
-        metric_name: metricData.name,
-        metric_value: metricData.value,
-      })
-    }
-
-    // Log in development
-    if (process.env.NODE_ENV === "development") {
-      console.log(`Performance Metric - ${metricData.name}: ${metricData.value}`)
-    }
-  } catch (error) {
-    console.error("Error reporting performance metric:", error)
-  }
-}
-
-/**
- * Track component render time
- */
-export function trackComponentRender(componentName: string): () => void {
-  if (!isBrowser) return () => {}
-
-  try {
-    const startTime = performance.now()
-
-    return () => {
-      const endTime = performance.now()
-      const renderTime = endTime - startTime
-
-      reportPerformanceMetric({
-        name: `${componentName}_render`,
-        value: renderTime,
-        attribution: {
-          component: componentName,
-        },
-      })
-    }
-  } catch (error) {
-    console.error("Error tracking component render:", error)
-    return () => {}
-  }
-}
 
 /**
  * Initialize performance monitoring
  */
 export function initPerformanceMonitoring(): void {
-  if (!isBrowser) return
+  if (typeof window === "undefined") return
 
   try {
-    // Set up performance observer for long tasks
+    // Set up performance observer for key metrics
     if ("PerformanceObserver" in window) {
-      try {
-        const longTaskObserver = new PerformanceObserver((list) => {
-          list.getEntries().forEach((entry) => {
-            // Report long tasks (over 50ms)
-            if (entry.duration > 50) {
-              reportPerformanceMetric({
-                name: "long_task",
-                value: entry.duration,
-                attribution: {
-                  startTime: entry.startTime,
-                  duration: entry.duration,
-                },
-              })
-            }
-          })
-        })
+      // LCP (Largest Contentful Paint)
+      const lcpObserver = new PerformanceObserver((entryList) => {
+        const entries = entryList.getEntries()
+        const lastEntry = entries[entries.length - 1]
 
-        longTaskObserver.observe({ entryTypes: ["longtask"] })
-      } catch (e) {
-        console.error("Long task observer error:", e)
-      }
-    }
+        // Report LCP
+        reportPerformanceMetric("LCP", lastEntry)
+      })
 
-    // Track page load metrics
-    window.addEventListener("load", () => {
-      // Use Navigation Timing API if available
-      if (performance.getEntriesByType && typeof performance.getEntriesByType === "function") {
-        const navigationEntries = performance.getEntriesByType("navigation")
+      lcpObserver.observe({ type: "largest-contentful-paint", buffered: true })
 
-        if (navigationEntries && navigationEntries.length > 0) {
-          const navigationEntry = navigationEntries[0] as PerformanceNavigationTiming
+      // FID (First Input Delay)
+      const fidObserver = new PerformanceObserver((entryList) => {
+        const entries = entryList.getEntries()
+        const firstInput = entries[0]
 
-          reportPerformanceMetric({
-            name: "page_load",
-            value: navigationEntry.loadEventEnd - navigationEntry.startTime,
-          })
+        // Report FID
+        reportPerformanceMetric("FID", firstInput)
+      })
 
-          reportPerformanceMetric({
-            name: "ttfb",
-            value: navigationEntry.responseStart - navigationEntry.requestStart,
-          })
+      fidObserver.observe({ type: "first-input", buffered: true })
+
+      // CLS (Cumulative Layout Shift)
+      const clsObserver = new PerformanceObserver((entryList) => {
+        let clsValue = 0
+
+        for (const entry of entryList.getEntries()) {
+          // @ts-ignore - layout shift entry
+          if (!entry.hadRecentInput) {
+            // @ts-ignore - layout shift entry
+            clsValue += entry.value
+          }
         }
-      }
-    })
+
+        // Report CLS
+        reportPerformanceMetric("CLS", { value: clsValue })
+      })
+
+      clsObserver.observe({ type: "layout-shift", buffered: true })
+    }
   } catch (error) {
     console.error("Error initializing performance monitoring:", error)
   }
 }
 
-// Add type definitions for web-vitals global
-declare global {
-  interface Window {
-    webVitals?: {
-      reportWebVitals: (data: { metric: any }) => void
+/**
+ * Report a performance metric
+ */
+function reportPerformanceMetric(name: string, entry: any): void {
+  if (typeof window === "undefined") return
+
+  try {
+    // Report to Vercel Speed Insights if available
+    if (window.va) {
+      window.va("event", {
+        name: `web_vitals_${name.toLowerCase()}`,
+        value: entry.value || entry.duration || 0,
+        category: "Web Vitals",
+      })
     }
-    dataLayer?: any[]
+
+    // Report to Google Analytics if available
+    if (window.gtag) {
+      window.gtag("event", name, {
+        value: Math.round(entry.value || entry.duration || 0),
+        event_category: "Web Vitals",
+        non_interaction: true,
+      })
+    }
+
+    // Log in development
+    if (process.env.NODE_ENV === "development") {
+      console.log(`[Performance] ${name}:`, entry.value || entry.duration || 0)
+    }
+  } catch (error) {
+    console.error(`Error reporting ${name}:`, error)
   }
 }

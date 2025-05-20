@@ -1,34 +1,33 @@
 const fs = require("fs")
 const path = require("path")
 
-// Directories to check
-const directories = ["public/images", "public/images/testimonials", "public/images/projects", "public/images/services"]
+// List of critical assets to check
+const criticalAssets = [
+  "/logo.png",
+  "/favicon.ico",
+  "/images/service-truck.png",
+  "/images/garage-door-repair-service.png",
+]
 
-console.log("Checking for image files in the project...")
+// Check if the public directory exists
+if (!fs.existsSync(path.join(process.cwd(), "public"))) {
+  console.error('Error: The "public" directory does not exist.')
+  process.exit(1)
+}
 
-let totalImages = 0
-
-directories.forEach((dir) => {
-  try {
-    const fullPath = path.join(process.cwd(), dir)
-    if (fs.existsSync(fullPath)) {
-      const files = fs.readdirSync(fullPath).filter((file) => /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(file))
-
-      console.log(`Found ${files.length} images in ${dir}`)
-      totalImages += files.length
-
-      if (files.length > 0) {
-        console.log("  Sample files:")
-        files.slice(0, 3).forEach((file) => console.log(`  - ${file}`))
-        if (files.length > 3) console.log(`  - ... and ${files.length - 3} more`)
-      }
-    } else {
-      console.log(`Directory not found: ${dir}`)
-    }
-  } catch (error) {
-    console.error(`Error checking directory ${dir}:`, error)
+// Check each critical asset
+const missingAssets = []
+criticalAssets.forEach((assetPath) => {
+  const fullPath = path.join(process.cwd(), "public", assetPath)
+  if (!fs.existsSync(fullPath)) {
+    missingAssets.push(assetPath)
   }
 })
 
-console.log(`\nTotal images found: ${totalImages}`)
-console.log("\nReminder: Make sure all these images are committed to your Git repository!")
+if (missingAssets.length > 0) {
+  console.error("Error: The following critical assets are missing:")
+  missingAssets.forEach((asset) => console.error(`  - ${asset}`))
+  process.exit(1)
+} else {
+  console.log("All critical assets are present.")
+}

@@ -25,18 +25,10 @@ const nextConfig = {
   trailingSlash: true, // Add trailing slashes for cleaner URLs
   experimental: {
     optimizePackageImports: ['lucide-react'],
-    // Removed optimizeCss: true to fix the critters dependency issue
     scrollRestoration: true,
   },
   compress: true,
   poweredByHeader: false,
-  webpack: (config, { dev, isServer }) => {
-    // Optimize only in production
-    if (!dev && !isServer) {
-      // Add optimizations here
-    }
-    return config;
-  },
 };
 
 export default nextConfig;

@@ -1,52 +1,49 @@
 /**
- * Google Analytics configuration constants
+ * Google Analytics configuration
  */
 
-// Form types for tracking
-export const FORM_TYPES = {
-  CONTACT: "contact_form",
-  BOOKING: "booking_form",
-  QUOTE: "quote_form",
-  NEWSLETTER: "newsletter_form",
-  LEAD: "lead_form",
+/**
+ * Google Analytics configuration
+ */
+export const GA_CONFIG = {
+  // Measurement ID
+  id: process.env.NEXT_PUBLIC_GTM_ID || "",
+
+  // Debug mode
+  debug: process.env.NODE_ENV === "development",
+
+  // Disable analytics in development
+  disable: process.env.NODE_ENV === "development" && !process.env.ENABLE_ANALYTICS_IN_DEV,
+
+  // Custom dimensions
+  dimensions: {
+    userType: "dimension1",
+    deviceType: "dimension2",
+    pageLoadTime: "dimension3",
+  },
+
+  // Custom metrics
+  metrics: {
+    scrollDepth: "metric1",
+    engagement: "metric2",
+  },
 }
 
-// Event categories
-export const EVENT_CATEGORIES = {
-  ENGAGEMENT: "engagement",
-  CONVERSION: "conversion",
-  NAVIGATION: "navigation",
-  CONTENT: "content",
-  ERROR: "error",
-}
+/**
+ * Initialize Google Analytics
+ */
+export function initGA(): void {
+  if (typeof window === "undefined" || GA_CONFIG.disable) return
 
-// Event actions
-export const EVENT_ACTIONS = {
-  CLICK: "click",
-  VIEW: "view",
-  SUBMIT: "submit",
-  DOWNLOAD: "download",
-  SCROLL: "scroll",
-  PLAY: "play",
-  PAUSE: "pause",
-  COMPLETE: "complete",
-  ERROR: "error",
-}
+  window.dataLayer = window.dataLayer || []
 
-// Custom dimensions
-export const CUSTOM_DIMENSIONS = {
-  SERVICE_AREA: "service_area",
-  USER_TYPE: "user_type",
-  DEVICE_CATEGORY: "device_category",
-  LEAD_SOURCE: "lead_source",
-  CUSTOMER_JOURNEY_STAGE: "customer_journey_stage",
-}
+  function gtag(...args: any[]) {
+    window.dataLayer.push(args)
+  }
 
-// Conversion goals
-export const CONVERSION_GOALS = {
-  FORM_SUBMISSION: "form_submission",
-  PHONE_CALL: "phone_call",
-  BOOKING_COMPLETED: "booking_completed",
-  QUOTE_REQUESTED: "quote_requested",
-  EMAIL_SIGNUP: "email_signup",
+  gtag("js", new Date())
+  gtag("config", GA_CONFIG.id, {
+    debug_mode: GA_CONFIG.debug,
+    send_page_view: false, // We'll track page views manually
+  })
 }

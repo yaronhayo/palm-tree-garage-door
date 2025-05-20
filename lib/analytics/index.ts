@@ -1,46 +1,59 @@
-// Re-export all analytics-related utilities and constants
-// This file serves as the main entry point for analytics functionality
+/**
+ * Analytics utilities for tracking user interactions
+ */
+import { trackEvent as trackGtmEvent } from "../dataLayer"
 
-import {
-  trackPhoneCall,
-  trackFormSubmission,
-  trackPageView,
-  trackEvent,
-  trackEngagement,
-  trackError,
-} from "../dataLayer"
-import { FORM_TYPES, EVENT_CATEGORIES, EVENT_ACTIONS } from "./ga-config"
+type EventCategory = "engagement" | "conversion" | "navigation" | "form" | "call" | "error"
+
+type EventAction = "click" | "view" | "submit" | "complete" | "error" | "call" | "scroll"
 
 /**
- * Re-export everything from dataLayer for backward compatibility
+ * Track an event in all analytics platforms
  */
+export function trackEvent(category: EventCategory, action: EventAction, label: string, value?: number): void {
+  // Track in GTM/GA
+  trackGtmEvent(category, action, label, value)
 
-export * from "../dataLayer"
-
-export const trackPhoneCallConversion = (phoneNumber: string, metadata: Record<string, string> = {}) => {
-  try {
-    if (typeof window !== "undefined" && window.dataLayer) {
-      window.dataLayer.push({
-        event: "phone_call_conversion",
-        phoneNumber,
-        ...metadata,
-      })
-    }
-  } catch (error) {
-    console.error("Error tracking phone call conversion:", error)
+  // Track in Vercel Analytics if available
+  if (typeof window !== "undefined" && window.va) {
+    window.va("event", {
+      name: `${action}_${label}`,
+      category,
+      label,
+      value: value?.toString(),
+    })
   }
 }
 
-export {
-  // Functions
-  trackPhoneCall,
-  trackFormSubmission,
-  trackPageView,
-  trackEvent,
-  trackEngagement,
-  trackError,
-  // Constants
-  FORM_TYPES,
-  EVENT_CATEGORIES,
-  EVENT_ACTIONS,
+/**
+ * Track a page view
+ */
+export function trackPageView(url: string): void {
+  trackEvent("navigation", "view", url)
+}
+
+/**
+ * Track a form submission
+ */
+export function trackFormSubmission(formName: string, success = true): void {
+  trackEvent("form", success ? "submit" : "error", formName)
+}
+
+/**
+ * Track a phone call
+ */
+export function trackPhoneCall(phoneNumber: string, location: string): void {
+  trackEvent("call", "call", location, 1)
+}
+
+/**
+ * Track an error
+ */
+export function trackError(errorType: string, errorMessage: string): void {
+  trackEvent("error", "error", errorType, 1)
+
+  // Log to console in development
+  if (process.env.NODE_ENV === "development") {
+    console.error(`[Analytics Error]: ${errorType} - ${errorMessage}`)
+  }
 }

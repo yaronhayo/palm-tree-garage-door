@@ -30,6 +30,7 @@ import {
 import { cn } from "@/lib/utils"
 import { serviceAreas } from "@/data/service-areas"
 import { trackPhoneCall } from "@/lib/dataLayer"
+import { getCurrentEasternTime, formatEasternTime } from "@/lib/date-utils"
 
 interface QuickContactFormProps {
   showBookingForm: boolean
@@ -44,6 +45,20 @@ function findCityByZipCode(zipCode: string): { city: string; state: string } | n
     }
   }
   return null
+}
+
+// Function to collect client-side user information
+function collectClientUserInfo() {
+  return {
+    userAgent: navigator.userAgent,
+    language: navigator.language,
+    screen: {
+      width: window.screen.width,
+      height: window.screen.height,
+    },
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    // Add more client-side information as needed
+  }
 }
 
 export default function QuickContactForm({ showBookingForm, setShowBookingForm }: QuickContactFormProps) {
@@ -370,24 +385,41 @@ export default function QuickContactForm({ showBookingForm, setShowBookingForm }
     setFormStatus(null)
 
     try {
+      // Collect client-side user information
+      const clientUserInfo = typeof window !== "undefined" ? collectClientUserInfo() : {}
+
+      // Get current Eastern Time
+      const easternTime = formatEasternTime(getCurrentEasternTime())
+
       // Prepare form data for submission
-      const formspreeData = {
+      const submissionData = {
         ...formData,
         formattedAddress: getFormattedAddress(),
-        submissionTime: new Date().toISOString(),
+        submissionTime: easternTime,
+        formType: "quick-contact",
+        timeZone: "America/New_York (Eastern Time)",
       }
 
-      // Submit to Formspree
-      const response = await fetch("https://formspree.io/f/YOUR_FORMSPREE_FORM_ID", {
+      // Submit to our API endpoint
+      const response = await fetch("/api/submit-form", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formspreeData),
+        body: JSON.stringify({
+          formData: submissionData,
+          recaptchaToken: null, // We're not using client-side reCAPTCHA in this form
+          userInfo: {
+            ...clientUserInfo,
+            submissionTimeEastern: easternTime,
+          },
+        }),
       })
 
-      if (!response.ok) {
-        throw new Error("Form submission failed")
+      const result = await response.json()
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || "Form submission failed")
       }
 
       setFormStatus({

@@ -1,67 +1,77 @@
 # Palm Tree Garage Door
 
-Professional garage door repair and installation services in South Florida.
+A lightning-fast, SEO-ready landing page for Palm Tree Garage Door service.
 
-## Deployment Instructions
+## Tech Stack
 
-### GitHub Setup
+- Next.js 14 (App Router, TypeScript)
+- Tailwind CSS, shadcn/ui, lucide-react icons
+- Vercel/Netlify hosting
+- Resend for transactional email
+- Google Tag Manager for analytics
+- CallRail for call tracking
+- next-sitemap & next-seo for SEO optimization
 
-1. Create a new repository on GitHub
-2. Initialize the local repository and push to GitHub:
+## Getting Started
+
+1. Clone the repository
+2. Install dependencies:
+   \`\`\`bash
+   npm install
+   \`\`\`
+3. Create a `.env` file based on `.env.example`
+4. Run the development server:
+   \`\`\`bash
+   npm run dev
+   \`\`\`
+
+## Building for Production
 
 \`\`\`bash
-git init
-git add .
-git commit -m "Initial commit"
-git branch -M main
-git remote add origin https://github.com/yourusername/palm-tree-garage-door.git
-git push -u origin main
+npm run build
 \`\`\`
 
-### Netlify Deployment
+This will generate a static export in the `out` directory, ready for deployment to Netlify or any static hosting service.
 
-1. Log in to Netlify (https://app.netlify.com/)
-2. Click "New site from Git"
-3. Select GitHub and authorize Netlify
-4. Select the repository you just created
-5. Configure build settings:
+## Deployment
+
+### Netlify
+
+1. Push your code to GitHub
+2. Connect your repository to Netlify
+3. Configure the build settings:
    - Build command: `npm run build`
    - Publish directory: `out`
-6. Click "Deploy site"
+4. Set up your environment variables in Netlify's dashboard
 
-### Environment Variables
+## Features
 
-Add the following environment variables in Netlify's site settings (refer to your .env.local file for values):
+- Responsive design optimized for all devices
+- SEO-optimized with structured data
+- Performance-optimized with Core Web Vitals in mind
+- Form handling with validation and reCAPTCHA
+- Email notifications for new leads
+- Call tracking with CallRail
+- Analytics with Google Tag Manager
+- Testimonials and service showcase
+- Service area targeting
 
-- NEXT_PUBLIC_GTM_ID
-- NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
-- NEXT_PUBLIC_CALLRAIL_ACCOUNT_ID
-- NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
-- NEXT_PUBLIC_SUPABASE_URL
-- NEXT_PUBLIC_SUPABASE_ANON_KEY
-- BUSINESS_EMAIL
-- SITE_URL
+## Project Structure
 
-**Note:** For security reasons, never commit actual environment variable values to your repository. Use a private .env.local file locally and set the values directly in Netlify's dashboard.
+- `app/` - Next.js App Router pages and layouts
+- `components/` - React components
+- `lib/` - Utility functions and helpers
+- `public/` - Static assets
+- `scripts/` - Build and utility scripts
+- `types/` - TypeScript type definitions
 
-## Development
+## Environment Variables
 
-\`\`\`bash
-# Install dependencies
-npm install
+See `.env.example` for required environment variables.
 
-# Run development server
-npm run dev
+## License
 
-# Build for production
-npm run build
-
-# Start production server
-npm start
+This project is proprietary and confidential. Unauthorized copying, transfer, or reproduction of the contents is strictly prohibited.
 \`\`\`
 
-## Security Notes
-
-- ReCAPTCHA keys should be set in Netlify's environment variables and not committed to the repository
-- All API keys should be kept private and only added through Netlify's environment variables interface
-- For local development, use a .env.local file (which is git-ignored)
+Let's clean up the .env.example file:
