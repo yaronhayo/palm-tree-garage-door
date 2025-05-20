@@ -50,6 +50,7 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [activeSection, setActiveSection] = useState<string | null>(null)
+  const [logoError, setLogoError] = useState(false)
   const pathname = usePathname()
   const menuRef = useRef<HTMLDivElement>(null)
   const headerRef = useRef<HTMLElement>(null)
@@ -193,6 +194,13 @@ export default function Header() {
     [pathname],
   )
 
+  // Fallback logo content if image fails to load
+  const renderFallbackLogo = () => (
+    <div className="flex items-center h-full">
+      <div className="text-white font-bold text-xl">Palm Tree Garage Door</div>
+    </div>
+  )
+
   return (
     <header
       ref={headerRef}
@@ -208,16 +216,22 @@ export default function Header() {
             aria-label="Palm Tree Garage Door Repair - Home"
             onClick={handleLogoClick}
           >
-            <div className="relative h-10 w-36 xs:h-12 xs:w-40 sm:h-14 sm:w-48 md:h-14 md:w-56 lg:h-16 lg:w-64">
-              <Image
-                src="/logo.png"
-                alt="Palm Tree Garage Door Repair"
-                fill
-                sizes="(max-width: 480px) 144px, (max-width: 640px) 160px, (max-width: 768px) 192px, (max-width: 1024px) 224px, 256px"
-                style={{ objectFit: "contain", objectPosition: "left" }}
-                priority
-              />
-            </div>
+            {!logoError ? (
+              <div className="relative h-10 w-36 xs:h-12 xs:w-40 sm:h-14 sm:w-48 md:h-14 md:w-56 lg:h-16 lg:w-64">
+                <Image
+                  src="/logo.png"
+                  alt="Palm Tree Garage Door Repair"
+                  fill
+                  sizes="(max-width: 480px) 144px, (max-width: 640px) 160px, (max-width: 768px) 192px, (max-width: 1024px) 224px, 256px"
+                  style={{ objectFit: "contain", objectPosition: "left" }}
+                  priority
+                  unoptimized={true} // Add this to ensure image works in static export
+                  onError={() => setLogoError(true)}
+                />
+              </div>
+            ) : (
+              renderFallbackLogo()
+            )}
           </Link>
 
           <div className="hidden md:flex items-center">
@@ -346,15 +360,21 @@ export default function Header() {
         >
           {/* Close button at the top */}
           <div className="sticky top-0 left-0 right-0 bg-primary-600 p-4 flex justify-between items-center z-[100]">
-            <div className="relative h-8 w-28 xs:h-9 xs:w-32 sm:h-10 sm:w-36">
-              <Image
-                src="/logo.png"
-                alt="Palm Tree Garage Door Repair"
-                fill
-                sizes="(max-width: 480px) 112px, (max-width: 640px) 128px, 144px"
-                style={{ objectFit: "contain", objectPosition: "left" }}
-              />
-            </div>
+            {!logoError ? (
+              <div className="relative h-8 w-28 xs:h-9 xs:w-32 sm:h-10 sm:w-36">
+                <Image
+                  src="/logo.png"
+                  alt="Palm Tree Garage Door Repair"
+                  fill
+                  sizes="(max-width: 480px) 112px, (max-width: 640px) 128px, 144px"
+                  style={{ objectFit: "contain", objectPosition: "left" }}
+                  unoptimized={true} // Add this to ensure image works in static export
+                  onError={() => setLogoError(true)}
+                />
+              </div>
+            ) : (
+              <div className="text-white font-bold text-lg">Palm Tree Garage Door</div>
+            )}
             <button
               type="button"
               className="p-2 text-white hover:text-accent-300 focus:outline-none focus:ring-2 focus:ring-accent-300 rounded-md"

@@ -37,6 +37,7 @@ export default function HeroSection() {
               quality={85}
               onLoad={() => setImageLoaded(true)}
               onError={() => setImageError(true)}
+              unoptimized={true} // Add this to ensure image works in static export
             />
           </div>
         ) : (
