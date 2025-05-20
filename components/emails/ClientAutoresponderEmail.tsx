@@ -5,7 +5,7 @@ interface ClientAutoresponderEmailProps {
   formData: FormData
 }
 
-export default function ClientAutoresponderEmail({ formData }: ClientAutoresponderEmailProps) {
+export function ClientAutoresponderEmail({ formData }: ClientAutoresponderEmailProps) {
   // Format the current time in Eastern Time
   const currentTime = formatEasternTime(new Date())
 
@@ -141,6 +141,3 @@ export default function ClientAutoresponderEmail({ formData }: ClientAutorespond
     </div>
   )
 }
-
-// Also export as named export for backward compatibility
-export { ClientAutoresponderEmail }

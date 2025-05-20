@@ -1,10 +1,9 @@
 /**
  * reCAPTCHA utilities
- * Server-side implementation to protect sensitive keys
  */
 
 /**
- * Verify a reCAPTCHA token on the server
+ * Verify a reCAPTCHA token
  */
 export async function verifyRecaptchaToken(token: string): Promise<boolean> {
   try {
@@ -25,79 +24,51 @@ export async function verifyRecaptchaToken(token: string): Promise<boolean> {
 }
 
 /**
- * Validate reCAPTCHA token
+ * Load the reCAPTCHA script
  */
-export async function validateRecaptcha(
-  token: string | null | undefined,
-  action?: string,
-): Promise<{
-  success: boolean
-  score?: number
-  error?: string
-}> {
-  // Skip verification in development mode if no token is provided
-  if (process.env.NODE_ENV === "development" && !token) {
-    console.log("Development mode: Skipping reCAPTCHA verification")
-    return { success: true, score: 1.0, action: action || "default" }
-  }
+export function loadRecaptchaScript(siteKey: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (typeof window === "undefined") {
+      reject(new Error("Cannot load reCAPTCHA in server environment"))
+      return
+    }
 
-  // If no token is provided in production, return failure
-  if (!token) {
-    return { success: false, error: "No reCAPTCHA token provided" }
+    // Check if already loaded
+    if (window.grecaptcha) {
+      resolve()
+      return
+    }
+
+    // Create script element
+    const script = document.createElement("script")
+    script.src = `https://www.google.com/recaptcha/api.js?render=${siteKey}`
+    script.async = true
+    script.defer = true
+
+    script.onload = () => resolve()
+    script.onerror = () => reject(new Error("Failed to load reCAPTCHA script"))
+
+    document.head.appendChild(script)
+  })
+}
+
+/**
+ * Execute reCAPTCHA and get a token
+ */
+export async function executeRecaptcha(action: string): Promise<string> {
+  if (typeof window === "undefined" || !window.grecaptcha) {
+    throw new Error("reCAPTCHA not loaded")
   }
 
   try {
-    const secretKey = process.env.RECAPTCHA_SECRET_KEY
-
-    // If no secret key is available, log warning and return success in development
-    if (!secretKey) {
-      if (process.env.NODE_ENV === "development") {
-        console.warn("RECAPTCHA_SECRET_KEY is not defined. Skipping verification in development.")
-        return { success: true, score: 1.0, action: action || "default" }
-      } else {
-        return { success: false, error: "reCAPTCHA configuration error" }
-      }
+    const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY
+    if (!siteKey) {
+      throw new Error("reCAPTCHA site key not found")
     }
 
-    // Verify the token with Google reCAPTCHA API
-    const response = await fetch("https://www.google.com/recaptcha/api/siteverify", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: `secret=${secretKey}&response=${token}`,
-    })
-
-    const data = await response.json()
-
-    // Check if verification was successful
-    if (data.success) {
-      // If action was specified, verify it matches
-      if (action && data.action && data.action !== action) {
-        return {
-          success: false,
-          score: data.score,
-          action: data.action,
-          error: "Action verification failed",
-        }
-      }
-
-      return {
-        success: true,
-        score: data.score,
-        action: data.action,
-      }
-    } else {
-      return {
-        success: false,
-        error: data["error-codes"] ? data["error-codes"].join(", ") : "reCAPTCHA verification failed",
-      }
-    }
+    return await window.grecaptcha.execute(siteKey, { action })
   } catch (error) {
-    console.error("Error verifying reCAPTCHA token:", error)
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error during reCAPTCHA verification",
-    }
+    console.error("Error executing reCAPTCHA:", error)
+    throw error
   }
 }
