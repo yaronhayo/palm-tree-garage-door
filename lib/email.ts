@@ -1,61 +1,93 @@
-/**
- * Email utilities
- */
 import { Resend } from "resend"
-import LeadNotificationEmail from "@/components/emails/LeadNotificationEmail"
-import ClientAutoresponderEmail from "@/components/emails/ClientAutoresponderEmail"
-import { formatDateTimeET } from "./date-utils"
+import { BUSINESS_EMAIL } from "./env-client"
 
-// Initialize Resend with API key
+// Create a Resend instance
 const resend = new Resend(process.env.RESEND_API_KEY)
 
-// Business email from environment variable
-const BUSINESS_EMAIL = process.env.BUSINESS_EMAIL || "info@palmtreegaragedoor.com"
+// Define the FormData type
+export type FormData = {
+  name: string
+  email: string
+  phone: string
+  message?: string
+  service?: string
+  urgency?: string
+  date?: string
+  time?: string
+  city?: string
+  zipCode?: string
+  formattedAddress?: string
+  gateCode?: string
+  specialInstructions?: string
+  isEmergency?: boolean
+  formType?: string
+  [key: string]: any // Allow for additional properties
+}
 
-/**
- * Send a lead notification email to the business
- */
-export async function sendLeadNotificationEmail(data: any) {
+// Function to send lead notification email
+export async function sendLeadNotificationEmail(formData: FormData, userInfo?: any) {
   try {
-    const timestamp = formatDateTimeET(new Date())
-
-    const response = await resend.emails.send({
-      from: "Palm Tree Garage Door <notifications@palmtreegaragedoor.com>",
+    const { data, error } = await resend.emails.send({
+      from: `Palm Tree Garage Door <notifications@palmtreegaragedoor.com>`,
       to: [BUSINESS_EMAIL],
-      subject: `New Lead: ${data.name} - ${data.service || "Service Request"}`,
-      react: LeadNotificationEmail({
-        ...data,
-        timestamp,
-      }),
+      subject: `${formData.isEmergency ? "🚨 EMERGENCY: " : ""}New Lead: ${formData.name} - ${
+        formData.service || formData.formType || "Contact Form"
+      }`,
+      react: (await import("../components/emails/LeadNotificationEmail")).default({ formData, userInfo }),
     })
 
-    return { success: true, id: response.id }
+    if (error) {
+      console.error("Error sending lead notification email:", error)
+      throw new Error(`Failed to send lead notification: ${error.message}`)
+    }
+
+    return { success: true, data }
   } catch (error) {
-    console.error("Error sending lead notification email:", error)
-    return { success: false, error }
+    console.error("Error in sendLeadNotificationEmail:", error)
+    throw error
+  }
+}
+
+// Function to send client autoresponder email
+export async function sendClientAutoresponderEmail(formData: FormData) {
+  try {
+    const { data, error } = await resend.emails.send({
+      from: `Palm Tree Garage Door <support@palmtreegaragedoor.com>`,
+      to: [formData.email],
+      subject: `Thank you for contacting Palm Tree Garage Door!`,
+      react: (await import("../components/emails/ClientAutoresponderEmail")).default({ formData }),
+    })
+
+    if (error) {
+      console.error("Error sending client autoresponder email:", error)
+      throw new Error(`Failed to send autoresponder: ${error.message}`)
+    }
+
+    return { success: true, data }
+  } catch (error) {
+    console.error("Error in sendClientAutoresponderEmail:", error)
+    throw error
   }
 }
 
 /**
- * Send an autoresponder email to the client
+ * Send both notification and autoresponder emails for form submissions
  */
-export async function sendClientAutoresponderEmail(data: any) {
+export async function sendFormSubmissionEmails(formData: FormData, userInfo?: any) {
   try {
-    const timestamp = formatDateTimeET(new Date())
+    // Send notification email to business
+    const notificationResult = await sendLeadNotificationEmail(formData, userInfo)
 
-    const response = await resend.emails.send({
-      from: "Palm Tree Garage Door <support@palmtreegaragedoor.com>",
-      to: [data.email],
-      subject: "Thank You for Contacting Palm Tree Garage Door",
-      react: ClientAutoresponderEmail({
-        ...data,
-        timestamp,
-      }),
-    })
+    // Send autoresponder email to client
+    const autoresponderResult = await sendClientAutoresponderEmail(formData)
 
-    return { success: true, id: response.id }
+    return {
+      success: true,
+      notification: notificationResult,
+      autoresponder: autoresponderResult,
+    }
   } catch (error) {
-    console.error("Error sending client autoresponder email:", error)
-    return { success: false, error }
+    console.error("Error sending form submission emails:", error)
+    throw error
   }
 }

@@ -11,6 +11,7 @@ type CookiePreferences = {
   preferences: boolean
 }
 
+// Define the component
 export function CookieConsent() {
   const [isVisible, setIsVisible] = useState(false)
   const [showDetails, setShowDetails] = useState(false)
@@ -93,6 +94,12 @@ export function CookieConsent() {
       ...prev,
       [key]: !prev[key],
     }))
+  }
+
+  const handleDecline = () => {
+    localStorage.setItem("cookieConsent", "false")
+    setIsVisible(false)
+    // You might want to disable certain tracking features here
   }
 
   if (!isVisible) return null
@@ -281,3 +288,6 @@ export function CookieConsent() {
     </>
   )
 }
+
+// Add default export
+export default CookieConsent

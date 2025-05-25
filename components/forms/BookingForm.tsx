@@ -7,8 +7,9 @@ import { useRouter } from "next/navigation"
 import { ArrowRight, Calendar, Clock } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useServiceAreaTracking } from "@/hooks/useServiceAreaTracking"
-import { FORM_TYPES } from "@/lib/analytics/ga-config"
+import { FORM_TYPES } from "@/lib/analytics"
 import { getCurrentEasternTime, formatEasternTime } from "@/lib/date-utils"
+import { useRecaptcha } from "@/hooks/useRecaptcha"
 
 interface BookingFormProps {
   prefilledCity?: string
@@ -44,6 +45,8 @@ export default function BookingForm({ prefilledCity }: BookingFormProps) {
     city: "",
     zipCode: "",
   })
+
+  const { executeRecaptcha, error: recaptchaError } = useRecaptcha()
 
   const serviceOptions = [
     { value: "", label: "Select a service" },
@@ -154,6 +157,14 @@ export default function BookingForm({ prefilledCity }: BookingFormProps) {
     setFormStatus(null)
 
     try {
+      // Try to execute reCAPTCHA, but continue even if it fails
+      let recaptchaToken = null
+      try {
+        recaptchaToken = await executeRecaptcha("booking_form")
+      } catch (recaptchaError) {
+        console.warn("reCAPTCHA execution failed, continuing without verification:", recaptchaError)
+      }
+
       // Track form submission with service area data
       trackFormWithServiceArea(FORM_TYPES.BOOKING, {
         ...formData,
@@ -183,7 +194,7 @@ export default function BookingForm({ prefilledCity }: BookingFormProps) {
         },
         body: JSON.stringify({
           formData: submissionData,
-          recaptchaToken: null, // We're not using client-side reCAPTCHA in this form
+          recaptchaToken: recaptchaToken,
           userInfo: {
             ...clientUserInfo,
             submissionTimeEastern: easternTime,
@@ -252,6 +263,15 @@ export default function BookingForm({ prefilledCity }: BookingFormProps) {
   return (
     <div className="bg-white rounded-lg shadow-xl p-6 md:p-8">
       <h2 className="text-2xl font-bold text-primary-600 mb-6">Schedule Your Service</h2>
+
+      {recaptchaError && (
+        <div className="p-3 mb-4 bg-yellow-50 border border-yellow-200 rounded-md">
+          <p className="text-sm text-yellow-700">
+            <span className="font-medium">Note:</span> Security verification is currently unavailable. Your form will
+            still be submitted.
+          </p>
+        </div>
+      )}
 
       {formStatus ? (
         <div

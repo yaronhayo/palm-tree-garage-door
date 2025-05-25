@@ -7,7 +7,7 @@ interface TermsOfServiceModalProps {
   onClose: () => void
 }
 
-export function TermsOfServiceModal({ isOpen, onClose }: TermsOfServiceModalProps) {
+function TermsOfServiceModal({ isOpen, onClose }: TermsOfServiceModalProps) {
   const modalRef = useRef<HTMLDivElement>(null)
 
   // Handle ESC key press
@@ -249,3 +249,9 @@ export function TermsOfServiceModal({ isOpen, onClose }: TermsOfServiceModalProp
     </div>
   )
 }
+
+// Export as default for dynamic imports
+export default TermsOfServiceModal
+
+// Keep named export for backward compatibility
+export { TermsOfServiceModal }

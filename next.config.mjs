@@ -11,10 +11,7 @@ const nextConfig = {
   images: {
     domains: [
       'res.cloudinary.com',
-      'blob.v0.dev',
-      'hebbkx1anhila5yf.public.blob.vercel-storage.com',
-      'vercel-storage.com',
-      'public.blob.vercel-storage.com'
+      'blob.v0.dev'
     ],
     unoptimized: true, // Required for static export
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],

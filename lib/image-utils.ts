@@ -1,62 +1,110 @@
 /**
- * Image utility functions
+ * Comprehensive image utilities for the application
  */
 
+// Check if we're in the browser
+const isBrowser = typeof window !== "undefined"
+
 /**
- * Get image dimensions from a URL
+ * Convert image URL to WebP format if possible
  */
-export async function getImageDimensions(url: string): Promise<{ width: number; height: number }> {
-  return new Promise((resolve, reject) => {
-    const img = new Image()
-    img.onload = () => {
-      resolve({
-        width: img.width,
-        height: img.height,
-      })
+export function getWebPUrl(url: string): string {
+  // If it's already a WebP or SVG, return as is
+  if (url.endsWith(".webp") || url.endsWith(".svg")) return url
+
+  // If it's a Cloudinary URL, add WebP format
+  if (url.includes("res.cloudinary.com")) {
+    return url.replace(/\.(jpe?g|png)/i, ".webp")
+  }
+
+  // If it's a Vercel Blob URL, we can't modify it
+  if (url.includes("blob.vercel-storage.com")) return url
+
+  // For local images, try to use WebP version if available
+  const urlWithoutExt = url.replace(/\.(jpe?g|png|gif)$/i, "")
+  return `${urlWithoutExt}.webp`
+}
+
+/**
+ * Generate responsive image sizes string for Next.js Image component
+ */
+export function generateImageSizes(mobile = "100vw", tablet = "50vw", desktop = "33vw"): string {
+  return `(max-width: 640px) ${mobile}, (max-width: 1024px) ${tablet}, ${desktop}`
+}
+
+/**
+ * Get image dimensions from URL if possible
+ * Works with Cloudinary URLs that include dimensions
+ */
+export function getImageDimensionsFromUrl(url: string): { width: number; height: number } | null {
+  // Default dimensions if we can't determine
+  const defaultDimensions = { width: 1200, height: 800 }
+
+  try {
+    // Check for Cloudinary URLs with dimensions
+    if (url.includes("res.cloudinary.com")) {
+      const match = url.match(/\/w_(\d+),h_(\d+)\//)
+      if (match && match[1] && match[2]) {
+        return {
+          width: Number.parseInt(match[1], 10),
+          height: Number.parseInt(match[2], 10),
+        }
+      }
     }
-    img.onerror = () => {
-      reject(new Error(`Failed to load image: ${url}`))
-    }
-    img.src = url
+
+    return defaultDimensions
+  } catch (error) {
+    console.error("Error parsing image dimensions:", error)
+    return defaultDimensions
+  }
+}
+
+/**
+ * Preload critical images
+ */
+export function preloadCriticalImages(imageUrls: string[]): void {
+  if (!isBrowser) return
+
+  imageUrls.forEach((url) => {
+    const link = document.createElement("link")
+    link.rel = "preload"
+    link.as = "image"
+    link.href = url
+    link.type = url.endsWith(".svg") ? "image/svg+xml" : url.endsWith(".webp") ? "image/webp" : "image/png"
+    document.head.appendChild(link)
   })
 }
 
 /**
  * Check if an image exists
  */
-export async function imageExists(url: string): Promise<boolean> {
+export async function checkImageExists(url: string): Promise<boolean> {
+  if (!isBrowser) return true
+
   try {
     const response = await fetch(url, { method: "HEAD" })
     return response.ok
   } catch (error) {
+    console.error(`Error checking if image exists: ${url}`, error)
     return false
   }
 }
 
 /**
- * Get a fallback image URL if the primary one fails
+ * Get appropriate image format based on browser support
  */
-export function getFallbackImageUrl(primaryUrl: string, fallbackUrl: string): string {
-  return primaryUrl || fallbackUrl || "/placeholder.png"
-}
+export function getOptimalImageFormat(): "webp" | "avif" | "original" {
+  if (!isBrowser) return "webp"
 
-/**
- * Generate a responsive image srcSet
- */
-export function generateSrcSet(baseUrl: string, widths: number[]): string {
-  return widths
-    .map((width) => {
-      // This assumes your image service supports width parameters
-      // Adjust according to your actual image service
-      const url = `${baseUrl}?width=${width}`
-      return `${url} ${width}w`
-    })
-    .join(", ")
-}
+  // Check for AVIF support
+  if (document.createElement("canvas").toDataURL("image/avif").indexOf("data:image/avif") === 0) {
+    return "avif"
+  }
 
-/**
- * Generate image sizes attribute for responsive images
- */
-export function generateSizes(sizes: { breakpoint: number; width: string }[]): string {
-  return sizes.map(({ breakpoint, width }) => `(max-width: ${breakpoint}px) ${width}`).join(", ")
+  // Check for WebP support
+  if (document.createElement("canvas").toDataURL("image/webp").indexOf("data:image/webp") === 0) {
+    return "webp"
+  }
+
+  return "original"
 }

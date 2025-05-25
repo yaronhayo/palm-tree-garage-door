@@ -6,7 +6,7 @@ import * as Collapsible from "@radix-ui/react-collapsible"
 import { ChevronDown, ChevronUp } from "lucide-react"
 import Script from "next/script"
 
-// Updated FAQ data with more relevant questions and answers
+// Updated FAQ data with more relevant questions and answers (removed price mentions)
 export const faqData = [
   {
     id: "faq-1",
@@ -36,7 +36,7 @@ export const faqData = [
     id: "faq-5",
     question: "Do you offer warranties on your garage door repairs?",
     answer:
-      "Yes, we stand behind our work with a 1-year warranty on labor and parts we install. Manufacturer warranties on new doors and openers vary by product, and we'll provide all warranty information before installation.",
+      "Yes, we stand behind our work with a lifetime warranty on parts we install. Manufacturer warranties on new doors and openers vary by product, and we'll provide all warranty information before installation.",
   },
   {
     id: "faq-6",

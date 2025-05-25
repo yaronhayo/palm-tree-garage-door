@@ -91,13 +91,14 @@ const generateRandomProof = (): SocialProofData => {
   }
 }
 
-export function SocialProofPopup() {
+function SocialProofPopup() {
   const [isVisible, setIsVisible] = useState(false)
   const [currentProof, setCurrentProof] = useState<SocialProofData | null>(null)
   const [isHovering, setIsHovering] = useState(false)
   const popupRef = useRef<HTMLDivElement>(null)
   const shownProofsRef = useRef<Set<string>>(new Set())
   const [isDismissed, setIsDismissed] = useState<boolean>(false)
+  const [isAtTop, setIsAtTop] = useState(true)
 
   // Check if notifications were previously dismissed in this session
   useEffect(() => {
@@ -109,6 +110,17 @@ export function SocialProofPopup() {
     } catch (e) {
       console.error("Error accessing sessionStorage:", e)
     }
+  }, [])
+
+  // Track scroll position to hide popup when at top
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop
+      setIsAtTop(scrollTop < 100) // Hide popup when within 100px of top
+    }
+
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
   // Get a unique social proof that hasn't been shown in this session
@@ -237,7 +249,7 @@ export function SocialProofPopup() {
     <div
       ref={popupRef}
       className={`fixed bottom-4 left-4 z-40 max-w-[280px] sm:max-w-[320px] transform transition-all duration-500 ease-in-out ${
-        isVisible ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"
+        isVisible && !isAtTop ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"
       }`}
       aria-live="polite"
       onMouseEnter={handleMouseEnter}
@@ -286,3 +298,9 @@ export function SocialProofPopup() {
     </div>
   )
 }
+
+// Export as default
+export default SocialProofPopup
+
+// Keep named export for backward compatibility
+export { SocialProofPopup }

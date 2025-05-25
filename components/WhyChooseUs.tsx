@@ -1,186 +1,92 @@
-"use client"
-
-import { useRef } from "react"
-import { motion, useInView } from "framer-motion"
-import { Clock, Award, Shield, Truck, CheckCircle } from "lucide-react"
-import OptimizedImage from "./OptimizedImage"
-
-// Sample benefits data
-export const benefitsData = [
-  {
-    id: "fast-service",
-    title: "Fast Service",
-    description: "24/7 emergency service with quick response times to get your door working again.",
-    icon: Clock,
-  },
-  {
-    id: "experienced",
-    title: "Experienced Technicians",
-    description: "Our certified technicians have years of experience solving all garage door problems.",
-    icon: Award,
-  },
-  {
-    id: "warranty",
-    title: "Guaranteed Work",
-    description: "All repairs and installations come with our satisfaction guarantee and warranty.",
-    icon: Shield,
-  },
-  {
-    id: "fair-pricing",
-    title: "Fair & Transparent Pricing",
-    description: "No hidden fees or surprise charges - just honest, upfront pricing for quality work.",
-    icon: Truck,
-  },
-]
+import { Shield, Clock, Award, Percent, Home, Heart } from "lucide-react"
 
 export default function WhyChooseUs() {
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, amount: 0.2 })
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  }
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        duration: 0.5,
-      },
-    },
-  }
-
   return (
-    <section className="py-20 relative overflow-hidden" ref={ref}>
-      {/* Background with subtle pattern */}
-      <div className="absolute inset-0 z-0">
-        <OptimizedImage
-          src="/images/subtle-pattern.webp"
-          alt=""
-          fill
-          className="object-cover opacity-5"
-          decorative={true}
-          priority={false}
-          lazyLoad={true}
-        />
-      </div>
-
-      {/* Decorative elements */}
-      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary-600 via-accent-500 to-primary-600"></div>
-      <div className="hidden lg:block absolute -left-24 top-1/2 transform -translate-y-1/2 w-64 h-64 rounded-full bg-accent-500 opacity-10"></div>
-      <div className="hidden lg:block absolute -right-24 top-1/3 transform -translate-y-1/2 w-80 h-80 rounded-full bg-primary-600 opacity-10"></div>
-
-      <div className="container mx-auto px-4 relative z-10">
-        <div className="text-center mb-16">
-          <motion.div
-            className="inline-flex items-center justify-center mb-4"
-            initial={{ opacity: 0, y: -10 }}
-            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }}
-            transition={{ duration: 0.5 }}
-          >
-            <div className="h-px w-12 bg-accent-500"></div>
-            <span className="mx-4 text-accent-500 font-medium">WHY CHOOSE US</span>
-            <div className="h-px w-12 bg-accent-500"></div>
-          </motion.div>
-
-          <motion.h2
-            className="text-3xl md:text-4xl font-bold text-primary-600 mb-4"
-            initial={{ opacity: 0, y: -20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: -20 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-          >
-            What Sets Us Apart
-          </motion.h2>
-
-          <motion.p
-            className="text-lg text-gray-600 max-w-2xl mx-auto"
-            initial={{ opacity: 0 }}
-            animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            Palm Tree Garage Door is committed to excellence in every service we provide
-          </motion.p>
+    <section className="py-16 bg-white">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold text-primary-600 mb-4">
+            Why Choose Palm Tree Garage Door Repair?
+          </h2>
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+            Palm Tree Garage Door has been serving South Florida homeowners with reliable, professional garage door
+            services for years. Here's why our customers trust us.
+          </p>
         </div>
 
-        <motion.div
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
-          variants={containerVariants}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-        >
-          {benefitsData.map((benefit, index) => (
-            <motion.div key={benefit.id} className="group" variants={itemVariants}>
-              <div className="bg-white rounded-xl shadow-md p-6 h-full flex flex-col items-center text-center transition-all duration-300 hover:shadow-lg hover:translate-y-[-5px] border border-gray-100 hover:border-accent-200">
-                <div className="bg-accent-500 p-4 rounded-full inline-flex items-center justify-center mb-5 group-hover:bg-primary-600 transition-colors">
-                  <benefit.icon className="h-8 w-8 text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-primary-900 mb-3">{benefit.title}</h3>
-                <p className="text-gray-600">{benefit.description}</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {/* Card 1 - Free Estimates */}
+          <div className="bg-gray-50 rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow text-center">
+            <div className="bg-primary-600/10 p-3 rounded-full w-14 h-14 flex items-center justify-center mb-4 mx-auto">
+              <Home className="h-7 w-7 text-primary-600" />
+            </div>
+            <h3 className="text-xl font-bold text-primary-600 mb-3">Free On-Site Estimates</h3>
+            <p className="text-gray-600">
+              Palm Tree Garage Door provides completely free, no-obligation estimates for all services. Our technicians
+              come to your home, assess your garage door needs, and provide transparent recommendations.
+            </p>
+          </div>
 
-                {/* Feature list with checkmarks */}
-                <div className="mt-4 text-left w-full">
-                  <div className="flex items-start mt-2">
-                    <CheckCircle className="h-5 w-5 text-accent-500 mr-2 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-700">
-                      {index === 0
-                        ? "30-minute average response time"
-                        : index === 1
-                          ? "Certified and background-checked"
-                          : index === 2
-                            ? "1-year labor warranty on all work"
-                            : "Upfront pricing before work begins"}
-                    </span>
-                  </div>
-                  <div className="flex items-start mt-2">
-                    <CheckCircle className="h-5 w-5 text-accent-500 mr-2 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-700">
-                      {index === 0
-                        ? "Available nights and weekends"
-                        : index === 1
-                          ? "Ongoing training and certification"
-                          : index === 2
-                            ? "Satisfaction guarantee"
-                            : "No surprise fees or hidden costs"}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
+          {/* Card 2 - Lifetime Warranty */}
+          <div className="bg-gray-50 rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow text-center">
+            <div className="bg-primary-600/10 p-3 rounded-full w-14 h-14 flex items-center justify-center mb-4 mx-auto">
+              <Shield className="h-7 w-7 text-primary-600" />
+            </div>
+            <h3 className="text-xl font-bold text-primary-600 mb-3">Lifetime Warranty on Parts</h3>
+            <p className="text-gray-600">
+              We stand behind our work with an industry-leading lifetime warranty on all parts we install. This
+              exceptional coverage demonstrates our confidence in the quality of our materials and workmanship.
+            </p>
+          </div>
 
-        {/* Stats section */}
-        <motion.div
-          className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8"
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-          transition={{ duration: 0.5, delay: 0.6 }}
-        >
-          <div className="bg-primary-50 rounded-lg p-6 text-center">
-            <div className="text-4xl font-bold text-primary-600 mb-2">15+</div>
-            <div className="text-sm text-gray-600">Years Experience</div>
+          {/* Card 3 - Discounts */}
+          <div className="bg-gray-50 rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow text-center">
+            <div className="bg-primary-600/10 p-3 rounded-full w-14 h-14 flex items-center justify-center mb-4 mx-auto">
+              <Percent className="h-7 w-7 text-primary-600" />
+            </div>
+            <h3 className="text-xl font-bold text-primary-600 mb-3">Senior & Veteran Discounts</h3>
+            <p className="text-gray-600">
+              Palm Tree Garage Door proudly offers special discounts for seniors and veterans. We're honored to serve
+              those who have served our country and our long-standing community members.
+            </p>
           </div>
-          <div className="bg-primary-50 rounded-lg p-6 text-center">
-            <div className="text-4xl font-bold text-primary-600 mb-2">5,000+</div>
-            <div className="text-sm text-gray-600">Happy Customers</div>
+
+          {/* Card 4 */}
+          <div className="bg-gray-50 rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow text-center">
+            <div className="bg-primary-600/10 p-3 rounded-full w-14 h-14 flex items-center justify-center mb-4 mx-auto">
+              <Clock className="h-7 w-7 text-primary-600" />
+            </div>
+            <h3 className="text-xl font-bold text-primary-600 mb-3">Fast Response Times</h3>
+            <p className="text-gray-600">
+              Palm Tree Garage Door technicians arrive promptly to diagnose and fix your garage door issues. We
+              understand that a malfunctioning garage door is more than an inconvenience—it's a security concern.
+            </p>
           </div>
-          <div className="bg-primary-50 rounded-lg p-6 text-center">
-            <div className="text-4xl font-bold text-primary-600 mb-2">24/7</div>
-            <div className="text-sm text-gray-600">Emergency Service</div>
+
+          {/* Card 5 */}
+          <div className="bg-gray-50 rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow text-center">
+            <div className="bg-primary-600/10 p-3 rounded-full w-14 h-14 flex items-center justify-center mb-4 mx-auto">
+              <Award className="h-7 w-7 text-primary-600" />
+            </div>
+            <h3 className="text-xl font-bold text-primary-600 mb-3">Experienced Technicians</h3>
+            <p className="text-gray-600">
+              Our Palm Tree technicians are certified, experienced, and continuously trained on the latest garage door
+              systems. We've seen and fixed every type of garage door problem throughout South Florida.
+            </p>
           </div>
-          <div className="bg-primary-50 rounded-lg p-6 text-center">
-            <div className="text-4xl font-bold text-primary-600 mb-2">100%</div>
-            <div className="text-sm text-gray-600">Satisfaction Rate</div>
+
+          {/* Card 6 */}
+          <div className="bg-gray-50 rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow text-center">
+            <div className="bg-primary-600/10 p-3 rounded-full w-14 h-14 flex items-center justify-center mb-4 mx-auto">
+              <Heart className="h-7 w-7 text-primary-600" />
+            </div>
+            <h3 className="text-xl font-bold text-primary-600 mb-3">Customer Satisfaction</h3>
+            <p className="text-gray-600">
+              Palm Tree Garage Door has built our reputation on exceptional customer service. Our 5-star reviews and
+              high referral rate speak to our commitment to your complete satisfaction on every job.
+            </p>
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   )

@@ -2,6 +2,7 @@
 /node_modules
 /.pnp
 .pnp.js
+.yarn/install-state.gz
 
 # testing
 /coverage
@@ -25,6 +26,8 @@ yarn-error.log*
 # local env files
 .env*.local
 .env
+.env.development
+.env.production
 
 # vercel
 .vercel
@@ -36,3 +39,20 @@ next-env.d.ts
 # IDE
 .idea
 .vscode
+
+# Netlify
+.netlify
+
+# Logs
+logs
+*.log
+
+# Build artifacts
+.cache
+.next
+out
+dist
+
+# Temporary files
+.tmp
+.temp

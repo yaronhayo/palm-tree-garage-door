@@ -3,8 +3,8 @@
 import type React from "react"
 
 import { useState } from "react"
-import { Phone, Calendar, Clock, CheckCircle, ArrowRight, Mail, MapPin } from "lucide-react"
-import { trackPhoneCall } from "@/lib/dataLayer"
+import { Phone, Calendar, Clock, CheckCircle, ArrowRight, Mail, MapPin } from 'lucide-react'
+import { trackPhoneCall } from "@/lib/analytics"
 
 export default function BookingSection() {
   const [formSubmitted, setFormSubmitted] = useState(false)

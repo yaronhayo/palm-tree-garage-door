@@ -26,7 +26,15 @@ interface SchemaMarkupProps {
   serviceImage?: string
 }
 
-export default function SchemaMarkup({
+/**
+ * SchemaMarkup Component - Generates JSON-LD schema markup for SEO
+ *
+ * This component is used to add structured data to pages for better search engine visibility.
+ * It dynamically generates different schema types based on the page and provided props.
+ *
+ * @export default - This component uses default export for compatibility with dynamic imports
+ */
+function SchemaMarkup({
   page = "home",
   serviceName,
   serviceDescription,
@@ -118,3 +126,9 @@ export default function SchemaMarkup({
     </>
   )
 }
+
+// Export as default for dynamic import compatibility
+export default SchemaMarkup
+
+// Also export as named export for backward compatibility
+export { SchemaMarkup }

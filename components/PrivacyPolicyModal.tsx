@@ -7,7 +7,7 @@ interface PrivacyPolicyModalProps {
   onClose: () => void
 }
 
-export function PrivacyPolicyModal({ isOpen, onClose }: PrivacyPolicyModalProps) {
+function PrivacyPolicyModal({ isOpen, onClose }: PrivacyPolicyModalProps) {
   const modalRef = useRef<HTMLDivElement>(null)
 
   // Handle ESC key press
@@ -250,3 +250,9 @@ export function PrivacyPolicyModal({ isOpen, onClose }: PrivacyPolicyModalProps)
     </div>
   )
 }
+
+// Export as default for dynamic imports
+export default PrivacyPolicyModal
+
+// Keep named export for backward compatibility
+export { PrivacyPolicyModal }

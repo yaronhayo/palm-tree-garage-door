@@ -2,15 +2,13 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import Image from "next/image"
-import { CheckCircle, Clock, Shield, Award, ArrowRight, Phone } from "lucide-react"
-import { trackPhoneCall } from "@/lib/dataLayer"
+import { Clock, Shield, Award, ArrowRight, Phone } from "lucide-react"
+import { trackPhoneCall } from "@/lib/analytics"
 import QuickContactForm from "./forms/QuickContactForm"
+import MobileOptimizedImage from "./MobileOptimizedImage"
 
 export default function HeroSection() {
   const [showBookingForm, setShowBookingForm] = useState(false)
-  const [imageLoaded, setImageLoaded] = useState(false)
-  const [imageError, setImageError] = useState(false)
 
   // Safe tracking function
   const handlePhoneClick = () => {
@@ -22,58 +20,33 @@ export default function HeroSection() {
   }
 
   return (
-    <section className="relative pt-24 sm:pt-28 pb-20">
+    <section className="relative pt-28 sm:pt-32 pb-20">
       {/* Background Image with Overlay */}
-      <div className="absolute inset-0 z-0">
-        {!imageError ? (
-          <div className="w-full h-full relative">
-            <Image
-              src="/images/service-truck.png"
-              alt="Palm Tree Garage Door Repairs service truck"
-              fill
-              priority
-              className={`object-cover transition-opacity duration-300 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
-              sizes="100vw"
-              quality={85}
-              onLoad={() => setImageLoaded(true)}
-              onError={() => setImageError(true)}
-              unoptimized={true} // Add this to ensure image works in static export
-            />
-          </div>
-        ) : (
-          <div className="w-full h-full bg-primary-800"></div>
-        )}
-        <div className="absolute inset-0 bg-primary-900/80" />
+      <div className="absolute inset-0 z-0 overflow-hidden">
+        {/* Use MobileOptimizedImage for better mobile display */}
+        <MobileOptimizedImage
+          src="/images/service-truck.png"
+          alt="Palm Tree Garage Door Repairs service truck in South Florida"
+          priority={true}
+          objectFit="cover"
+          objectPosition="center 40%"
+          quality={90}
+        />
+        {/* Darker overlay for better text contrast */}
+        <div className="absolute inset-0 bg-primary-900/85" />
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
-        {/* Trust badges */}
-        <div className="hidden sm:inline-flex bg-white rounded-full items-center px-6 py-3 mb-8 sm:mb-16 shadow-md max-w-full overflow-x-auto md:overflow-visible">
-          <div className="flex items-center whitespace-nowrap">
-            <CheckCircle className="text-accent-500 mr-2 h-5 w-5 flex-shrink-0" />
-            <span className="text-primary-600 font-medium">5-Star Rated</span>
-          </div>
-          <div className="mx-4 h-6 w-px bg-gray-300 hidden sm:block"></div>
-          <div className="flex items-center whitespace-nowrap hidden sm:flex">
-            <CheckCircle className="text-accent-500 mr-2 h-5 w-5 flex-shrink-0" />
-            <span className="text-primary-600 font-medium">100% Satisfaction</span>
-          </div>
-          <div className="mx-4 h-6 w-px bg-gray-300 hidden sm:block"></div>
-          <div className="flex items-center whitespace-nowrap">
-            <CheckCircle className="text-accent-500 mr-2 h-5 w-5 flex-shrink-0" />
-            <span className="text-primary-600 font-medium">24/7 Service</span>
-          </div>
-        </div>
-
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
           {/* Left Column - Content */}
           <div>
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 leading-tight text-white">
-              <span className="text-accent-500">Fast & Reliable</span> Garage Door Repair in South Florida
+              <span className="text-accent-500">Palm Tree Garage Door:</span> Fast & Reliable Repair in South Florida
             </h1>
 
             <p className="text-lg sm:text-xl text-white mb-8">
-              24/7 emergency service with expert technicians. We fix all garage door problems quickly and affordably.
+              Palm Tree Garage Door provides 24/7 emergency service with expert technicians. We fix all garage door
+              problems quickly and affordably throughout South Florida.
             </p>
 
             <div className="space-y-4 mb-10">
@@ -88,7 +61,7 @@ export default function HeroSection() {
                 <div className="bg-accent-500/20 p-2 rounded-full mr-3 flex-shrink-0">
                   <Shield className="h-5 w-5 text-accent-500" />
                 </div>
-                <span className="text-base sm:text-lg text-white">All Work Guaranteed</span>
+                <span className="text-base sm:text-lg text-white">All Work Guaranteed by Palm Tree Garage Door</span>
               </div>
 
               <div className="flex items-center">
@@ -107,7 +80,7 @@ export default function HeroSection() {
                 data-call-tracking="true"
               >
                 <Phone className="mr-2 h-5 w-5" />
-                <span>Call Now</span>
+                <span>Call Palm Tree Now</span>
               </a>
 
               <Link
@@ -137,7 +110,7 @@ export default function HeroSection() {
                   href="tel:+13213669723"
                   className="mt-4 inline-block bg-accent-500 hover:bg-accent-600 text-primary-900 font-bold py-2 px-4 rounded-md"
                 >
-                  Call Us Instead
+                  Call Palm Tree Garage Door
                 </a>
               </div>
             )}

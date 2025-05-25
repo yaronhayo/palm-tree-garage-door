@@ -37,3 +37,8 @@ export function getSiteUrl(): string {
 
   return process.env.SITE_URL || "https://palmtreegaragedoor.com"
 }
+
+/**
+ * Business email from environment variables
+ */
+export const BUSINESS_EMAIL = process.env.BUSINESS_EMAIL || "info@palmtreegaragedoor.com"

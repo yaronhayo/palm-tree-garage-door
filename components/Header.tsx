@@ -6,7 +6,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { Menu, X, Phone, Calendar, Wrench, AlertTriangle, Star, HelpCircle, ChevronRight } from "lucide-react"
 import { usePathname } from "next/navigation"
-import { trackPhoneCall } from "@/lib/dataLayer"
+import { trackPhoneCall, trackEvent, GA_EVENTS, GA_CATEGORIES } from "@/lib/analytics"
 
 // Simple SkipToContent component
 const SkipToContent = ({ contentId }: { contentId: string }) => (
@@ -96,6 +96,16 @@ export default function Header() {
     trackPhoneCall("3213669723", "header")
   }, [])
 
+  // Track navigation events
+  const handleNavigation = useCallback((path: string, sectionName: string) => {
+    trackEvent({
+      action: GA_EVENTS.CLICK,
+      category: GA_CATEGORIES.NAVIGATION,
+      label: sectionName,
+      path: path,
+    })
+  }, [])
+
   // Close menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -141,6 +151,9 @@ export default function Header() {
             setIsMenuOpen(false)
           }
 
+          // Track navigation
+          handleNavigation(href, targetId)
+
           // Small delay to ensure menu closes before scrolling
           setTimeout(() => {
             // Scroll to the element
@@ -151,7 +164,7 @@ export default function Header() {
         }
       }
     },
-    [pathname, isMenuOpen],
+    [pathname, isMenuOpen, handleNavigation],
   )
 
   // Navigation items with icons
@@ -189,9 +202,12 @@ export default function Header() {
         e.preventDefault()
         window.scrollTo({ top: 0, behavior: "smooth" })
         setActiveSection(null)
+
+        // Track home navigation
+        handleNavigation("/", "home")
       }
     },
-    [pathname],
+    [pathname, handleNavigation],
   )
 
   // Fallback logo content if image fails to load
@@ -204,7 +220,7 @@ export default function Header() {
   return (
     <header
       ref={headerRef}
-      className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${isScrolled ? "bg-primary-600/75 backdrop-blur-sm" : "bg-primary-600"} py-5`}
+      className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${isScrolled ? "bg-primary-600/75 backdrop-blur-sm" : "bg-primary-600"} py-3`}
     >
       <SkipToContent contentId="main-content" />
 
@@ -217,12 +233,12 @@ export default function Header() {
             onClick={handleLogoClick}
           >
             {!logoError ? (
-              <div className="relative h-10 w-36 xs:h-12 xs:w-40 sm:h-14 sm:w-48 md:h-14 md:w-56 lg:h-16 lg:w-64">
+              <div className="relative w-48 h-16 xs:w-56 xs:h-18 sm:w-64 sm:h-20 md:w-72 md:h-20 lg:w-80 lg:h-24">
                 <Image
                   src="/logo.png"
                   alt="Palm Tree Garage Door Repair"
                   fill
-                  sizes="(max-width: 480px) 144px, (max-width: 640px) 160px, (max-width: 768px) 192px, (max-width: 1024px) 224px, 256px"
+                  sizes="(max-width: 480px) 192px, (max-width: 640px) 224px, (max-width: 768px) 256px, (max-width: 1024px) 288px, 320px"
                   style={{ objectFit: "contain", objectPosition: "left" }}
                   priority
                   unoptimized={true} // Add this to ensure image works in static export
@@ -361,12 +377,12 @@ export default function Header() {
           {/* Close button at the top */}
           <div className="sticky top-0 left-0 right-0 bg-primary-600 p-4 flex justify-between items-center z-[100]">
             {!logoError ? (
-              <div className="relative h-8 w-28 xs:h-9 xs:w-32 sm:h-10 sm:w-36">
+              <div className="relative w-40 h-12 xs:w-44 xs:h-14 sm:w-48 sm:h-16">
                 <Image
                   src="/logo.png"
                   alt="Palm Tree Garage Door Repair"
                   fill
-                  sizes="(max-width: 480px) 112px, (max-width: 640px) 128px, 144px"
+                  sizes="(max-width: 480px) 160px, (max-width: 640px) 176px, 192px"
                   style={{ objectFit: "contain", objectPosition: "left" }}
                   unoptimized={true} // Add this to ensure image works in static export
                   onError={() => setLogoError(true)}

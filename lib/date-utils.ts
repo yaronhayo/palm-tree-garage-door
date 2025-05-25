@@ -1,46 +1,91 @@
 /**
- * Date utility functions for handling Eastern Time Zone (Florida)
+ * Date and time utilities
  */
 
 /**
- * Gets the current date in Eastern Time
- */
-export function getCurrentDateET(): Date {
-  return new Date(new Date().toLocaleString("en-US", { timeZone: "America/New_York" }))
-}
-
-/**
- * Gets the current Eastern Time
- * @returns Date object in Eastern Time
+ * Get the current time in Eastern Time (ET)
  */
 export function getCurrentEasternTime(): Date {
-  return getCurrentDateET()
+  const now = new Date()
+
+  // Convert to ET (UTC-5 or UTC-4 during daylight saving)
+  const etOffsetHours = isDaylightSavingTime(now) ? -4 : -5
+  const utcDate = new Date(now.toUTCString())
+  const etDate = new Date(utcDate.getTime() + etOffsetHours * 60 * 60 * 1000)
+
+  return etDate
 }
 
 /**
- * Formats a date to a readable string in Eastern Time
+ * Format a date to Eastern Time string
  */
-export function formatDateET(date: Date, options: Intl.DateTimeFormatOptions = {}): string {
-  const defaultOptions: Intl.DateTimeFormatOptions = {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    timeZone: "America/New_York",
-  }
-
-  return date.toLocaleDateString("en-US", { ...defaultOptions, ...options })
+export function formatEasternTime(date: Date): string {
+  return (
+    date.toLocaleString("en-US", {
+      timeZone: "America/New_York",
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    }) + " ET"
+  )
 }
 
 /**
- * Formats a date and time in Eastern Time
+ * Format a date and time in Eastern Time
  */
 export function formatDateTimeET(date: Date): string {
-  return date.toLocaleString("en-US", {
-    timeZone: "America/New_York",
-    year: "numeric",
+  return (
+    date.toLocaleString("en-US", {
+      timeZone: "America/New_York",
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    }) + " ET"
+  )
+}
+
+/**
+ * Check if a date is during Daylight Saving Time
+ */
+export function isDaylightSavingTime(date: Date): boolean {
+  const jan = new Date(date.getFullYear(), 0, 1).getTimezoneOffset()
+  const jul = new Date(date.getFullYear(), 6, 1).getTimezoneOffset()
+
+  // If timezone offset in January and July are different,
+  // then DST is observed
+  if (jan !== jul) {
+    // If current offset equals January's, then we're not in DST
+    return date.getTimezoneOffset() !== Math.max(jan, jul)
+  }
+
+  // If timezone offset is the same in January and July,
+  // then DST is not observed
+  return false
+}
+
+/**
+ * Format a date for display
+ */
+export function formatDate(date: Date): string {
+  return date.toLocaleDateString("en-US", {
     month: "long",
     day: "numeric",
+    year: "numeric",
+  })
+}
+
+/**
+ * Format a time for display
+ */
+export function formatTime(date: Date): string {
+  return date.toLocaleTimeString("en-US", {
     hour: "numeric",
     minute: "2-digit",
     hour12: true,
@@ -48,67 +93,34 @@ export function formatDateTimeET(date: Date): string {
 }
 
 /**
- * Formats a date in Eastern Time with custom options
- * @param date The date to format
- * @param options Optional formatting options
- * @returns Formatted date string in Eastern Time
+ * Get a date object for a specific time today in Eastern Time
  */
-export function formatEasternTime(date: Date, options?: Intl.DateTimeFormatOptions): string {
-  const defaultOptions: Intl.DateTimeFormatOptions = {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-    second: "2-digit",
-    timeZone: "America/New_York",
-    timeZoneName: "short",
+export function getEasternTimeToday(hour: number, minute = 0): Date {
+  const today = getCurrentEasternTime()
+  today.setHours(hour, minute, 0, 0)
+  return today
+}
+
+/**
+ * Check if the current time is within business hours (Eastern Time)
+ */
+export function isWithinBusinessHours(): boolean {
+  const now = getCurrentEasternTime()
+  const day = now.getDay() // 0 = Sunday, 1 = Monday, etc.
+  const hour = now.getHours()
+
+  // Closed on Sunday (0)
+  if (day === 0) return false
+
+  // Monday-Friday: 8am-6pm
+  if (day >= 1 && day <= 5) {
+    return hour >= 8 && hour < 18
   }
 
-  return date.toLocaleString("en-US", options || defaultOptions)
-}
+  // Saturday: 9am-3pm
+  if (day === 6) {
+    return hour >= 9 && hour < 15
+  }
 
-/**
- * Converts a date to Eastern Time
- * @param date The date to convert
- * @returns Date object converted to Eastern Time
- */
-export function convertToEasternTime(date: Date): Date {
-  const etDateStr = date.toLocaleString("en-US", { timeZone: "America/New_York" })
-  return new Date(etDateStr)
-}
-
-/**
- * Converts a date to Eastern Time ISO string
- */
-export function toISOStringET(date: Date): string {
-  const etDate = new Date(date.toLocaleString("en-US", { timeZone: "America/New_York" }))
-  return etDate.toISOString()
-}
-
-/**
- * Gets Eastern Time ISO string for the current time
- */
-export function getEasternTimeISOString(date: Date = new Date()): string {
-  return toISOStringET(date)
-}
-
-/**
- * Gets tomorrow's date in Eastern Time
- */
-export function getTomorrowET(): Date {
-  const today = getCurrentDateET()
-  const tomorrow = new Date(today)
-  tomorrow.setDate(tomorrow.getDate() + 1)
-  return tomorrow
-}
-
-/**
- * Formats a date for input[type="date"] value
- */
-export function formatDateForInput(date: Date): string {
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, "0")
-  const day = String(date.getDate()).padStart(2, "0")
-  return `${year}-${month}-${day}`
+  return false
 }

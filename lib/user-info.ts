@@ -1,57 +1,65 @@
 /**
  * User information utilities
  */
-import { formatDateTimeET } from "./date-utils"
+import type { NextRequest } from "next/server"
 
-/**
- * Get basic user information
- */
-export function getUserInfo() {
-  if (typeof window === "undefined") {
-    return {
-      userAgent: "Server",
-      timestamp: formatDateTimeET(new Date()),
-      timezone: "America/New_York",
-      language: "en-US",
-    }
-  }
-
-  return {
-    userAgent: navigator.userAgent,
-    timestamp: formatDateTimeET(new Date()),
-    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    language: navigator.language,
-    screenSize: `${window.screen.width}x${window.screen.height}`,
-    viewportSize: `${window.innerWidth}x${window.innerHeight}`,
-    referrer: document.referrer || "Direct",
-    path: window.location.pathname,
-  }
+interface UserInfo {
+  ip?: string
+  userAgent?: string
+  referer?: string
+  country?: string
+  city?: string
+  region?: string
+  timezone?: string
+  language?: string
+  [key: string]: any
 }
 
 /**
- * Get user's geolocation (if permitted)
+ * Get user information from a request
  */
-export function getUserGeolocation(): Promise<GeolocationPosition> {
-  return new Promise((resolve, reject) => {
-    if (typeof window === "undefined" || !navigator.geolocation) {
-      reject(new Error("Geolocation not supported"))
-      return
-    }
-
-    navigator.geolocation.getCurrentPosition(resolve, reject)
-  })
-}
-
-/**
- * Get the user's IP-based location (country/region)
- */
-export async function getUserRegion(): Promise<string | null> {
+export async function getUserInfo(request: NextRequest): Promise<UserInfo> {
   try {
-    const response = await fetch("https://ipapi.co/json/")
-    const data = await response.json()
-    return data.region || null
+    const userInfo: UserInfo = {}
+
+    // Get IP address
+    userInfo.ip = request.ip || request.headers.get("x-forwarded-for") || "unknown"
+
+    // Get user agent
+    userInfo.userAgent = request.headers.get("user-agent") || "unknown"
+
+    // Get referer
+    userInfo.referer = request.headers.get("referer") || "direct"
+
+    // Get language
+    userInfo.language = request.headers.get("accept-language") || "unknown"
+
+    // Get geo information from Vercel headers if available
+    const country = request.headers.get("x-vercel-ip-country")
+    const city = request.headers.get("x-vercel-ip-city")
+    const region = request.headers.get("x-vercel-ip-country-region")
+
+    if (country) userInfo.country = country
+    if (city) userInfo.city = city
+    if (region) userInfo.region = region
+
+    return userInfo
   } catch (error) {
-    console.error("Error getting user region:", error)
-    return null
+    console.error("Error getting user info:", error)
+    return {}
   }
+}
+
+/**
+ * Sanitize user information for logging (remove sensitive data)
+ */
+export function sanitizeUserInfo(userInfo: UserInfo): UserInfo {
+  const sanitized = { ...userInfo }
+
+  // Mask IP address
+  if (sanitized.ip) {
+    sanitized.ip = sanitized.ip.split(".").slice(0, 2).join(".") + ".xxx.xxx"
+  }
+
+  return sanitized
 }

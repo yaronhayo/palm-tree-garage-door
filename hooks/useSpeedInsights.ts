@@ -1,28 +1,29 @@
 "use client"
 
 import { useEffect } from "react"
-import { initPerformanceMonitoring } from "@/lib/performance-monitoring"
 
-/**
- * Hook to initialize performance monitoring with Speed Insights
- */
 export function useSpeedInsights() {
   useEffect(() => {
-    // Initialize performance monitoring
-    initPerformanceMonitoring()
+    // Monitor Core Web Vitals
+    if (typeof window !== "undefined" && "performance" in window) {
+      try {
+        const observer = new PerformanceObserver((list) => {
+          for (const entry of list.getEntries()) {
+            // Log performance metrics
+            console.debug("Performance metric:", {
+              name: entry.name,
+              value: entry.startTime,
+              type: entry.entryType,
+            })
+          }
+        })
 
-    // Log initialization in development
-    if (process.env.NODE_ENV === "development") {
-      console.log("Speed Insights monitoring initialized")
-    }
+        observer.observe({ entryTypes: ["navigation", "resource", "paint"] })
 
-    return () => {
-      // Cleanup if needed
-      if (process.env.NODE_ENV === "development") {
-        console.log("Speed Insights monitoring cleanup")
+        return () => observer.disconnect()
+      } catch (error) {
+        console.error("Performance monitoring error:", error)
       }
     }
   }, [])
 }
-
-export default useSpeedInsights

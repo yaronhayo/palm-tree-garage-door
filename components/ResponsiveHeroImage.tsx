@@ -2,52 +2,83 @@
 
 import { useState, useEffect } from "react"
 import Image from "next/image"
+import { cn } from "@/lib/utils"
 
 interface ResponsiveHeroImageProps {
-  src: string
+  mobileSrc: string
+  desktopSrc: string
   alt: string
-  className?: string
   priority?: boolean
+  className?: string
+  width?: number
+  height?: number
+  quality?: number
+  sizes?: string
+  placeholder?: string
+  blurDataURL?: string
+  onLoad?: () => void
 }
 
-export default function ResponsiveHeroImage({ src, alt, className = "", priority = true }: ResponsiveHeroImageProps) {
+export default function ResponsiveHeroImage({
+  mobileSrc,
+  desktopSrc,
+  alt,
+  priority = true,
+  className = "",
+  width = 1920,
+  height = 1080,
+  quality = 85,
+  sizes = "(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw",
+  placeholder = "blur",
+  blurDataURL,
+  onLoad,
+}: ResponsiveHeroImageProps) {
   const [isLoaded, setIsLoaded] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
 
-  // Reset loaded state when src changes
   useEffect(() => {
-    setIsLoaded(false)
-  }, [src])
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
 
-  // Convert to WebP if possible
-  const webpSrc = src.endsWith(".webp") ? src : src.replace(/\.(jpe?g|png|gif)$/i, ".webp")
+    // Initial check
+    checkMobile()
 
-  // Create responsive image sources
-  const imageSources = [
-    { src: webpSrc, type: "image/webp" },
-    { src, type: "image/jpeg" }, // Fallback to original format
-  ]
+    // Add event listener for window resize
+    window.addEventListener("resize", checkMobile)
+
+    // Cleanup
+    return () => window.removeEventListener("resize", checkMobile)
+  }, [])
+
+  const handleImageLoad = () => {
+    setIsLoaded(true)
+    if (onLoad) onLoad()
+  }
+
+  const imageSrc = isMobile ? mobileSrc : desktopSrc
 
   return (
-    <div className="relative w-full h-full">
-      {/* Low quality placeholder */}
-      {!isLoaded && <div className="absolute inset-0 bg-gray-200 animate-pulse" />}
-
-      <picture>
-        {imageSources.map((source, index) => (
-          <source key={index} srcSet={source.src} type={source.type} />
-        ))}
-
-        <Image
-          src={src || "/placeholder.svg"}
-          alt={alt}
-          fill
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 100vw"
-          priority={priority}
-          className={`transition-opacity duration-500 ${isLoaded ? "opacity-100" : "opacity-0"} ${className}`}
-          onLoad={() => setIsLoaded(true)}
-          style={{ objectFit: "cover" }}
-        />
-      </picture>
+    <div className={cn("relative w-full overflow-hidden", className)}>
+      <Image
+        src={imageSrc || "/placeholder.svg"}
+        alt={alt}
+        width={width}
+        height={height}
+        quality={quality}
+        priority={priority}
+        sizes={sizes}
+        placeholder={placeholder}
+        blurDataURL={blurDataURL}
+        className={cn(
+          "w-full h-auto object-cover transition-opacity duration-500",
+          isLoaded ? "opacity-100" : "opacity-0",
+        )}
+        onLoad={handleImageLoad}
+      />
     </div>
   )
 }
+
+// For backward compatibility
+export { ResponsiveHeroImage }

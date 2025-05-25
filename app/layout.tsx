@@ -11,12 +11,7 @@ import Script from "next/script"
 import GoogleTagManager from "@/components/GoogleTagManager"
 
 // Lazy load non-critical components
-const FloatingContactButton = lazy(() => import("@/components/FloatingContactButton"))
-const SocialProofPopup = lazy(() =>
-  import("@/components/SocialProofPopup").then((mod) => ({
-    default: mod.SocialProofPopup,
-  })),
-)
+const SocialProofPopup = lazy(() => import("@/components/SocialProofPopup"))
 
 // Optimize font loading with display swap
 const inter = Inter({
@@ -29,24 +24,37 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: {
     template: "%s | Palm Tree Garage Door Repair",
-    default: "Palm Tree Garage Door Repair | South Florida's Trusted Experts",
+    default: "Palm Tree Garage Door Repair | South Florida's Trusted Garage Door Experts",
   },
   description:
-    "Professional garage door repair and installation services in South Florida. 24/7 emergency service, free estimates, and expert technicians.",
+    "Palm Tree Garage Door provides professional garage door repair and installation services in South Florida. 24/7 emergency service, free estimates, and expert technicians for all garage door needs.",
   keywords: [
-    "garage door repair",
+    "Palm Tree Garage Door",
+    "garage door repair South Florida",
     "garage door installation",
     "garage door service",
-    "South Florida",
+    "South Florida garage door company",
     "emergency garage door repair",
     "garage door spring replacement",
     "garage door opener repair",
+    "Palm Tree Garage Door Repair",
+    "best garage door company South Florida",
   ],
+  authors: [{ name: "Palm Tree Garage Door" }],
+  creator: "Palm Tree Garage Door",
+  publisher: "Palm Tree Garage Door",
   icons: {
     icon: "/logo.png",
     apple: "/logo.png",
   },
   openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://palmtreegaragedoor.com/",
+    siteName: "Palm Tree Garage Door Repair",
+    title: "Palm Tree Garage Door Repair | South Florida's Trusted Garage Door Experts",
+    description:
+      "Professional garage door repair and installation services in South Florida. 24/7 emergency service by Palm Tree Garage Door experts.",
     images: [
       {
         url: "/logo.png",
@@ -58,7 +66,23 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
+    title: "Palm Tree Garage Door Repair | South Florida's Trusted Garage Door Experts",
+    description: "Professional garage door repair and installation services in South Florida by Palm Tree Garage Door.",
     images: ["/logo.png"],
+    creator: "@palmtreegaragedoor",
+  },
+  alternates: {
+    canonical: "https://palmtreegaragedoor.com",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
   },
     generator: 'v0.dev'
 }
@@ -70,17 +94,12 @@ export const viewport: Viewport = {
   themeColor: "#0D423A",
 }
 
-// Simple error boundary component
-function ErrorBoundary({ children }: { children: React.ReactNode }) {
-  return <>{children}</>
-}
-
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const gtmId = "GTM-MF948JFL"
+  const gtmId = process.env.NEXT_PUBLIC_GTM_ID || "GTM-MF948JFL"
 
   return (
     <html lang="en" className="scroll-smooth">
@@ -104,10 +123,6 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://res.cloudinary.com" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-
-        {/* Preload critical CSS */}
-        <link rel="preload" href="/styles/critical.css" as="style" />
-        <link rel="stylesheet" href="/styles/critical.css" />
       </head>
       <body className={`${inter.className} antialiased`}>
         {/* Google Tag Manager (noscript) - placed immediately after opening body tag */}
@@ -122,38 +137,32 @@ export default function RootLayout({
         </noscript>
         {/* End Google Tag Manager (noscript) */}
 
-        <ErrorBoundary>
-          <Header />
-          <main id="main-content">{children}</main>
-          <Footer />
+        <Header />
+        <main id="main-content">{children}</main>
+        <Footer />
 
-          {/* Lazy load non-critical UI elements */}
-          <Suspense fallback={null}>
-            <FloatingContactButton />
-          </Suspense>
+        {/* Lazy load non-critical UI elements */}
+        <Suspense fallback={null}>
+          <CookieConsent />
+        </Suspense>
 
-          <Suspense fallback={null}>
-            <CookieConsent />
-          </Suspense>
+        <Suspense fallback={null}>
+          <SocialProofPopup />
+        </Suspense>
 
-          <Suspense fallback={null}>
-            <SocialProofPopup />
-          </Suspense>
+        <Suspense fallback={null}>
+          <SchemaMarkup page="home" />
+        </Suspense>
 
-          <Suspense fallback={null}>
-            <SchemaMarkup page="home" />
-          </Suspense>
+        {/* Initialize GoogleTagManager component for dataLayer */}
+        <GoogleTagManager gtmId={gtmId} />
 
-          {/* Initialize GoogleTagManager component for dataLayer */}
-          <GoogleTagManager gtmId={gtmId} />
-
-          {/* CallRail Tracking - deferred */}
-          <Script
-            id="callrail-tracking"
-            strategy="lazyOnload"
-            src="//cdn.callrail.com/companies/988425603/06b6d7a2f8e273d0c684/12/swap.js"
-          />
-        </ErrorBoundary>
+        {/* CallRail Tracking - deferred */}
+        <Script
+          id="callrail-tracking"
+          strategy="lazyOnload"
+          src="//cdn.callrail.com/companies/988425603/06b6d7a2f8e273d0c684/12/swap.js"
+        />
       </body>
     </html>
   )

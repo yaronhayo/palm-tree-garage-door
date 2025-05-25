@@ -1,6 +1,5 @@
 "use client"
 
-import type React from "react"
 import Link from "next/link"
 import Image from "next/image"
 import {
@@ -22,13 +21,13 @@ import {
   Calendar,
   MapPinned,
 } from "lucide-react"
-import { trackPhoneCall } from "@/lib/dataLayer"
+import { trackPhoneCall, trackEvent, GA_EVENTS, GA_CATEGORIES } from "@/lib/analytics"
 import { usePathname } from "next/navigation"
 import { useState, useCallback } from "react"
 import { PrivacyPolicyModal } from "./PrivacyPolicyModal"
 import { TermsOfServiceModal } from "./TermsOfServiceModal"
 
-export default function Footer() {
+const Footer = () => {
   const pathname = usePathname()
   const [isPrivacyPolicyOpen, setIsPrivacyPolicyOpen] = useState(false)
   const [isTermsOfServiceOpen, setIsTermsOfServiceOpen] = useState(false)
@@ -37,17 +36,30 @@ export default function Footer() {
     trackPhoneCall("3213669723", "footer")
   }
 
-  const handleLogoClick = (e: React.MouseEvent) => {
+  // Track navigation events
+  const handleNavigation = useCallback((path: string, sectionName: string) => {
+    trackEvent({
+      action: GA_EVENTS.CLICK,
+      category: GA_CATEGORIES.NAVIGATION,
+      label: sectionName,
+      path: path,
+    })
+  }, [])
+
+  const handleLogoClick = (e: any) => {
     // If we're already on the homepage, prevent default and scroll to top
     if (pathname === "/") {
       e.preventDefault()
       window.scrollTo({ top: 0, behavior: "smooth" })
+
+      // Track home navigation
+      handleNavigation("/", "home")
     }
   }
 
   // Handle smooth scrolling for anchor links
   const handleAnchorClick = useCallback(
-    (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    (e: any, href: string) => {
       // Only handle anchor links on the homepage
       if (pathname === "/" && href.startsWith("/#")) {
         e.preventDefault()
@@ -55,12 +67,15 @@ export default function Footer() {
         const targetElement = document.getElementById(targetId)
 
         if (targetElement) {
+          // Track navigation
+          handleNavigation(href, targetId)
+
           // Scroll to the element
           targetElement.scrollIntoView({ behavior: "smooth" })
         }
       }
     },
-    [pathname],
+    [pathname, handleNavigation],
   )
 
   return (
@@ -105,13 +120,14 @@ export default function Footer() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
             <div>
               <Link href="/" className="inline-block mb-6" onClick={handleLogoClick}>
-                <div className="relative h-12 w-40 xs:h-14 xs:w-44 sm:h-16 sm:w-52 md:h-16 md:w-56 lg:h-18 lg:w-64">
+                <div className="relative w-56 h-20 xs:w-64 xs:h-22 sm:w-72 sm:h-24 md:w-72 md:h-24 lg:w-80 lg:h-28">
                   <Image
                     src="/logo.png"
                     alt="Palm Tree Garage Door Repair"
                     fill
-                    sizes="(max-width: 480px) 160px, (max-width: 640px) 176px, (max-width: 768px) 208px, (max-width: 1024px) 224px, 256px"
+                    sizes="(max-width: 480px) 224px, (max-width: 640px) 256px, (max-width: 768px) 288px, (max-width: 1024px) 288px, 320px"
                     style={{ objectFit: "contain", objectPosition: "left" }}
+                    unoptimized={true} // Add this to ensure image works in static export
                   />
                 </div>
               </Link>
@@ -121,23 +137,32 @@ export default function Footer() {
               </p>
               <div className="flex space-x-4 mb-6">
                 <a
-                  href="#"
+                  href="https://facebook.com"
                   className="bg-primary-700 hover:bg-primary-600 p-2 rounded-full text-white hover:text-accent-500 transition-colors"
                   aria-label="Facebook"
+                  onClick={() => handleNavigation("https://facebook.com", "facebook")}
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
                   <Facebook className="h-5 w-5" />
                 </a>
                 <a
-                  href="#"
+                  href="https://instagram.com"
                   className="bg-primary-700 hover:bg-primary-600 p-2 rounded-full text-white hover:text-accent-500 transition-colors"
                   aria-label="Instagram"
+                  onClick={() => handleNavigation("https://instagram.com", "instagram")}
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
                   <Instagram className="h-5 w-5" />
                 </a>
                 <a
-                  href="#"
+                  href="https://twitter.com"
                   className="bg-primary-700 hover:bg-primary-600 p-2 rounded-full text-white hover:text-accent-500 transition-colors"
                   aria-label="Twitter"
+                  onClick={() => handleNavigation("https://twitter.com", "twitter")}
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
                   <Twitter className="h-5 w-5" />
                 </a>
@@ -180,6 +205,7 @@ export default function Footer() {
                     <a
                       href="mailto:palmtreegaragedoor@gmail.com"
                       className="text-gray-300 hover:text-accent-500 transition-colors"
+                      onClick={() => handleNavigation("mailto:palmtreegaragedoor@gmail.com", "email")}
                     >
                       palmtreegaragedoor@gmail.com
                     </a>
@@ -336,6 +362,7 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="ml-1 text-accent-500 hover:text-accent-400 transition-colors"
+                onClick={() => handleNavigation("https://gettmarketing.com", "gett_marketing")}
               >
                 Gett Marketing
               </a>
@@ -350,3 +377,5 @@ export default function Footer() {
     </>
   )
 }
+
+export default Footer

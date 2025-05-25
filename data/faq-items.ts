@@ -2,7 +2,7 @@ export const faqItems = [
   {
     question: "How much does garage door repair cost?",
     answer:
-      "Garage door repair costs vary depending on the issue. Basic service calls start at $89, spring replacements range from $175-$250, and opener repairs start at $95. We provide free estimates for all services.",
+      "Garage door repair costs vary depending on the specific issue and your door type. We provide free on-site estimates for all services, and our technicians will explain all options before any work begins.",
   },
   {
     question: "How long does it take to repair a garage door?",
@@ -32,6 +32,6 @@ export const faqItems = [
   {
     question: "Do you provide warranties on your work?",
     answer:
-      "Yes, we provide a 90-day warranty on all labor and up to a 5-year warranty on parts depending on the manufacturer. New door installations come with both manufacturer warranties and our own service guarantee.",
+      "Yes, we provide a lifetime warranty on all parts we install. New door installations come with both manufacturer warranties and our own service guarantee for your complete peace of mind.",
   },
 ]

@@ -6,7 +6,7 @@ interface LeadNotificationEmailProps {
   userInfo?: any
 }
 
-export function LeadNotificationEmail({ formData, userInfo }: LeadNotificationEmailProps) {
+export default function LeadNotificationEmail({ formData, userInfo }: LeadNotificationEmailProps) {
   // Format the submission time in Eastern Time
   const submissionTime = userInfo?.submissionTimeEastern || formatEasternTime(new Date())
 
@@ -275,3 +275,6 @@ export function LeadNotificationEmail({ formData, userInfo }: LeadNotificationEm
     </div>
   )
 }
+
+// Also export as named export for backward compatibility
+export { LeadNotificationEmail }
