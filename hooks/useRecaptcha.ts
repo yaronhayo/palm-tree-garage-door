@@ -9,10 +9,43 @@ export function useRecaptcha() {
   const [isScriptLoaded, setIsScriptLoaded] = useState(false)
   const [isScriptLoading, setIsScriptLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [siteKey, setSiteKey] = useState<string | null>(null)
+
+  // Fetch the site key from the API
+  useEffect(() => {
+    async function fetchSiteKey() {
+      try {
+        const response = await fetch("/api/recaptcha")
+        if (!response.ok) {
+          throw new Error(`API returned ${response.status}: ${response.statusText}`)
+        }
+
+        const data = await response.json()
+        if (data.siteKey) {
+          setSiteKey(data.siteKey)
+          return data.siteKey
+        }
+
+        throw new Error("No site key received from API")
+      } catch (err) {
+        console.error("Error fetching reCAPTCHA site key:", err)
+        setError("Failed to fetch reCAPTCHA key")
+        // Use test key as fallback in development
+        if (process.env.NODE_ENV === "development") {
+          console.warn("Using test reCAPTCHA key as fallback")
+          setSiteKey(TEST_RECAPTCHA_KEY)
+          return TEST_RECAPTCHA_KEY
+        }
+        return null
+      }
+    }
+
+    fetchSiteKey()
+  }, [])
 
   useEffect(() => {
-    // Only load the script once
-    if (isScriptLoaded || isScriptLoading) return
+    // Only load the script once we have the site key
+    if (!siteKey || isScriptLoaded || isScriptLoading) return
 
     const loadScript = () => {
       try {
@@ -30,7 +63,7 @@ export function useRecaptcha() {
 
         // Create and append the script
         const script = document.createElement("script")
-        script.src = `https://www.google.com/recaptcha/api.js?render=${TEST_RECAPTCHA_KEY}`
+        script.src = `https://www.google.com/recaptcha/api.js?render=${siteKey}`
         script.async = true
         script.defer = true
 
@@ -60,12 +93,12 @@ export function useRecaptcha() {
     return () => {
       // We don't remove the script on unmount as it might be needed by other components
     }
-  }, [isScriptLoaded, isScriptLoading])
+  }, [isScriptLoaded, isScriptLoading, siteKey])
 
   // Function to execute reCAPTCHA
   const executeRecaptcha = async (action: string): Promise<string | null> => {
-    // If script failed to load, return null but don't block form submission
-    if (error || !isScriptLoaded) {
+    // If we don't have a site key or script failed to load, return null but don't block form submission
+    if (error || !isScriptLoaded || !siteKey) {
       console.warn("reCAPTCHA not available, continuing without verification")
       return null
     }
@@ -77,7 +110,7 @@ export function useRecaptcha() {
         return null
       }
 
-      const token = await window.grecaptcha.execute(TEST_RECAPTCHA_KEY, { action })
+      const token = await window.grecaptcha.execute(siteKey, { action })
       return token
     } catch (err) {
       console.error("Error executing reCAPTCHA:", err)

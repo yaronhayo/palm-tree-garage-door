@@ -1,134 +1,85 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import {
-  generateLocalBusinessSchema,
-  generateServiceSchema,
-  generateFAQSchema,
-  generateReviewSchema,
-  generateAggregateRatingSchema,
-} from "@/lib/schema"
-
-// Import service areas data
-import { serviceAreas } from "@/data/service-areas"
-
-// Import FAQ data
-import { faqItems } from "@/data/faq-items"
-
-// Import testimonials data
-import { testimonialsData } from "@/components/Testimonials"
+import Script from "next/script"
 
 interface SchemaMarkupProps {
-  page?: "home" | "service" | "contact" | "testimonials"
-  serviceName?: string
-  serviceDescription?: string
-  servicePrice?: string
-  serviceImage?: string
+  page?: string
 }
 
-/**
- * SchemaMarkup Component - Generates JSON-LD schema markup for SEO
- *
- * This component is used to add structured data to pages for better search engine visibility.
- * It dynamically generates different schema types based on the page and provided props.
- *
- * @export default - This component uses default export for compatibility with dynamic imports
- */
-function SchemaMarkup({
-  page = "home",
-  serviceName,
-  serviceDescription,
-  servicePrice,
-  serviceImage,
-}: SchemaMarkupProps) {
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  if (!mounted) return null
-
-  // Generate the appropriate schema based on the page
-  const generateSchema = () => {
-    // Always include the LocalBusiness schema
-    const schemas = [generateLocalBusinessSchema(serviceAreas)]
-
-    // Add page-specific schemas
-    if (page === "home" || page === "testimonials") {
-      // Add AggregateRating schema
-      schemas.push(generateAggregateRatingSchema(testimonialsData))
-
-      // Add individual Review schemas (limit to 10 for performance)
-      testimonialsData.slice(0, 10).forEach((testimonial) => {
-        schemas.push(generateReviewSchema(testimonial))
-      })
-    }
-
-    if (page === "home") {
-      // Add service schemas for main services
-      const services = [
-        {
-          name: "Garage Door Repair",
-          description:
-            "Professional garage door repair services for all makes and models. Fast, reliable service with a satisfaction guarantee.",
-          price: "89.00",
-          image: "https://palmtreegaragedoor.com/images/services/door-repair.png",
-        },
-        {
-          name: "Spring Replacement",
-          description:
-            "Expert garage door spring replacement services. We use high-quality springs rated for 10,000+ cycles for lasting performance.",
-          price: "175.00",
-          image: "https://palmtreegaragedoor.com/images/services/spring-replacement.png",
-        },
-        {
-          name: "Opener Repair",
-          description:
-            "Garage door opener repair and replacement services for all major brands. Fast diagnosis and affordable solutions.",
-          price: "95.00",
-          image: "https://palmtreegaragedoor.com/images/services/opener-repair.png",
-        },
-        {
-          name: "New Installation",
-          description:
-            "Professional garage door installation services. Wide selection of styles, materials, and features to match your home.",
-          price: "900.00",
-          image: "https://palmtreegaragedoor.com/images/services/new-installation.png",
-        },
-      ]
-
-      services.forEach((service) => {
-        schemas.push(
-          generateServiceSchema(service.name, service.description, service.price, service.image, serviceAreas),
-        )
-      })
-
-      // Add FAQ schema
-      schemas.push(generateFAQSchema(faqItems))
-    } else if (page === "service" && serviceName && serviceDescription && servicePrice && serviceImage) {
-      // Add specific service schema
-      schemas.push(generateServiceSchema(serviceName, serviceDescription, servicePrice, serviceImage, serviceAreas))
-    }
-
-    return schemas
+export default function SchemaMarkup({ page = "home" }: SchemaMarkupProps) {
+  const baseSchema = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    name: "Palm Tree Garage Door",
+    description:
+      "Professional garage door repair and installation services in South Florida. 24/7 emergency service, free estimates, and expert technicians.",
+    url: "https://palmtreegaragedoor.com",
+    telephone: "+1-561-123-4567",
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Delray Beach",
+      addressRegion: "FL",
+      postalCode: "33444",
+      addressCountry: "US",
+    },
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: 26.4614625,
+      longitude: -80.0728201,
+    },
+    openingHoursSpecification: {
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+      opens: "00:00",
+      closes: "23:59",
+    },
+    priceRange: "$$",
+    image: "https://palmtreegaragedoor.com/logo.png",
+    sameAs: ["https://www.facebook.com/palmtreegaragedoor", "https://twitter.com/palmtreegaragedoor"],
   }
 
+  const pageSpecificSchema = {
+    home: {
+      ...baseSchema,
+      "@type": ["LocalBusiness", "HomeAndConstructionBusiness"],
+      serviceArea: {
+        "@type": "GeoCircle",
+        geoMidpoint: {
+          "@type": "GeoCoordinates",
+          latitude: 26.4614625,
+          longitude: -80.0728201,
+        },
+        geoRadius: "50000",
+      },
+    },
+    services: {
+      ...baseSchema,
+      "@type": "Service",
+      serviceType: "Garage Door Repair and Installation",
+      areaServed: {
+        "@type": "State",
+        name: "Florida",
+      },
+    },
+    testimonials: {
+      ...baseSchema,
+      aggregateRating: {
+        "@type": "AggregateRating",
+        ratingValue: "4.9",
+        reviewCount: "150",
+      },
+    },
+  }
+
+  const schema = pageSpecificSchema[page as keyof typeof pageSpecificSchema] || baseSchema
+
   return (
-    <>
-      {generateSchema().map((schema, index) => (
-        <script
-          key={`schema-${index}`}
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-        />
-      ))}
-    </>
+    <Script
+      id={`schema-${page}`}
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{
+        __html: JSON.stringify(schema),
+      }}
+    />
   )
 }
-
-// Export as default for dynamic import compatibility
-export default SchemaMarkup
-
-// Also export as named export for backward compatibility
-export { SchemaMarkup }

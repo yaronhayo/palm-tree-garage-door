@@ -4,14 +4,11 @@ import type { Metadata, Viewport } from "next"
 import { Inter } from "next/font/google"
 import Header from "@/components/Header"
 import Footer from "@/components/Footer"
-import { Suspense, lazy } from "react"
 import SchemaMarkup from "@/components/SchemaMarkup"
-import Script from "next/script"
 import GoogleTagManager from "@/components/GoogleTagManager"
-
-// Lazy load non-critical components
-const CookieConsent = lazy(() => import("@/components/CookieConsent").then((mod) => ({ default: mod.CookieConsent })))
-const SocialProofPopup = lazy(() => import("@/components/SocialProofPopup"))
+import ClientScript from "@/components/ClientScript"
+import { CookieConsent } from "@/components/CookieConsent"
+import SocialProofPopup from "@/components/SocialProofPopup"
 
 // Optimize font loading with display swap
 const inter = Inter({
@@ -141,33 +138,19 @@ export default function RootLayout({
         <main id="main-content">{children}</main>
         <Footer />
 
-        {/* Lazy load non-critical UI elements with improved loading states */}
-        <Suspense fallback={null}>
-          <CookieConsent />
-        </Suspense>
-
-        <Suspense fallback={null}>
-          <SocialProofPopup />
-        </Suspense>
-
-        <Suspense fallback={null}>
-          <SchemaMarkup page="home" />
-        </Suspense>
+        {/* Non-critical UI elements */}
+        <CookieConsent />
+        <SocialProofPopup />
+        <SchemaMarkup page="home" />
 
         {/* Initialize GoogleTagManager component for dataLayer */}
         <GoogleTagManager gtmId={gtmId} />
 
         {/* CallRail Tracking - deferred with improved loading strategy */}
-        <Script
+        <ClientScript
           id="callrail-tracking"
           strategy="lazyOnload"
           src="//cdn.callrail.com/companies/988425603/06b6d7a2f8e273d0c684/12/swap.js"
-          onLoad={() => {
-            console.log("CallRail script loaded successfully")
-          }}
-          onError={(e) => {
-            console.error("Error loading CallRail script:", e)
-          }}
         />
       </body>
     </html>

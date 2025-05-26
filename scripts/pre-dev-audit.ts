@@ -24,7 +24,7 @@ async function checkEnvironmentVariables() {
     { name: "SITE_URL", value: process.env.SITE_URL },
     { name: "BUSINESS_EMAIL", value: process.env.BUSINESS_EMAIL },
     { name: "RESEND_API_KEY", value: process.env.RESEND_API_KEY },
-    { name: "RECAPTCHA_SITE_KEY", value: process.env.RECAPTCHA_SITE_KEY }, // Changed from NEXT_PUBLIC_RECAPTCHA_SITE_KEY
+    { name: "RECAPTCHA_SITE_KEY", value: process.env.RECAPTCHA_SITE_KEY },
     { name: "RECAPTCHA_SECRET_KEY", value: process.env.RECAPTCHA_SECRET_KEY },
     { name: "NEXT_PUBLIC_GTM_ID", value: process.env.NEXT_PUBLIC_GTM_ID },
   ]
@@ -46,7 +46,7 @@ async function checkEnvironmentVariables() {
 async function checkRecaptcha() {
   log("\n=== Testing reCAPTCHA Integration ===\n", "cyan")
 
-  const siteKey = process.env.RECAPTCHA_SITE_KEY // Changed from NEXT_PUBLIC_RECAPTCHA_SITE_KEY
+  const siteKey = process.env.RECAPTCHA_SITE_KEY
   const secretKey = process.env.RECAPTCHA_SECRET_KEY
 
   let allValid = true

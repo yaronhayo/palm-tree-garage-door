@@ -1,27 +1,27 @@
 "use client"
 
 import { useEffect } from "react"
-import { initGTM, cleanGtmId, isPlaceholderGtmId } from "@/lib/analytics"
 
 interface GoogleTagManagerProps {
   gtmId: string
 }
 
+declare global {
+  interface Window {
+    dataLayer: any[]
+  }
+}
+
 export default function GoogleTagManager({ gtmId }: GoogleTagManagerProps) {
   useEffect(() => {
-    // Clean up and validate the GTM ID
-    const cleanedId = cleanGtmId(gtmId || "")
+    // Initialize dataLayer if it doesn't exist
+    if (typeof window !== "undefined") {
+      window.dataLayer = window.dataLayer || []
 
-    // Skip loading in development if using placeholder
-    if (isPlaceholderGtmId(cleanedId)) {
-      console.info("Skipping GTM initialization with placeholder ID")
-      return
+      // Log GTM initialization
+      console.log("Google Tag Manager initialized with ID:", gtmId)
     }
-
-    // Initialize GTM with the cleaned ID
-    initGTM(cleanedId)
   }, [gtmId])
 
-  // This component doesn't render anything visible
   return null
 }

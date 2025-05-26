@@ -22,7 +22,7 @@ const colors = {
 }
 
 // Get the API keys from environment variables
-const siteKey = process.env.RECAPTCHA_SITE_KEY // Changed from NEXT_PUBLIC_RECAPTCHA_SITE_KEY
+const siteKey = process.env.RECAPTCHA_SITE_KEY
 const secretKey = process.env.RECAPTCHA_SECRET_KEY
 
 if (!siteKey) {
