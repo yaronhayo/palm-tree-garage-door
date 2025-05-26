@@ -10,12 +10,22 @@ export default function LeadNotificationEmail({ formData, userInfo }: LeadNotifi
   // Format the submission time in Eastern Time
   const submissionTime = userInfo?.submissionTimeEastern || formatEasternTime(new Date())
 
+  // Format phone number for the call link
+  const formattedPhone = formData.phone?.replace(/\D/g, "") || ""
+
   return (
     <div
-      style={{ fontFamily: "Arial, sans-serif", maxWidth: "600px", margin: "0 auto", padding: "20px", color: "#333" }}
+      style={{
+        fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
+        maxWidth: "600px",
+        margin: "0 auto",
+        padding: "0",
+        color: "#333",
+        backgroundColor: "#f9f9f9",
+      }}
     >
       {/* Header with Logo */}
-      <div style={{ textAlign: "center", marginBottom: "30px" }}>
+      <div style={{ backgroundColor: "#0D423A", padding: "20px", textAlign: "center", borderRadius: "8px 8px 0 0" }}>
         <img
           src="https://palmtreegaragedoor.com/logo.png"
           alt="Palm Tree Garage Door"
@@ -23,254 +33,417 @@ export default function LeadNotificationEmail({ formData, userInfo }: LeadNotifi
         />
       </div>
 
-      <div style={{ background: "#f7f7f7", padding: "20px", borderRadius: "8px", marginBottom: "20px" }}>
-        <h1 style={{ color: "#0D423A", fontSize: "24px", marginBottom: "20px" }}>New Lead Notification</h1>
-
-        <div style={{ marginBottom: "30px" }}>
-          <h2
+      {/* Main Content */}
+      <div
+        style={{
+          backgroundColor: "#ffffff",
+          padding: "30px",
+          borderRadius: "0 0 8px 8px",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+        }}
+      >
+        {/* Lead Alert Banner */}
+        <div
+          style={{
+            backgroundColor: formData.isEmergency ? "#ffebee" : "#e8f5e9",
+            padding: "15px",
+            borderRadius: "6px",
+            marginBottom: "25px",
+            borderLeft: `5px solid ${formData.isEmergency ? "#f44336" : "#4caf50"}`,
+          }}
+        >
+          <h1
             style={{
-              color: "#0D423A",
-              fontSize: "18px",
-              marginBottom: "10px",
-              borderBottom: "2px solid #9ADF67",
-              paddingBottom: "5px",
+              color: formData.isEmergency ? "#d32f2f" : "#2e7d32",
+              fontSize: "22px",
+              margin: "0 0 5px 0",
+              fontWeight: "600",
             }}
           >
-            Contact Information
-          </h2>
-          <p>
-            <strong>Name:</strong> {formData.name}
+            {formData.isEmergency ? "🚨 EMERGENCY LEAD" : "✅ NEW LEAD"}
+          </h1>
+          <p style={{ margin: "0", fontSize: "16px", color: "#555" }}>
+            Received on <strong>{submissionTime}</strong>
           </p>
-          <p>
-            <strong>Email:</strong> {formData.email}
-          </p>
-          <p>
-            <strong>Phone:</strong> {formData.phone}
-          </p>
-          {formData.city && (
-            <p>
-              <strong>City:</strong> {formData.city}
-            </p>
-          )}
-          {formData.zipCode && (
-            <p>
-              <strong>ZIP Code:</strong> {formData.zipCode}
-            </p>
-          )}
-          {formData.formattedAddress && (
-            <p>
-              <strong>Address:</strong> {formData.formattedAddress}
-            </p>
-          )}
         </div>
 
-        <div style={{ marginBottom: "30px" }}>
+        {/* Call to Action Button */}
+        <div style={{ textAlign: "center", marginBottom: "30px" }}>
+          <a
+            href={`tel:${formattedPhone}`}
+            style={{
+              backgroundColor: "#9ADF67",
+              color: "#0D423A",
+              padding: "15px 30px",
+              borderRadius: "50px",
+              fontSize: "18px",
+              fontWeight: "bold",
+              textDecoration: "none",
+              display: "inline-block",
+              boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+              border: "none",
+            }}
+          >
+            📞 Call {formData.name} Now
+          </a>
+        </div>
+
+        {/* Contact Information */}
+        <div style={{ marginBottom: "30px", backgroundColor: "#f5f9ff", padding: "20px", borderRadius: "8px" }}>
           <h2
             style={{
               color: "#0D423A",
               fontSize: "18px",
-              marginBottom: "10px",
+              marginTop: "0",
+              marginBottom: "15px",
               borderBottom: "2px solid #9ADF67",
-              paddingBottom: "5px",
+              paddingBottom: "8px",
+              fontWeight: "600",
             }}
           >
-            Service Details
+            📋 Contact Information
           </h2>
-          {formData.service && (
-            <p>
-              <strong>Service Requested:</strong> {formData.service}
-            </p>
-          )}
-          {formData.urgency && (
-            <p>
-              <strong>Urgency:</strong> {formData.urgency}
-            </p>
-          )}
-          {formData.date && (
-            <p>
-              <strong>Preferred Date:</strong> {formData.date}
-            </p>
-          )}
-          {formData.time && (
-            <p>
-              <strong>Preferred Time:</strong> {formData.time}
-            </p>
-          )}
-          {formData.isEmergency && <p style={{ color: "red", fontWeight: "bold" }}>⚠️ EMERGENCY SERVICE REQUESTED</p>}
+
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <tbody>
+              <tr>
+                <td style={{ padding: "8px 0", fontWeight: "bold", width: "120px" }}>Name:</td>
+                <td style={{ padding: "8px 0" }}>{formData.name}</td>
+              </tr>
+              <tr>
+                <td style={{ padding: "8px 0", fontWeight: "bold" }}>Phone:</td>
+                <td style={{ padding: "8px 0" }}>
+                  <a href={`tel:${formattedPhone}`} style={{ color: "#0D423A", fontWeight: "bold" }}>
+                    {formData.phone}
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <td style={{ padding: "8px 0", fontWeight: "bold" }}>Email:</td>
+                <td style={{ padding: "8px 0" }}>
+                  <a href={`mailto:${formData.email}`} style={{ color: "#0D423A" }}>
+                    {formData.email}
+                  </a>
+                </td>
+              </tr>
+              {formData.city && (
+                <tr>
+                  <td style={{ padding: "8px 0", fontWeight: "bold" }}>City:</td>
+                  <td style={{ padding: "8px 0" }}>{formData.city}</td>
+                </tr>
+              )}
+              {formData.zipCode && (
+                <tr>
+                  <td style={{ padding: "8px 0", fontWeight: "bold" }}>ZIP Code:</td>
+                  <td style={{ padding: "8px 0" }}>{formData.zipCode}</td>
+                </tr>
+              )}
+              {formData.formattedAddress && (
+                <tr>
+                  <td style={{ padding: "8px 0", fontWeight: "bold" }}>Address:</td>
+                  <td style={{ padding: "8px 0" }}>{formData.formattedAddress}</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Service Details */}
+        <div style={{ marginBottom: "30px", backgroundColor: "#f7f7f7", padding: "20px", borderRadius: "8px" }}>
+          <h2
+            style={{
+              color: "#0D423A",
+              fontSize: "18px",
+              marginTop: "0",
+              marginBottom: "15px",
+              borderBottom: "2px solid #9ADF67",
+              paddingBottom: "8px",
+              fontWeight: "600",
+            }}
+          >
+            🔧 Service Details
+          </h2>
+
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <tbody>
+              {formData.service && (
+                <tr>
+                  <td style={{ padding: "8px 0", fontWeight: "bold", width: "150px" }}>Service Requested:</td>
+                  <td style={{ padding: "8px 0" }}>{formData.service}</td>
+                </tr>
+              )}
+              {formData.urgency && (
+                <tr>
+                  <td style={{ padding: "8px 0", fontWeight: "bold" }}>Urgency:</td>
+                  <td style={{ padding: "8px 0" }}>{formData.urgency}</td>
+                </tr>
+              )}
+              {formData.date && (
+                <tr>
+                  <td style={{ padding: "8px 0", fontWeight: "bold" }}>Preferred Date:</td>
+                  <td style={{ padding: "8px 0" }}>{formData.date}</td>
+                </tr>
+              )}
+              {formData.time && (
+                <tr>
+                  <td style={{ padding: "8px 0", fontWeight: "bold" }}>Preferred Time:</td>
+                  <td style={{ padding: "8px 0" }}>{formData.time}</td>
+                </tr>
+              )}
+              {formData.isEmergency && (
+                <tr>
+                  <td style={{ padding: "8px 0", fontWeight: "bold" }}>Emergency:</td>
+                  <td style={{ padding: "8px 0", color: "#d32f2f", fontWeight: "bold" }}>
+                    ⚠️ EMERGENCY SERVICE REQUESTED
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+
           {formData.message && (
-            <div>
-              <p>
-                <strong>Additional Details:</strong>
-              </p>
-              <p style={{ whiteSpace: "pre-wrap", background: "#fff", padding: "10px", borderRadius: "4px" }}>
+            <div style={{ marginTop: "15px" }}>
+              <p style={{ fontWeight: "bold", margin: "0 0 5px 0" }}>Additional Details:</p>
+              <div
+                style={{
+                  whiteSpace: "pre-wrap",
+                  background: "#fff",
+                  padding: "15px",
+                  borderRadius: "6px",
+                  border: "1px solid #e0e0e0",
+                  fontSize: "14px",
+                  lineHeight: "1.5",
+                }}
+              >
                 {formData.message}
-              </p>
+              </div>
             </div>
           )}
         </div>
 
+        {/* Access Information (if provided) */}
         {formData.gateCode && (
-          <div style={{ marginBottom: "30px" }}>
+          <div
+            style={{
+              marginBottom: "30px",
+              backgroundColor: "#fff8e1",
+              padding: "20px",
+              borderRadius: "8px",
+              border: "1px dashed #ffd54f",
+            }}
+          >
             <h2
               style={{
                 color: "#0D423A",
                 fontSize: "18px",
-                marginBottom: "10px",
+                marginTop: "0",
+                marginBottom: "15px",
                 borderBottom: "2px solid #9ADF67",
-                paddingBottom: "5px",
+                paddingBottom: "8px",
+                fontWeight: "600",
               }}
             >
-              Access Information
+              🔑 Access Information
             </h2>
-            <p>
-              <strong>Gate Code:</strong> {formData.gateCode}
-            </p>
+
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <tbody>
+                <tr>
+                  <td style={{ padding: "8px 0", fontWeight: "bold", width: "120px" }}>Gate Code:</td>
+                  <td style={{ padding: "8px 0", fontWeight: "bold" }}>{formData.gateCode}</td>
+                </tr>
+              </tbody>
+            </table>
+
             {formData.specialInstructions && (
-              <div>
-                <p>
-                  <strong>Special Instructions:</strong>
-                </p>
-                <p style={{ whiteSpace: "pre-wrap", background: "#fff", padding: "10px", borderRadius: "4px" }}>
+              <div style={{ marginTop: "15px" }}>
+                <p style={{ fontWeight: "bold", margin: "0 0 5px 0" }}>Special Instructions:</p>
+                <div
+                  style={{
+                    whiteSpace: "pre-wrap",
+                    background: "#fff",
+                    padding: "15px",
+                    borderRadius: "6px",
+                    border: "1px solid #e0e0e0",
+                    fontSize: "14px",
+                    lineHeight: "1.5",
+                  }}
+                >
                   {formData.specialInstructions}
-                </p>
+                </div>
               </div>
             )}
           </div>
         )}
 
-        <div style={{ marginBottom: "30px" }}>
+        {/* Lead Source Information */}
+        <div style={{ marginBottom: "30px", backgroundColor: "#f0f4f8", padding: "20px", borderRadius: "8px" }}>
           <h2
             style={{
               color: "#0D423A",
               fontSize: "18px",
-              marginBottom: "10px",
+              marginTop: "0",
+              marginBottom: "15px",
               borderBottom: "2px solid #9ADF67",
-              paddingBottom: "5px",
+              paddingBottom: "8px",
+              fontWeight: "600",
             }}
           >
-            Submission Information
+            📊 Lead Source Information
           </h2>
-          <p>
-            <strong>Form Type:</strong> {formData.formType || "Contact Form"}
-          </p>
-          <p>
-            <strong>Submission Time (ET):</strong> {submissionTime}
-          </p>
-          <p>
-            <strong>Time Zone:</strong> Eastern Time (Florida)
-          </p>
+
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "14px" }}>
+            <tbody>
+              <tr>
+                <td style={{ padding: "6px 0", fontWeight: "bold", width: "150px" }}>Form Type:</td>
+                <td style={{ padding: "6px 0" }}>{formData.formType || "Contact Form"}</td>
+              </tr>
+              <tr>
+                <td style={{ padding: "6px 0", fontWeight: "bold" }}>Submission Time:</td>
+                <td style={{ padding: "6px 0" }}>{submissionTime}</td>
+              </tr>
+              {userInfo?.source && (
+                <tr>
+                  <td style={{ padding: "6px 0", fontWeight: "bold" }}>Lead Source:</td>
+                  <td style={{ padding: "6px 0" }}>{userInfo.source}</td>
+                </tr>
+              )}
+              {userInfo?.referrer && (
+                <tr>
+                  <td style={{ padding: "6px 0", fontWeight: "bold" }}>Referrer:</td>
+                  <td style={{ padding: "6px 0" }}>{userInfo.referrer}</td>
+                </tr>
+              )}
+              {userInfo?.utm_source && (
+                <tr>
+                  <td style={{ padding: "6px 0", fontWeight: "bold" }}>UTM Source:</td>
+                  <td style={{ padding: "6px 0" }}>{userInfo.utm_source}</td>
+                </tr>
+              )}
+              {userInfo?.utm_medium && (
+                <tr>
+                  <td style={{ padding: "6px 0", fontWeight: "bold" }}>UTM Medium:</td>
+                  <td style={{ padding: "6px 0" }}>{userInfo.utm_medium}</td>
+                </tr>
+              )}
+              {userInfo?.utm_campaign && (
+                <tr>
+                  <td style={{ padding: "6px 0", fontWeight: "bold" }}>UTM Campaign:</td>
+                  <td style={{ padding: "6px 0" }}>{userInfo.utm_campaign}</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
 
+        {/* User Technical Information (Collapsible) */}
         {userInfo && (
-          <div>
+          <div
+            style={{
+              marginBottom: "20px",
+              backgroundColor: "#f5f5f5",
+              padding: "20px",
+              borderRadius: "8px",
+              fontSize: "13px",
+            }}
+          >
             <h2
               style={{
                 color: "#0D423A",
-                fontSize: "18px",
-                marginBottom: "10px",
-                borderBottom: "2px solid #9ADF67",
-                paddingBottom: "5px",
+                fontSize: "16px",
+                marginTop: "0",
+                marginBottom: "15px",
+                borderBottom: "1px solid #e0e0e0",
+                paddingBottom: "8px",
+                fontWeight: "600",
               }}
             >
-              User Information
+              💻 Technical Information
             </h2>
 
-            {userInfo.ip && (
-              <p>
-                <strong>IP Address:</strong> {userInfo.ip}
-              </p>
-            )}
-            {userInfo.submissionTimeEastern && (
-              <p>
-                <strong>Submission Time (ET):</strong> {userInfo.submissionTimeEastern}
-              </p>
-            )}
-
-            {userInfo.screen && (
-              <p>
-                <strong>Screen Size:</strong> {userInfo.screen.width} x {userInfo.screen.height}
-              </p>
-            )}
-
-            {userInfo.source && (
-              <p>
-                <strong>Lead Source:</strong> {userInfo.source}
-              </p>
-            )}
-            {userInfo.referrer && (
-              <p>
-                <strong>Referrer:</strong> {userInfo.referrer}
-              </p>
-            )}
-
-            {/* UTM Parameters */}
-            {userInfo.utm_source && (
-              <p>
-                <strong>UTM Source:</strong> {userInfo.utm_source}
-              </p>
-            )}
-            {userInfo.utm_medium && (
-              <p>
-                <strong>UTM Medium:</strong> {userInfo.utm_medium}
-              </p>
-            )}
-            {userInfo.utm_campaign && (
-              <p>
-                <strong>UTM Campaign:</strong> {userInfo.utm_campaign}
-              </p>
-            )}
-            {userInfo.utm_term && (
-              <p>
-                <strong>UTM Term:</strong> {userInfo.utm_term}
-              </p>
-            )}
-            {userInfo.utm_content && (
-              <p>
-                <strong>UTM Content:</strong> {userInfo.utm_content}
-              </p>
-            )}
-
-            {userInfo.userAgent && (
-              <p>
-                <strong>User Agent:</strong> {userInfo.userAgent}
-              </p>
-            )}
-            {userInfo.platform && (
-              <p>
-                <strong>Platform:</strong> {userInfo.platform}
-              </p>
-            )}
-            {userInfo.language && (
-              <p>
-                <strong>Language:</strong> {userInfo.language}
-              </p>
-            )}
-            {userInfo.timezone && (
-              <p>
-                <strong>User Timezone:</strong> {userInfo.timezone}
-              </p>
-            )}
-
-            {/* Cookie Consent */}
-            <p>
-              <strong>Cookie Consent:</strong>{" "}
-              {userInfo.cookieConsent === true ? "Granted" : userInfo.cookieConsent === false ? "Denied" : "Unknown"}
-            </p>
-
-            {/* reCAPTCHA Verification */}
-            {userInfo.recaptchaVerified !== undefined && (
-              <p>
-                <strong>reCAPTCHA:</strong>{" "}
-                {userInfo.recaptchaVerified ? `Verified (Score: ${userInfo.recaptchaScore || "N/A"})` : "Failed"}
-              </p>
-            )}
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}>
+              <tbody>
+                {userInfo.ip && (
+                  <tr>
+                    <td style={{ padding: "4px 0", fontWeight: "bold", width: "150px" }}>IP Address:</td>
+                    <td style={{ padding: "4px 0" }}>{userInfo.ip}</td>
+                  </tr>
+                )}
+                {userInfo.screen && (
+                  <tr>
+                    <td style={{ padding: "4px 0", fontWeight: "bold" }}>Screen Size:</td>
+                    <td style={{ padding: "4px 0" }}>
+                      {userInfo.screen.width} x {userInfo.screen.height}
+                    </td>
+                  </tr>
+                )}
+                {userInfo.userAgent && (
+                  <tr>
+                    <td style={{ padding: "4px 0", fontWeight: "bold" }}>User Agent:</td>
+                    <td style={{ padding: "4px 0", fontSize: "12px" }}>{userInfo.userAgent}</td>
+                  </tr>
+                )}
+                {userInfo.platform && (
+                  <tr>
+                    <td style={{ padding: "4px 0", fontWeight: "bold" }}>Platform:</td>
+                    <td style={{ padding: "4px 0" }}>{userInfo.platform}</td>
+                  </tr>
+                )}
+                {userInfo.language && (
+                  <tr>
+                    <td style={{ padding: "4px 0", fontWeight: "bold" }}>Language:</td>
+                    <td style={{ padding: "4px 0" }}>{userInfo.language}</td>
+                  </tr>
+                )}
+                {userInfo.timezone && (
+                  <tr>
+                    <td style={{ padding: "4px 0", fontWeight: "bold" }}>User Timezone:</td>
+                    <td style={{ padding: "4px 0" }}>{userInfo.timezone}</td>
+                  </tr>
+                )}
+                {userInfo.recaptchaVerified !== undefined && (
+                  <tr>
+                    <td style={{ padding: "4px 0", fontWeight: "bold" }}>reCAPTCHA:</td>
+                    <td style={{ padding: "4px 0" }}>
+                      {userInfo.recaptchaVerified
+                        ? `✅ Verified (Score: ${userInfo.recaptchaScore || "N/A"})`
+                        : "❌ Failed"}
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
         )}
+
+        {/* Final Call to Action */}
+        <div style={{ textAlign: "center", marginTop: "30px", marginBottom: "10px" }}>
+          <a
+            href={`tel:${formattedPhone}`}
+            style={{
+              backgroundColor: "#0D423A",
+              color: "white",
+              padding: "15px 30px",
+              borderRadius: "50px",
+              fontSize: "18px",
+              fontWeight: "bold",
+              textDecoration: "none",
+              display: "inline-block",
+              boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+              border: "none",
+            }}
+          >
+            📞 Call Customer Now
+          </a>
+        </div>
       </div>
 
-      <div style={{ textAlign: "center", fontSize: "12px", color: "#666", marginTop: "30px" }}>
-        <p>This is an automated notification from your website. Please do not reply to this email.</p>
-        <p>&copy; {new Date().getFullYear()} Palm Tree Garage Door. All rights reserved.</p>
+      {/* Footer */}
+      <div style={{ textAlign: "center", fontSize: "12px", color: "#666", marginTop: "20px", padding: "0 20px 20px" }}>
+        <p style={{ margin: "0 0 5px 0" }}>
+          This is an automated notification from your website. Please do not reply to this email.
+        </p>
+        <p style={{ margin: "0" }}>&copy; {new Date().getFullYear()} Palm Tree Garage Door. All rights reserved.</p>
       </div>
     </div>
   )

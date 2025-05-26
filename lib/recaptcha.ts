@@ -103,7 +103,7 @@ export async function loadRecaptchaScript(): Promise<void> {
   }
 
   // Check if already loaded
-  if (window.grecaptcha) {
+  if (window.grecaptcha && window.grecaptcha.ready) {
     return Promise.resolve()
   }
 
@@ -122,7 +122,19 @@ export async function loadRecaptchaScript(): Promise<void> {
       script.async = true
       script.defer = true
 
-      script.onload = () => resolve()
+      script.onload = () => {
+        // Give reCAPTCHA time to initialize
+        setTimeout(() => {
+          if (window.grecaptcha && window.grecaptcha.ready) {
+            window.grecaptcha.ready(() => {
+              resolve()
+            })
+          } else {
+            resolve() // Still resolve even if ready method isn't available
+          }
+        }, 500)
+      }
+
       script.onerror = () => reject(new Error("Failed to load reCAPTCHA script"))
 
       document.head.appendChild(script)
@@ -142,8 +154,14 @@ export async function executeRecaptcha(action: string): Promise<string> {
   }
 
   try {
-    if (!window.grecaptcha) {
+    if (!window.grecaptcha || !window.grecaptcha.execute) {
       await loadRecaptchaScript()
+
+      // Additional check after loading
+      if (!window.grecaptcha || !window.grecaptcha.execute) {
+        console.warn("reCAPTCHA failed to initialize properly")
+        return ""
+      }
     }
 
     // Fetch the site key from API
@@ -156,6 +174,15 @@ export async function executeRecaptcha(action: string): Promise<string> {
     // Add a timeout to prevent hanging
     const timeoutPromise = new Promise<string>((_, reject) => {
       setTimeout(() => reject(new Error("reCAPTCHA execution timed out")), 5000)
+    })
+
+    // Make sure grecaptcha is ready
+    await new Promise<void>((resolve) => {
+      if (window.grecaptcha.ready) {
+        window.grecaptcha.ready(() => resolve())
+      } else {
+        resolve() // Continue if ready method isn't available
+      }
     })
 
     const recaptchaPromise = window.grecaptcha.execute(siteKey, { action })

@@ -61,7 +61,7 @@ const ServicePopup = ({ service, isOpen, onClose }: ServicePopupProps) => {
             {/* Close button - Fixed position */}
             <button
               onClick={onClose}
-              className="absolute top-3 right-3 z-20 bg-white rounded-full p-2 shadow-md hover:bg-gray-100 transition-colors"
+              className="absolute top-3 right-3 z-20 bg-white rounded-full p-2 shadow-md hover:bg-gray-100 transition-colors touch-target-fix"
               aria-label="Close popup"
             >
               <X className="h-5 w-5 text-gray-700" />
@@ -73,11 +73,11 @@ const ServicePopup = ({ service, isOpen, onClose }: ServicePopupProps) => {
             </div>
 
             {/* Content with max height and scrolling */}
-            <div className="max-h-[75vh] overflow-y-auto">
-              {/* Two-column layout */}
+            <div className="max-h-[80vh] md:max-h-[75vh] overflow-y-auto">
+              {/* Two-column layout on desktop, single column on mobile */}
               <div className="grid md:grid-cols-2">
                 {/* Left column - Image and quick info */}
-                <div className="bg-gradient-to-br from-primary-50 to-primary-100 p-5 sm:p-6">
+                <div className="bg-gradient-to-br from-primary-50 to-primary-100 p-4 sm:p-6">
                   {/* Hide title on mobile since we show it above */}
                   <div className="hidden md:block space-y-3 mb-6">
                     <div className="inline-flex items-center justify-center w-12 h-12 bg-white rounded-xl shadow-md">
@@ -96,15 +96,15 @@ const ServicePopup = ({ service, isOpen, onClose }: ServicePopupProps) => {
                   <div className="relative rounded-lg overflow-hidden shadow-lg mb-5">
                     <LazyImage
                       src={service.image || "/placeholder.png"}
-                      alt={`Palm Tree Garage Door ${service.title} service`}
+                      alt={`Garage Door ${service.title} service`}
                       width={500}
                       height={300}
                       className="w-full h-48 sm:h-56 object-contain bg-gray-50"
                     />
                   </div>
 
-                  {/* Quick stats */}
-                  <div className="grid grid-cols-2 gap-3">
+                  {/* Quick stats - 1 column on very small screens, 2 columns otherwise */}
+                  <div className="grid grid-cols-1 xs:grid-cols-2 gap-3">
                     {service.timeEstimate && (
                       <div className="bg-white/80 backdrop-blur-sm rounded-lg p-3">
                         <Clock className="h-4 w-4 text-primary-600 mb-1" />
@@ -123,7 +123,7 @@ const ServicePopup = ({ service, isOpen, onClose }: ServicePopupProps) => {
                 </div>
 
                 {/* Right column - Details and CTAs */}
-                <div className="p-5 sm:p-6 space-y-4">
+                <div className="p-4 sm:p-6 space-y-4">
                   {/* Only show description on mobile since we show it in the left column on desktop */}
                   <div className="md:hidden">
                     <p className="text-gray-700">{service.description}</p>
@@ -140,7 +140,7 @@ const ServicePopup = ({ service, isOpen, onClose }: ServicePopupProps) => {
                   {/* Benefits */}
                   {service.benefits && service.benefits.length > 0 && (
                     <div>
-                      <h4 className="text-lg font-bold text-primary-900 mb-2">Why Choose Palm Tree Garage Door</h4>
+                      <h4 className="text-lg font-bold text-primary-900 mb-2">Why Choose Our Service</h4>
                       <ul className="space-y-2">
                         {service.benefits.map((benefit, index) => (
                           <li key={index} className="flex items-start">
@@ -158,7 +158,7 @@ const ServicePopup = ({ service, isOpen, onClose }: ServicePopupProps) => {
                   {service.features && service.features.length > 0 && (
                     <div>
                       <h4 className="text-lg font-bold text-primary-900 mb-2">Service Features</h4>
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="grid grid-cols-1 xs:grid-cols-2 gap-2">
                         {service.features.map((feature, index) => (
                           <div key={index} className="flex items-center text-xs sm:text-sm text-gray-700">
                             <div className="w-2 h-2 bg-primary-400 rounded-full mr-2 flex-shrink-0"></div>
@@ -172,12 +172,12 @@ const ServicePopup = ({ service, isOpen, onClose }: ServicePopupProps) => {
               </div>
 
               {/* CTAs - Full width at the bottom, always visible */}
-              <div className="sticky bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-md">
+              <div className="sticky bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-3 sm:p-4 shadow-md">
                 <div className="container mx-auto">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <a
                       href="tel:+13213669723"
-                      className="flex items-center justify-center bg-accent-500 hover:bg-accent-600 text-primary-900 font-bold py-3 px-4 rounded-lg transition-all duration-200"
+                      className="flex items-center justify-center bg-accent-500 hover:bg-accent-600 text-primary-900 font-bold py-2 sm:py-3 px-3 sm:px-4 rounded-lg transition-all duration-200 touch-target-fix"
                       data-call-tracking="true"
                     >
                       <Phone className="mr-2 h-4 w-4" />
@@ -185,7 +185,7 @@ const ServicePopup = ({ service, isOpen, onClose }: ServicePopupProps) => {
                     </a>
                     <Link
                       href="/#booking"
-                      className="flex items-center justify-center bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 px-4 rounded-lg transition-all duration-200"
+                      className="flex items-center justify-center bg-primary-600 hover:bg-primary-700 text-white font-bold py-2 sm:py-3 px-3 sm:px-4 rounded-lg transition-all duration-200 touch-target-fix"
                       onClick={onClose}
                     >
                       <Calendar className="mr-2 h-4 w-4" />
@@ -248,7 +248,7 @@ export default function ServicesGrid() {
       title: "Spring Replacement",
       description: "Safe and reliable replacement of broken or worn garage door springs by certified technicians.",
       longDescription:
-        "Garage door springs are under extreme tension and can be dangerous if not handled properly. Palm Tree Garage Door's certified technicians are specially trained to safely remove damaged springs and install high-quality replacements calibrated to your door's exact specifications. We'll also perform a complete system inspection to ensure optimal performance and safety.",
+        "Garage door springs are under extreme tension and can be dangerous if not handled properly. Our certified technicians are specially trained to safely remove damaged springs and install high-quality replacements calibrated to your door's exact specifications. We'll also perform a complete system inspection to ensure optimal performance and safety.",
       benefits: [
         "High-cycle springs rated for 20,000+ cycles",
         "Precision calibration for smooth, balanced operation",
@@ -273,7 +273,7 @@ export default function ServicesGrid() {
       title: "Opener Repair",
       description: "Comprehensive diagnostics and repair for all major garage door opener brands and models.",
       longDescription:
-        "Is your garage door opener acting up? Palm Tree Garage Door services all major opener brands including LiftMaster, Chamberlain, Genie, and Craftsman. From motor issues and circuit board failures to sensor misalignments and remote programming, our expert technicians have the tools and knowledge to get your opener working like new again.",
+        "Is your garage door opener acting up? We service all major opener brands including LiftMaster, Chamberlain, Genie, and Craftsman. From motor issues and circuit board failures to sensor misalignments and remote programming, our expert technicians have the tools and knowledge to get your opener working like new again.",
       benefits: [
         "Expert diagnosis of all opener problems",
         "Same-day service for most opener repairs",
@@ -298,7 +298,7 @@ export default function ServicesGrid() {
       title: "New Installation",
       description: "Transform your home's appearance and security with our custom garage door installation services.",
       longDescription:
-        "A new garage door from Palm Tree Garage Door is one of the best investments you can make in your home. Not only does it enhance curb appeal and increase property value, but modern doors also offer improved security, energy efficiency, and quiet operation. Our design consultants will help you choose the perfect door to complement your home's architecture.",
+        "A new garage door is one of the best investments you can make in your home. Not only does it enhance curb appeal and increase property value, but modern doors also offer improved security, energy efficiency, and quiet operation. Our design consultants will help you choose the perfect door to complement your home's architecture.",
       benefits: [
         "Free in-home design consultation",
         "Wide selection of styles, materials, and colors",
@@ -326,7 +326,7 @@ export default function ServicesGrid() {
     <section id="services" className="py-16 bg-gray-50">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-primary-600 mb-4">Palm Tree Garage Door Services</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-primary-600 mb-4">Our Garage Door Services</h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
             South Florida's most trusted garage door company. We offer comprehensive repair and installation services
             with a commitment to quality, reliability, and customer satisfaction.
@@ -349,12 +349,12 @@ export default function ServicesGrid() {
         <div className="mt-12 text-center">
           <Link
             href="/#booking"
-            className="bg-accent-500 hover:bg-accent-600 text-primary-900 font-bold py-3 px-8 rounded-md transition-all duration-300 inline-flex items-center group"
+            className="bg-accent-500 hover:bg-accent-600 text-primary-900 font-bold py-3 px-8 rounded-md transition-all duration-300 inline-flex items-center group touch-target-fix"
             scroll={true}
-            aria-label="Schedule a service appointment with Palm Tree Garage Door"
+            aria-label="Schedule a service appointment"
           >
             <Calendar className="mr-2 h-5 w-5" />
-            Schedule Your Palm Tree Service
+            Schedule Your Service
             <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-all duration-300" />
           </Link>
         </div>

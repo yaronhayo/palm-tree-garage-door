@@ -63,8 +63,7 @@ export default function ThankYouPage() {
                 Trusted by Homeowners Across South Florida
               </h3>
               <p className="text-gray-600">
-                Join our hundreds of satisfied customers who trust Palm Tree Garage Door for reliable, professional
-                service.
+                Join our hundreds of satisfied customers who trust us for reliable, professional service.
               </p>
             </div>
 

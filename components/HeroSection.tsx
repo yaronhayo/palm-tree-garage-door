@@ -73,13 +73,12 @@ export default function HeroSection() {
     <section className="relative pt-28 sm:pt-32 pb-20">
       {/* Background Image with Overlay */}
       <div className="absolute inset-0 z-0 overflow-hidden">
-        {/* Blur-up placeholder - tiny blurred version of the image */}
+        {/* Loading background - brand color instead of purple */}
         <div
           className={`absolute inset-0 bg-primary-800 transition-opacity duration-500 ${
             imageLoaded ? "opacity-0" : "opacity-100"
           }`}
           style={{
-            backgroundImage: `url("data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAABQYH/8QAIhAAAQMDBAMBAAAAAAAAAAAAAQIDBQAEBhEhMRITQVFx/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAT/xAAaEQACAgMAAAAAAAAAAAAAAAABAgADERIh/9oADAMBAAIRAxEAPwCVxnHMdyK5uLu8sVOOOKBUVOkbAAbDfUVJZJjmNWl0+2xYtNuJUUqSVkEEbHnVRRQBGzEgkxqf/9k=")`,
             backgroundSize: "cover",
             backgroundPosition: getObjectPosition(),
           }}
@@ -136,12 +135,12 @@ export default function HeroSection() {
           {/* Left Column - Content */}
           <div>
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 leading-tight text-white">
-              <span className="text-accent-500">Palm Tree Garage Door:</span> Fast & Reliable Repair in South Florida
+              Fast & Reliable Garage Door Repair in South Florida
             </h1>
 
             <p className="text-lg sm:text-xl text-white mb-8">
-              Palm Tree Garage Door provides 24/7 emergency service with expert technicians. We fix all garage door
-              problems quickly and affordably throughout South Florida.
+              We provide 24/7 emergency service with expert technicians. We fix all garage door problems quickly and
+              affordably throughout South Florida.
             </p>
 
             <div className="space-y-4 mb-10">
@@ -156,7 +155,7 @@ export default function HeroSection() {
                 <div className="bg-accent-500/20 p-2 rounded-full mr-3 flex-shrink-0">
                   <Shield className="h-5 w-5 text-accent-500" />
                 </div>
-                <span className="text-base sm:text-lg text-white">All Work Guaranteed by Palm Tree Garage Door</span>
+                <span className="text-base sm:text-lg text-white">All Work Guaranteed</span>
               </div>
 
               <div className="flex items-center">
@@ -175,7 +174,7 @@ export default function HeroSection() {
                 data-call-tracking="true"
               >
                 <Phone className="mr-2 h-5 w-5" />
-                <span>Call Palm Tree Now</span>
+                <span>Call Now</span>
               </a>
 
               <Link
@@ -205,7 +204,7 @@ export default function HeroSection() {
                   href="tel:+13213669723"
                   className="mt-4 inline-block bg-accent-500 hover:bg-accent-600 text-primary-900 font-bold py-2 px-4 rounded-md"
                 >
-                  Call Palm Tree Garage Door
+                  Call Us
                 </a>
               </div>
             )}

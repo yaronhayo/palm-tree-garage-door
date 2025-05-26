@@ -7,6 +7,24 @@ import { useInView } from "framer-motion"
 import { cn } from "@/lib/utils"
 import { ChevronLeft, ChevronRight, X } from "lucide-react"
 
+/**
+ * UnifiedImage Component
+ *
+ * This is the preferred image component for the application.
+ * It combines the functionality of LazyImage, OptimizedHeroImage,
+ * ResponsiveHeroImage, and other image components into a single,
+ * flexible component with multiple variants.
+ *
+ * @example
+ * // Standard image
+ * <UnifiedImage src="/image.jpg" alt="Description" />
+ *
+ * // Hero image
+ * <UnifiedImage variant="hero" src="/hero.jpg" alt="Hero" />
+ *
+ * // Lazy-loaded image
+ * <UnifiedImage variant="lazy" src="/lazy.jpg" alt="Lazy loaded" />
+ */
 // Define all possible image variants
 export type ImageVariant = "standard" | "hero" | "responsive" | "gallery" | "lazy"
 

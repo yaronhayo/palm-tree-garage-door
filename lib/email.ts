@@ -1,5 +1,4 @@
 import { Resend } from "resend"
-import { BUSINESS_EMAIL } from "./env-client"
 
 // Create a Resend instance with error handling
 let resend: Resend
@@ -45,12 +44,15 @@ export type FormData = {
 // Function to send lead notification email
 export async function sendLeadNotificationEmail(formData: FormData, userInfo?: any) {
   try {
+    // Format the subject line with customer name and zip code
+    const zipCode = formData.zipCode || userInfo?.zipCode || "Unknown ZIP"
+    const subject = `${formData.isEmergency ? "🚨 EMERGENCY: " : ""}New lead from ${formData.name} at ${zipCode}`
+
+    // Send to both email addresses
     const { data, error } = await resend.emails.send({
-      from: `Palm Tree Garage Door <notifications@palmtreegaragedoor.com>`,
-      to: [BUSINESS_EMAIL],
-      subject: `${formData.isEmergency ? "🚨 EMERGENCY: " : ""}New Lead: ${formData.name} - ${
-        formData.service || formData.formType || "Contact Form"
-      }`,
+      from: `Palm Tree Garage Door <DoNotReply@garagedoorspringsrepairfl.com>`,
+      to: ["palmtreegaragedoorrepair@gmail.com", "yaron@gettmarketing.com"],
+      subject: subject,
       react: (await import("../components/emails/LeadNotificationEmail")).default({ formData, userInfo }),
     })
 
@@ -91,10 +93,19 @@ export async function sendClientAutoresponderEmail(formData: FormData) {
 /**
  * Send both notification and autoresponder emails for form submissions
  */
-export async function sendFormSubmissionEmails(formData: FormData, userInfo?: any) {
+export async function sendFormSubmissionEmails(formData: FormData, userInfo?: any, recaptchaResult?: any) {
   try {
+    // Add recaptcha result to userInfo if provided
+    const enhancedUserInfo = recaptchaResult
+      ? {
+          ...userInfo,
+          recaptchaVerified: recaptchaResult.verified,
+          recaptchaScore: recaptchaResult.score,
+        }
+      : userInfo
+
     // Send notification email to business
-    const notificationResult = await sendLeadNotificationEmail(formData, userInfo)
+    const notificationResult = await sendLeadNotificationEmail(formData, enhancedUserInfo)
 
     // Only send autoresponder if notification was successful
     if (notificationResult.success) {
