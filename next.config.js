@@ -1,15 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
   images: {
     domains: ["res.cloudinary.com", "blob.v0.dev"],
     formats: ["image/avif", "image/webp"],
     unoptimized: true,
   },
-  experimental: {
-    optimizeCss: true,
-  },
+  // Removed experimental.optimizeCss to avoid critters dependency
+  // Removed swcMinify as it's no longer a valid option in Next.js 15
   eslint: {
     ignoreDuringBuilds: true,
   },
