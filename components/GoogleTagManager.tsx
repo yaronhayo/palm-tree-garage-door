@@ -1,38 +1,27 @@
 "use client"
 
-// components/GoogleTagManager.tsx
-// This component is responsible for injecting the Google Tag Manager script into the page.
-
 import { useEffect } from "react"
+import { initGTM, cleanGtmId, isPlaceholderGtmId } from "@/lib/analytics"
 
 interface GoogleTagManagerProps {
   gtmId: string
 }
 
-const GoogleTagManager = ({ gtmId }: GoogleTagManagerProps) => {
+export default function GoogleTagManager({ gtmId }: GoogleTagManagerProps) {
   useEffect(() => {
-    if (!gtmId) {
-      console.warn("GTM ID is missing. Google Tag Manager will not be initialized.")
+    // Clean up and validate the GTM ID
+    const cleanedId = cleanGtmId(gtmId || "")
+
+    // Skip loading in development if using placeholder
+    if (isPlaceholderGtmId(cleanedId)) {
+      console.info("Skipping GTM initialization with placeholder ID")
       return
     }
 
-    const script = document.createElement("script")
-    script.src = `https://www.googletagmanager.com/gtm.js?id=${gtmId}`
-    script.async = true
-    document.head.insertBefore(script, document.head.firstChild)
-
-    const dataLayerScript = document.createElement("script")
-    dataLayerScript.innerHTML = `
-      (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-      })(window,document,'script','dataLayer','${gtmId}');
-    `
-    document.head.insertBefore(dataLayerScript, document.head.firstChild)
+    // Initialize GTM with the cleaned ID
+    initGTM(cleanedId)
   }, [gtmId])
 
-  return null // This component doesn't render anything visible
+  // This component doesn't render anything visible
+  return null
 }
-
-export default GoogleTagManager

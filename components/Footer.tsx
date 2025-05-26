@@ -13,7 +13,6 @@ import {
   Heart,
   Award,
   Shield,
-  ArrowRight,
   Wrench,
   AlertTriangle,
   HelpCircle,
@@ -87,36 +86,6 @@ const Footer = () => {
         <div className="hidden lg:block absolute -right-24 top-2/3 transform -translate-y-1/2 w-80 h-80 rounded-full bg-primary-600 opacity-5"></div>
 
         <div className="container mx-auto px-4 relative z-10">
-          {/* Newsletter signup */}
-          <div className="bg-primary-700 rounded-xl p-8 mb-12 shadow-lg">
-            <div className="grid md:grid-cols-2 gap-8 items-center">
-              <div>
-                <h3 className="text-2xl font-bold mb-2 text-white">Stay Updated</h3>
-                <p className="text-gray-300 mb-0">
-                  Get maintenance tips, special offers, and garage door advice delivered to your inbox.
-                </p>
-              </div>
-              <div>
-                <form className="flex flex-col sm:flex-row gap-3">
-                  <input
-                    type="email"
-                    placeholder="Your email address"
-                    className="px-4 py-3 rounded-md flex-grow bg-primary-800 border border-primary-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent-500"
-                    aria-label="Email address"
-                  />
-                  <button
-                    type="submit"
-                    className="bg-accent-500 hover:bg-accent-600 text-primary-900 font-bold py-3 px-6 rounded-md transition-colors flex items-center justify-center whitespace-nowrap"
-                  >
-                    Subscribe
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </button>
-                </form>
-                <p className="text-xs text-gray-400 mt-2">We respect your privacy. Unsubscribe at any time.</p>
-              </div>
-            </div>
-          </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
             <div>
               <Link href="/" className="inline-block mb-6" onClick={handleLogoClick}>

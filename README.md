@@ -72,6 +72,3 @@ See `.env.example` for required environment variables.
 ## License
 
 This project is proprietary and confidential. Unauthorized copying, transfer, or reproduction of the contents is strictly prohibited.
-\`\`\`
-
-Let's clean up the .env.example file:

@@ -1,8 +1,26 @@
 import { Resend } from "resend"
 import { BUSINESS_EMAIL } from "./env-client"
 
-// Create a Resend instance
-const resend = new Resend(process.env.RESEND_API_KEY)
+// Create a Resend instance with error handling
+let resend: Resend
+try {
+  const apiKey = process.env.RESEND_API_KEY
+  if (!apiKey) {
+    console.error("Resend API key not found in environment variables")
+  }
+  resend = new Resend(apiKey)
+} catch (error) {
+  console.error("Failed to initialize Resend:", error)
+  // Create a dummy instance that will log errors instead of crashing
+  resend = {
+    emails: {
+      send: async () => {
+        console.error("Email sending failed: Resend not properly initialized")
+        return { error: { message: "Email service not configured" }, data: null }
+      },
+    },
+  } as unknown as Resend
+}
 
 // Define the FormData type
 export type FormData = {
@@ -44,7 +62,7 @@ export async function sendLeadNotificationEmail(formData: FormData, userInfo?: a
     return { success: true, data }
   } catch (error) {
     console.error("Error in sendLeadNotificationEmail:", error)
-    throw error
+    return { success: false, error }
   }
 }
 
@@ -66,7 +84,7 @@ export async function sendClientAutoresponderEmail(formData: FormData) {
     return { success: true, data }
   } catch (error) {
     console.error("Error in sendClientAutoresponderEmail:", error)
-    throw error
+    return { success: false, error }
   }
 }
 
@@ -78,16 +96,27 @@ export async function sendFormSubmissionEmails(formData: FormData, userInfo?: an
     // Send notification email to business
     const notificationResult = await sendLeadNotificationEmail(formData, userInfo)
 
-    // Send autoresponder email to client
-    const autoresponderResult = await sendClientAutoresponderEmail(formData)
+    // Only send autoresponder if notification was successful
+    if (notificationResult.success) {
+      const autoresponderResult = await sendClientAutoresponderEmail(formData)
+
+      return {
+        success: true,
+        notification: notificationResult,
+        autoresponder: autoresponderResult,
+      }
+    }
 
     return {
-      success: true,
+      success: false,
       notification: notificationResult,
-      autoresponder: autoresponderResult,
+      autoresponder: { success: false, error: "Skipped due to notification failure" },
     }
   } catch (error) {
     console.error("Error sending form submission emails:", error)
-    throw error
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    }
   }
 }

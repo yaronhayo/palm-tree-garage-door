@@ -1,22 +1,49 @@
-import type React from "react"
-import { Suspense, lazy } from "react"
+import { Suspense } from "react"
 import HeroSection from "@/components/HeroSection"
 import ServicesGrid from "@/components/ServicesGrid"
+import dynamic from "next/dynamic"
 
-// Lazy load below-the-fold components
-const WhyChooseUs = lazy(() => import("@/components/WhyChooseUs"))
-const CommonIssuesSection = lazy(() => import("@/components/CommonIssuesSection"))
-const TestimonialsSection = lazy(() => import("@/components/TestimonialsSection"))
-const ServiceAreas = lazy(() => import("@/components/ServiceAreas"))
-const FAQSection = lazy(() => import("@/components/FAQSection"))
-const BookingSection = lazy(() => import("@/components/BookingSection"))
+// Enhanced lazy loading with better loading states
+const WhyChooseUs = dynamic(() => import("@/components/WhyChooseUs"), {
+  loading: () => <SectionPlaceholder label="Why Choose Us" />,
+  ssr: true,
+})
+
+const CommonIssuesSection = dynamic(() => import("@/components/CommonIssuesSection"), {
+  loading: () => <SectionPlaceholder label="Common Issues" />,
+  ssr: false, // Non-critical section, can load client-side only
+})
+
+const TestimonialsSection = dynamic(() => import("@/components/TestimonialsSection"), {
+  loading: () => <SectionPlaceholder label="Testimonials" />,
+  ssr: false, // Non-critical section, can load client-side only
+})
+
+const ServiceAreas = dynamic(() => import("@/components/ServiceAreas"), {
+  loading: () => <SectionPlaceholder label="Service Areas" />,
+  ssr: true,
+})
+
+const FAQSection = dynamic(() => import("@/components/FAQSection"), {
+  loading: () => <SectionPlaceholder label="FAQ" />,
+  ssr: false, // Non-critical section, can load client-side only
+})
+
+const BookingSection = dynamic(() => import("@/components/BookingSection"), {
+  loading: () => <SectionPlaceholder label="Booking" />,
+  ssr: true, // Important for conversion, should be SSR
+})
+
+// Import EmergencyServiceSection normally since it's relatively small
 import EmergencyServiceSection from "@/components/EmergencyServiceSection"
 
-// Simple loading placeholders
-const SectionPlaceholder = () => <div className="w-full h-96 bg-gray-100 animate-pulse rounded-lg"></div>
-
-const SafeSection = ({ children, name }: { children: React.ReactNode; name: string }) => (
-  <Suspense fallback={<SectionPlaceholder />}>{children}</Suspense>
+// Improved loading placeholder with label for better UX
+const SectionPlaceholder = ({ label }: { label: string }) => (
+  <div className="w-full py-16 bg-gray-100 animate-pulse rounded-lg">
+    <div className="max-w-md mx-auto h-8 bg-gray-200 rounded mb-4"></div>
+    <div className="max-w-sm mx-auto h-4 bg-gray-200 rounded"></div>
+    <div className="sr-only">{label} section loading...</div>
+  </div>
 )
 
 export default function Home() {
@@ -26,34 +53,32 @@ export default function Home() {
       <HeroSection />
       <ServicesGrid />
 
-      {/* Lazy load below-the-fold content */}
-      <SafeSection name="WhyChooseUs">
+      {/* Lazy load below-the-fold content with improved Suspense boundaries */}
+      <Suspense fallback={<SectionPlaceholder label="Why Choose Us" />}>
         <WhyChooseUs />
-      </SafeSection>
+      </Suspense>
 
-      <SafeSection name="CommonIssues">
+      <Suspense fallback={<SectionPlaceholder label="Common Issues" />}>
         <CommonIssuesSection />
-      </SafeSection>
+      </Suspense>
 
-      <SafeSection name="EmergencyService">
-        <EmergencyServiceSection />
-      </SafeSection>
+      <EmergencyServiceSection />
 
-      <SafeSection name="Testimonials">
+      <Suspense fallback={<SectionPlaceholder label="Testimonials" />}>
         <TestimonialsSection />
-      </SafeSection>
+      </Suspense>
 
-      <SafeSection name="ServiceAreas">
+      <Suspense fallback={<SectionPlaceholder label="Service Areas" />}>
         <ServiceAreas />
-      </SafeSection>
+      </Suspense>
 
-      <SafeSection name="FAQSection">
+      <Suspense fallback={<SectionPlaceholder label="FAQ" />}>
         <FAQSection />
-      </SafeSection>
+      </Suspense>
 
-      <SafeSection name="BookingSection">
+      <Suspense fallback={<SectionPlaceholder label="Booking" />}>
         <BookingSection />
-      </SafeSection>
+      </Suspense>
     </>
   )
 }

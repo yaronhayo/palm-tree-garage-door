@@ -1,5 +1,8 @@
 /**
  * reCAPTCHA utilities
+ *
+ * This implementation fetches the site key from a server endpoint
+ * instead of using the environment variable directly in client code.
  */
 
 // Check if we're in the browser
@@ -20,6 +23,12 @@ export async function validateRecaptcha(token: string): Promise<boolean> {
     if (!secretKey) {
       console.error("reCAPTCHA secret key not found in environment variables")
       return false
+    }
+
+    // Skip validation in development if using test key
+    if (process.env.NODE_ENV === "development" && secretKey === "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe") {
+      console.warn("Using test reCAPTCHA key - validation bypassed in development")
+      return true
     }
 
     const response = await fetch("https://www.google.com/recaptcha/api/siteverify", {
@@ -49,19 +58,28 @@ export async function validateRecaptcha(token: string): Promise<boolean> {
  * Get the reCAPTCHA site key (server-side only)
  */
 export function getRecaptchaSiteKey(): string | undefined {
-  return process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY
+  // Only use this on the server
+  if (typeof window === "undefined") {
+    return process.env.RECAPTCHA_SITE_KEY
+  }
+  return undefined
 }
 
 /**
- * Fetch and cache the site key from the API
+ * Fetch the site key from the API
  */
-async function fetchSiteKey(): Promise<string> {
+export async function fetchSiteKey(): Promise<string> {
   if (cachedSiteKey) {
     return cachedSiteKey
   }
 
   try {
     const response = await fetch("/api/recaptcha")
+
+    if (!response.ok) {
+      throw new Error(`API returned ${response.status}: ${response.statusText}`)
+    }
+
     const data = await response.json()
 
     if (data.siteKey) {
@@ -89,25 +107,30 @@ export async function loadRecaptchaScript(): Promise<void> {
     return Promise.resolve()
   }
 
-  // Fetch the site key from API
-  const siteKey = await fetchSiteKey()
+  try {
+    // Fetch the site key from API
+    const siteKey = await fetchSiteKey()
 
-  if (!siteKey) {
-    return Promise.reject(new Error("reCAPTCHA site key not found"))
+    if (!siteKey) {
+      return Promise.reject(new Error("reCAPTCHA site key not found"))
+    }
+
+    return new Promise((resolve, reject) => {
+      // Create script element
+      const script = document.createElement("script")
+      script.src = `https://www.google.com/recaptcha/api.js?render=${siteKey}`
+      script.async = true
+      script.defer = true
+
+      script.onload = () => resolve()
+      script.onerror = () => reject(new Error("Failed to load reCAPTCHA script"))
+
+      document.head.appendChild(script)
+    })
+  } catch (error) {
+    console.error("Failed to load reCAPTCHA:", error)
+    return Promise.reject(error)
   }
-
-  return new Promise((resolve, reject) => {
-    // Create script element
-    const script = document.createElement("script")
-    script.src = `https://www.google.com/recaptcha/api.js?render=${siteKey}`
-    script.async = true
-    script.defer = true
-
-    script.onload = () => resolve()
-    script.onerror = () => reject(new Error("Failed to load reCAPTCHA script"))
-
-    document.head.appendChild(script)
-  })
 }
 
 /**
@@ -118,21 +141,30 @@ export async function executeRecaptcha(action: string): Promise<string> {
     throw new Error("reCAPTCHA not available in server environment")
   }
 
-  if (!window.grecaptcha) {
-    await loadRecaptchaScript()
-  }
-
   try {
-    // Fetch the site key from API if not cached
+    if (!window.grecaptcha) {
+      await loadRecaptchaScript()
+    }
+
+    // Fetch the site key from API
     const siteKey = await fetchSiteKey()
 
     if (!siteKey) {
       throw new Error("reCAPTCHA site key not found")
     }
 
-    return await window.grecaptcha.execute(siteKey, { action })
+    // Add a timeout to prevent hanging
+    const timeoutPromise = new Promise<string>((_, reject) => {
+      setTimeout(() => reject(new Error("reCAPTCHA execution timed out")), 5000)
+    })
+
+    const recaptchaPromise = window.grecaptcha.execute(siteKey, { action })
+
+    return Promise.race([recaptchaPromise, timeoutPromise])
   } catch (error) {
     console.error("Error executing reCAPTCHA:", error)
-    throw error
+    // Return empty string instead of throwing to prevent form submission failures
+    // when reCAPTCHA has issues
+    return ""
   }
 }
