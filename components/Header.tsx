@@ -233,12 +233,12 @@ export default function Header() {
             onClick={handleLogoClick}
           >
             {!logoError ? (
-              <div className="relative w-48 h-16 xs:w-56 xs:h-18 sm:w-64 sm:h-20 md:w-72 md:h-20 lg:w-80 lg:h-24">
+              <div className="relative w-36 h-12 xs:w-40 xs:h-14 sm:w-48 sm:h-16 md:w-56 md:h-18 lg:w-64 lg:h-20">
                 <Image
                   src="/logo.png"
                   alt="Palm Tree Garage Door Repair"
                   fill
-                  sizes="(max-width: 480px) 192px, (max-width: 640px) 224px, (max-width: 768px) 256px, (max-width: 1024px) 288px, 320px"
+                  sizes="(max-width: 320px) 144px, (max-width: 480px) 160px, (max-width: 640px) 192px, (max-width: 768px) 224px, (max-width: 1024px) 256px, 320px"
                   style={{ objectFit: "contain", objectPosition: "left" }}
                   priority
                   unoptimized={true} // Add this to ensure image works in static export
@@ -298,36 +298,36 @@ export default function Header() {
           <div className="md:hidden flex items-center">
             <Link
               href="#booking"
-              className="mr-2 flex items-center bg-white hover:bg-gray-100 text-primary-600 font-bold py-2 px-3 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary-600"
+              className="mr-2 flex items-center bg-white hover:bg-gray-100 text-primary-600 font-bold py-2 px-2 xs:px-3 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary-600"
               onClick={(e) => handleAnchorClick(e, "/#booking")}
               aria-label="Book a service appointment"
             >
-              <Calendar className="mr-1 h-4 w-4" aria-hidden="true" />
-              <span className="text-sm">Book</span>
+              <Calendar className="h-4 w-4 xs:mr-1" aria-hidden="true" />
+              <span className="hidden xs:inline text-sm">Book</span>
             </Link>
 
             <Link
               href="tel:+13213669723"
-              className="mr-2 flex items-center bg-accent-500 hover:bg-accent-600 text-primary-900 font-bold py-2 px-3 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-accent-300"
+              className="mr-2 flex items-center bg-accent-500 hover:bg-accent-600 text-primary-900 font-bold py-2 px-2 xs:px-3 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-accent-300"
               onClick={handlePhoneClick}
               data-call-tracking="true"
               aria-label="Call us at (321) 366-9723"
             >
-              <Phone className="mr-1 h-4 w-4" aria-hidden="true" />
-              <span className="text-sm">Call</span>
+              <Phone className="h-4 w-4 xs:mr-1" aria-hidden="true" />
+              <span className="hidden xs:inline text-sm">Call</span>
             </Link>
 
             <button
-              className="text-white p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-accent-300 focus:ring-offset-2 focus:ring-offset-primary-600 active:scale-95 transition-transform z-[110]"
+              className="text-white p-1.5 xs:p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-accent-300 focus:ring-offset-2 focus:ring-offset-primary-600 active:scale-95 transition-transform z-[110]"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               aria-label={isMenuOpen ? "Close menu" : "Open menu"}
               aria-expanded={isMenuOpen}
               aria-controls="mobile-menu"
             >
               {isMenuOpen ? (
-                <X className="h-6 w-6" aria-hidden="true" />
+                <X className="h-5 w-5 xs:h-6 xs:w-6" aria-hidden="true" />
               ) : (
-                <Menu className="h-6 w-6" aria-hidden="true" />
+                <Menu className="h-5 w-5 xs:h-6 xs:w-6" aria-hidden="true" />
               )}
             </button>
           </div>
@@ -375,39 +375,39 @@ export default function Header() {
           }}
         >
           {/* Close button at the top */}
-          <div className="sticky top-0 left-0 right-0 bg-primary-600 p-4 flex justify-between items-center z-[100]">
+          <div className="sticky top-0 left-0 right-0 bg-primary-600 p-3 xs:p-4 flex justify-between items-center z-[100]">
             {!logoError ? (
-              <div className="relative w-40 h-12 xs:w-44 xs:h-14 sm:w-48 sm:h-16">
+              <div className="relative w-32 h-10 xs:w-40 xs:h-12 sm:w-44 sm:h-14">
                 <Image
                   src="/logo.png"
                   alt="Palm Tree Garage Door Repair"
                   fill
-                  sizes="(max-width: 480px) 160px, (max-width: 640px) 176px, 192px"
+                  sizes="(max-width: 320px) 128px, (max-width: 480px) 160px, (max-width: 640px) 176px, 192px"
                   style={{ objectFit: "contain", objectPosition: "left" }}
                   unoptimized={true} // Add this to ensure image works in static export
                   onError={() => setLogoError(true)}
                 />
               </div>
             ) : (
-              <div className="text-white font-bold text-lg">Palm Tree Garage Door</div>
+              <div className="text-white font-bold text-base xs:text-lg">Palm Tree Garage Door</div>
             )}
             <button
               type="button"
-              className="p-2 text-white hover:text-accent-300 focus:outline-none focus:ring-2 focus:ring-accent-300 rounded-md"
+              className="p-1.5 xs:p-2 text-white hover:text-accent-300 focus:outline-none focus:ring-2 focus:ring-accent-300 rounded-md"
               onClick={() => setIsMenuOpen(false)}
               aria-label="Close menu"
             >
-              <X className="h-6 w-6" aria-hidden="true" />
+              <X className="h-5 w-5 xs:h-6 xs:w-6" aria-hidden="true" />
             </button>
           </div>
 
-          <div className="container mx-auto px-4 py-6">
+          <div className="container mx-auto px-3 xs:px-4 py-4 xs:py-6">
             <nav className="flex flex-col space-y-1">
               {navItems.map((item) => (
                 <Link
                   key={item.path}
                   href={item.path}
-                  className={`text-white hover:bg-primary-600/50 font-medium flex items-center justify-between p-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-300 active:scale-98 transition-all ${
+                  className={`text-white hover:bg-primary-600/50 font-medium flex items-center justify-between p-3 xs:p-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-300 active:scale-98 transition-all ${
                     activeSection === item.id ? "bg-primary-600/50 border-l-4 border-accent-300" : ""
                   }`}
                   onClick={(e) => {
@@ -417,17 +417,17 @@ export default function Header() {
                   }}
                 >
                   <div className="flex items-center">
-                    <div className="bg-primary-600/50 p-2 rounded-full mr-3">{item.icon}</div>
-                    <span className="text-lg">{item.name}</span>
+                    <div className="bg-primary-600/50 p-1.5 xs:p-2 rounded-full mr-2 xs:mr-3">{item.icon}</div>
+                    <span className="text-base xs:text-lg">{item.name}</span>
                   </div>
-                  <ChevronRight className="h-5 w-5 text-accent-300" aria-hidden="true" />
+                  <ChevronRight className="h-4 w-4 xs:h-5 xs:w-5 text-accent-300" aria-hidden="true" />
                 </Link>
               ))}
 
-              <div className="pt-6 space-y-4">
+              <div className="pt-4 xs:pt-6 space-y-3 xs:space-y-4">
                 <Link
                   href="#booking"
-                  className={`flex items-center justify-between bg-white hover:bg-gray-100 text-primary-600 font-bold p-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-white active:scale-98 ${
+                  className={`flex items-center justify-between bg-white hover:bg-gray-100 text-primary-600 font-bold p-3 xs:p-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-white active:scale-98 ${
                     activeSection === "booking" ? "bg-gray-100 ring-2 ring-white" : ""
                   }`}
                   onClick={(e) => {
@@ -438,17 +438,17 @@ export default function Header() {
                   aria-label="Book a service appointment"
                 >
                   <div className="flex items-center">
-                    <div className="bg-primary-100 p-2 rounded-full mr-3">
-                      <Calendar className="h-5 w-5 text-primary-600" aria-hidden="true" />
+                    <div className="bg-primary-100 p-1.5 xs:p-2 rounded-full mr-2 xs:mr-3">
+                      <Calendar className="h-4 w-4 xs:h-5 xs:w-5 text-primary-600" aria-hidden="true" />
                     </div>
-                    <span className="text-lg">Book Now</span>
+                    <span className="text-base xs:text-lg">Book Now</span>
                   </div>
-                  <ChevronRight className="h-5 w-5 text-primary-400" aria-hidden="true" />
+                  <ChevronRight className="h-4 w-4 xs:h-5 xs:w-5 text-primary-400" aria-hidden="true" />
                 </Link>
 
                 <Link
                   href="tel:+13213669723"
-                  className="flex items-center justify-between bg-accent-500 hover:bg-accent-600 text-primary-900 font-bold p-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-accent-300 active:scale-98"
+                  className="flex items-center justify-between bg-accent-500 hover:bg-accent-600 text-primary-900 font-bold p-3 xs:p-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-accent-300 active:scale-98"
                   onClick={() => {
                     handlePhoneClick()
                     setIsMenuOpen(false)
@@ -457,15 +457,15 @@ export default function Header() {
                   aria-label="Call us at (321) 366-9723"
                 >
                   <div className="flex items-center">
-                    <div className="bg-white/20 p-2 rounded-full mr-3">
-                      <Phone className="h-5 w-5" aria-hidden="true" />
+                    <div className="bg-white/20 p-1.5 xs:p-2 rounded-full mr-2 xs:mr-3">
+                      <Phone className="h-4 w-4 xs:h-5 xs:w-5" aria-hidden="true" />
                     </div>
                     <div className="flex flex-col">
-                      <span className="text-lg">Call Now</span>
-                      <span className="text-sm font-normal">(321) 366-9723</span>
+                      <span className="text-base xs:text-lg">Call Now</span>
+                      <span className="text-xs xs:text-sm font-normal">(321) 366-9723</span>
                     </div>
                   </div>
-                  <ChevronRight className="h-5 w-5 text-primary-800" aria-hidden="true" />
+                  <ChevronRight className="h-4 w-4 xs:h-5 xs:w-5 text-primary-800" aria-hidden="true" />
                 </Link>
               </div>
             </nav>

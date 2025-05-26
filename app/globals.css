@@ -87,9 +87,23 @@
   section[id] {
     scroll-margin-top: 100px; /* Adjust this value based on your header height plus some extra space */
   }
+
+  /* Ensure form elements are properly sized on small screens */
+  input,
+  select,
+  textarea {
+    @apply text-base;
+    font-size: 16px !important; /* Prevent iOS zoom on focus */
+  }
 }
 
 @layer utilities {
+  /* Ensure buttons and interactive elements have adequate touch targets */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
   .animate-pulse-on-hover {
     @apply transition-transform duration-300;
   }
@@ -133,6 +147,27 @@
   .animate-fade-in-up {
     animation: fade-in-up 0.5s ease-out forwards;
   }
+
+  /* Extra small screen optimizations */
+  @media (max-width: 359px) {
+    .xs-text-smaller {
+      font-size: 0.875rem !important;
+    }
+
+    .xs-p-smaller {
+      padding: 0.5rem !important;
+    }
+
+    .xs-my-smaller {
+      margin-top: 0.5rem !important;
+      margin-bottom: 0.5rem !important;
+    }
+
+    .xs-icon-smaller svg {
+      width: 1rem !important;
+      height: 1rem !important;
+    }
+  }
 }
 
 /* Collapsible animations */
@@ -170,7 +205,13 @@ html {
 /* Mobile menu optimizations */
 @media (max-width: 768px) {
   .mobile-nav-link {
-    @apply py-4 px-5 text-lg;
+    @apply py-3 px-4 text-base;
+  }
+
+  @media (max-width: 359px) {
+    .mobile-nav-link {
+      @apply py-2 px-3 text-sm;
+    }
   }
 
   .mobile-nav-link:active {
@@ -322,4 +363,42 @@ body.mobile-menu-open {
   z-index: 9999 !important;
   height: 100vh !important;
   width: 100% !important;
+}
+
+/* Viewport height fix for mobile browsers */
+.vh-fix {
+  height: 100vh; /* Fallback */
+  height: -webkit-fill-available;
+  height: stretch;
+}
+
+/* Ensure proper sizing on very small screens */
+@media screen and (max-width: 320px) {
+  .container {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  h1 {
+    font-size: 1.5rem !important;
+  }
+
+  h2 {
+    font-size: 1.25rem !important;
+  }
+
+  p {
+    font-size: 0.875rem !important;
+  }
+}
+
+/* Ensure proper touch targets on mobile */
+@media (max-width: 640px) {
+  .touch-target-fix {
+    min-height: 44px;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
