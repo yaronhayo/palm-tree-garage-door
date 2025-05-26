@@ -3,35 +3,29 @@ import HeroSection from "@/components/HeroSection"
 import ServicesGrid from "@/components/ServicesGrid"
 import dynamic from "next/dynamic"
 
-// Enhanced lazy loading with better loading states
+// Enhanced lazy loading with better loading states - removed ssr option
 const WhyChooseUs = dynamic(() => import("@/components/WhyChooseUs"), {
   loading: () => <SectionPlaceholder label="Why Choose Us" />,
-  ssr: true,
 })
 
 const CommonIssuesSection = dynamic(() => import("@/components/CommonIssuesSection"), {
   loading: () => <SectionPlaceholder label="Common Issues" />,
-  ssr: false, // Non-critical section, can load client-side only
 })
 
 const TestimonialsSection = dynamic(() => import("@/components/TestimonialsSection"), {
   loading: () => <SectionPlaceholder label="Testimonials" />,
-  ssr: false, // Non-critical section, can load client-side only
 })
 
 const ServiceAreas = dynamic(() => import("@/components/ServiceAreas"), {
   loading: () => <SectionPlaceholder label="Service Areas" />,
-  ssr: true,
 })
 
 const FAQSection = dynamic(() => import("@/components/FAQSection"), {
   loading: () => <SectionPlaceholder label="FAQ" />,
-  ssr: false, // Non-critical section, can load client-side only
 })
 
 const BookingSection = dynamic(() => import("@/components/BookingSection"), {
   loading: () => <SectionPlaceholder label="Booking" />,
-  ssr: true, // Important for conversion, should be SSR
 })
 
 // Import EmergencyServiceSection normally since it's relatively small
