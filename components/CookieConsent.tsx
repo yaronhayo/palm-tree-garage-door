@@ -167,12 +167,6 @@ export function CookieConsent() {
                   Customize
                 </button>
                 <button
-                  onClick={acceptNecessaryOnly}
-                  className="px-2 py-1 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
-                >
-                  Necessary Only
-                </button>
-                <button
                   onClick={acceptAll}
                   className="px-2 py-1 text-xs font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-md transition-colors flex items-center"
                 >

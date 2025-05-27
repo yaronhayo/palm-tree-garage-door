@@ -1,3 +1,5 @@
+"use client"
+
 import {
   AlertTriangle,
   ArrowRight,
@@ -10,7 +12,6 @@ import {
   CloudRain,
   Calendar,
 } from "lucide-react"
-import Link from "next/link"
 
 export default function CommonIssuesSection() {
   const commonIssues = [
@@ -108,14 +109,28 @@ export default function CommonIssuesSection() {
                 <Phone className="mr-2 h-5 w-5" />
                 Call Now
               </a>
-              <Link
-                href="/#booking"
+              <a
+                href="#booking"
                 className="bg-accent-500 hover:bg-accent-600 text-primary-900 font-bold py-4 px-8 rounded-lg transition-all duration-300 inline-flex items-center justify-center"
+                onClick={(e) => {
+                  e.preventDefault()
+                  const bookingSection = document.getElementById("booking")
+                  if (bookingSection) {
+                    const headerOffset = 80 // Adjust based on your header height
+                    const elementPosition = bookingSection.getBoundingClientRect().top
+                    const offsetPosition = elementPosition + window.pageYOffset - headerOffset
+
+                    window.scrollTo({
+                      top: offsetPosition,
+                      behavior: "smooth",
+                    })
+                  }
+                }}
               >
                 <Calendar className="mr-2 h-5 w-5" />
                 Schedule your service
                 <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
+              </a>
             </div>
           </div>
         </div>
