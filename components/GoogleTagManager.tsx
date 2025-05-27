@@ -24,11 +24,12 @@ export default function GoogleTagManager({ gtmId }: GoogleTagManagerProps) {
         page: {
           url: window.location.href,
           title: document.title,
+          path: window.location.pathname,
         },
       })
 
       // Log GTM initialization
-      console.log("Google Tag Manager dataLayer initialized with ID:", gtmId)
+      console.log("Google Tag Manager dataLayer event pushed with ID:", gtmId)
     }
   }, [gtmId])
 
