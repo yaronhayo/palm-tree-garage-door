@@ -40,6 +40,61 @@ function collectClientUserInfo() {
   }
 }
 
+// US States data
+const US_STATES = [
+  { value: "AL", label: "Alabama" },
+  { value: "AK", label: "Alaska" },
+  { value: "AZ", label: "Arizona" },
+  { value: "AR", label: "Arkansas" },
+  { value: "CA", label: "California" },
+  { value: "CO", label: "Colorado" },
+  { value: "CT", label: "Connecticut" },
+  { value: "DE", label: "Delaware" },
+  { value: "FL", label: "Florida" },
+  { value: "GA", label: "Georgia" },
+  { value: "HI", label: "Hawaii" },
+  { value: "ID", label: "Idaho" },
+  { value: "IL", label: "Illinois" },
+  { value: "IN", label: "Indiana" },
+  { value: "IA", label: "Iowa" },
+  { value: "KS", label: "Kansas" },
+  { value: "KY", label: "Kentucky" },
+  { value: "LA", label: "Louisiana" },
+  { value: "ME", label: "Maine" },
+  { value: "MD", label: "Maryland" },
+  { value: "MA", label: "Massachusetts" },
+  { value: "MI", label: "Michigan" },
+  { value: "MN", label: "Minnesota" },
+  { value: "MS", label: "Mississippi" },
+  { value: "MO", label: "Missouri" },
+  { value: "MT", label: "Montana" },
+  { value: "NE", label: "Nebraska" },
+  { value: "NV", label: "Nevada" },
+  { value: "NH", label: "New Hampshire" },
+  { value: "NJ", label: "New Jersey" },
+  { value: "NM", label: "New Mexico" },
+  { value: "NY", label: "New York" },
+  { value: "NC", label: "North Carolina" },
+  { value: "ND", label: "North Dakota" },
+  { value: "OH", label: "Ohio" },
+  { value: "OK", label: "Oklahoma" },
+  { value: "OR", label: "Oregon" },
+  { value: "PA", label: "Pennsylvania" },
+  { value: "RI", label: "Rhode Island" },
+  { value: "SC", label: "South Carolina" },
+  { value: "SD", label: "South Dakota" },
+  { value: "TN", label: "Tennessee" },
+  { value: "TX", label: "Texas" },
+  { value: "UT", label: "Utah" },
+  { value: "VT", label: "Vermont" },
+  { value: "VA", label: "Virginia" },
+  { value: "WA", label: "Washington" },
+  { value: "WV", label: "West Virginia" },
+  { value: "WI", label: "Wisconsin" },
+  { value: "WY", label: "Wyoming" },
+  { value: "DC", label: "District of Columbia" },
+]
+
 export default function QuickContactForm({ showBookingForm, setShowBookingForm }: QuickContactFormProps) {
   const [formData, setFormData] = useState({
     name: "",
@@ -59,6 +114,7 @@ export default function QuickContactForm({ showBookingForm, setShowBookingForm }
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const router = useRouter()
   const formRef = useRef<HTMLFormElement>(null)
 
@@ -70,43 +126,94 @@ export default function QuickContactForm({ showBookingForm, setShowBookingForm }
 
   const { executeRecaptcha, error: recaptchaError } = useRecaptcha()
 
-  // Enhance form validation for better data quality
-  // Add a validateForm function similar to BookingForm
-
+  // Enhanced form validation for better data quality
   function validateForm(): boolean {
     let isValid = true
-    let errorMessage = ""
+    const errors: Record<string, string> = {}
 
-    // Name validation
+    // Name validation - minimum 2 characters, alphanumeric with spaces
     if (!formData.name.trim()) {
-      errorMessage = "Please enter your name"
+      errors.name = "Please enter your name"
+      isValid = false
+    } else if (formData.name.trim().length < 2) {
+      errors.name = "Name must be at least 2 characters"
+      isValid = false
+    } else if (!/^[a-zA-Z\s'-]+$/.test(formData.name.trim())) {
+      errors.name = "Name contains invalid characters"
       isValid = false
     }
-    // Email validation
-    else if (!formData.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      errorMessage = "Please enter a valid email address"
+
+    // Email validation - standard email format
+    if (!formData.email.trim()) {
+      errors.email = "Please enter your email address"
+      isValid = false
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
+      errors.email = "Please enter a valid email address"
       isValid = false
     }
-    // Phone validation
-    else if (!formData.phone.trim()) {
-      errorMessage = "Please enter your phone number"
+
+    // Phone validation - must be 10 digits
+    if (!formData.phone.trim()) {
+      errors.phone = "Please enter your phone number"
       isValid = false
     } else {
       // Remove all non-numeric characters and check length
       const cleanPhone = formData.phone.replace(/\D/g, "")
       if (cleanPhone.length < 10 || cleanPhone.length > 11) {
-        errorMessage = "Please enter a valid 10-digit phone number"
+        errors.phone = "Please enter a valid 10-digit phone number"
         isValid = false
       }
     }
-    // ZIP code validation if provided
-    if (formData.zipCode && !/^\d{5}$/.test(formData.zipCode)) {
-      errorMessage = "Please enter a valid 5-digit ZIP code"
+
+    // Service validation
+    if (!formData.service) {
+      errors.service = "Please select a service"
       isValid = false
     }
 
+    // Service urgency validation
+    if (!formData.serviceUrgency) {
+      errors.serviceUrgency = "Please select when you need service"
+      isValid = false
+    }
+
+    // ZIP code validation - must be 5 digits
+    if (!formData.zipCode) {
+      errors.zipCode = "Please enter your ZIP code"
+      isValid = false
+    } else if (!/^\d{5}$/.test(formData.zipCode)) {
+      errors.zipCode = "Please enter a valid 5-digit ZIP code"
+      isValid = false
+    }
+
+    // Address validation - only if we've gone past the ZIP code/city confirmation
+    if (cityConfirmed || cityLookupStatus === "not_found") {
+      // Street validation
+      if (!formData.street.trim()) {
+        errors.street = "Please enter your street address"
+        isValid = false
+      }
+
+      // City validation
+      if (!formData.city.trim()) {
+        errors.city = "Please enter your city"
+        isValid = false
+      } else if (!/^[a-zA-Z\s.-]+$/.test(formData.city.trim())) {
+        errors.city = "City contains invalid characters"
+        isValid = false
+      }
+
+      // State validation
+      if (!formData.state) {
+        errors.state = "Please select your state"
+        isValid = false
+      }
+    }
+
+    setFieldErrors(errors)
+
     if (!isValid) {
-      setError(errorMessage)
+      setError("Please correct the errors in the form")
     } else {
       setError(null)
     }
@@ -115,8 +222,6 @@ export default function QuickContactForm({ showBookingForm, setShowBookingForm }
   }
 
   // Add input formatting for phone numbers
-  // Add this function:
-
   function formatPhoneNumber(value: string): string {
     if (!value) return value
 
@@ -136,29 +241,68 @@ export default function QuickContactForm({ showBookingForm, setShowBookingForm }
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
 
-    // Inside handleChange, add this special case for phone formatting
+    // Clear the error for this field when the user starts typing
+    if (fieldErrors[name]) {
+      setFieldErrors((prev) => {
+        const updated = { ...prev }
+        delete updated[name]
+        return updated
+      })
+    }
+
+    // Special case for phone formatting
     if (name === "phone") {
       const formattedPhone = formatPhoneNumber(value)
       setFormData((prev) => ({ ...prev, [name]: formattedPhone }))
       return // Skip the regular setFormData below
     }
 
-    // Reset city lookup if zip code is changed
-    if (name === "zipCode" && value !== formData.zipCode) {
-      setCityLookupStatus("idle")
-      setFoundCityInfo(null)
-      setCityConfirmed(false)
+    // Special case for ZIP code
+    if (name === "zipCode") {
+      // Only allow digits
+      const digitOnly = value.replace(/\D/g, "")
 
-      // If zip code is 5 digits, try to look up the city
-      if (value.length === 5) {
-        const cityInfo = findCityByZipCode(value)
-        if (cityInfo) {
-          setFoundCityInfo(cityInfo)
-          setCityLookupStatus("found")
-        } else {
-          setCityLookupStatus("not_found")
+      // Reset city lookup if zip code is changed
+      if (digitOnly !== formData.zipCode) {
+        setCityLookupStatus("idle")
+        setFoundCityInfo(null)
+        setCityConfirmed(false)
+
+        // If zip code is 5 digits, try to look up the city
+        if (digitOnly.length === 5) {
+          const cityInfo = findCityByZipCode(digitOnly)
+          if (cityInfo) {
+            setFoundCityInfo(cityInfo)
+            setCityLookupStatus("found")
+          } else {
+            setCityLookupStatus("not_found")
+          }
         }
       }
+
+      // Update with digits only
+      setFormData((prev) => ({ ...prev, [name]: digitOnly }))
+      return
+    }
+
+    // Special case for name to auto-capitalize
+    if (name === "name") {
+      const capitalizedName = value
+        .split(" ")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ")
+      setFormData((prev) => ({ ...prev, [name]: capitalizedName }))
+      return
+    }
+
+    // Special case for city to auto-capitalize
+    if (name === "city") {
+      const capitalizedCity = value
+        .split(" ")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ")
+      setFormData((prev) => ({ ...prev, [name]: capitalizedCity }))
+      return
     }
 
     // Then keep the regular setFormData for other fields
@@ -186,6 +330,13 @@ export default function QuickContactForm({ showBookingForm, setShowBookingForm }
 
     // Validate form before submission
     if (!validateForm()) {
+      // Scroll to the first error
+      if (formRef.current) {
+        const firstErrorField = formRef.current.querySelector('[aria-invalid="true"]')
+        if (firstErrorField) {
+          firstErrorField.scrollIntoView({ behavior: "smooth", block: "center" })
+        }
+      }
       return
     }
 
@@ -279,6 +430,7 @@ export default function QuickContactForm({ showBookingForm, setShowBookingForm }
     if (!showBookingForm) {
       setIsSubmitted(false)
       setError(null)
+      setFieldErrors({})
     }
   }, [showBookingForm])
 
@@ -348,35 +500,69 @@ export default function QuickContactForm({ showBookingForm, setShowBookingForm }
               required
               value={formData.name}
               onChange={handleChange}
-              className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              className={cn(
+                "w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500",
+                fieldErrors.name && "border-red-500 focus:ring-red-500 focus:border-red-500",
+              )}
               aria-label="Your Name"
+              aria-invalid={fieldErrors.name ? "true" : "false"}
+              aria-describedby={fieldErrors.name ? "name-error" : undefined}
             />
+            {fieldErrors.name && (
+              <p id="name-error" className="mt-1 text-sm text-red-500">
+                {fieldErrors.name}
+              </p>
+            )}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <input
-              type="tel"
-              id="quick-phone"
-              name="phone"
-              placeholder="Phone Number*"
-              required
-              value={formData.phone}
-              onChange={handleChange}
-              className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-              aria-label="Phone Number"
-            />
+            <div>
+              <input
+                type="tel"
+                id="quick-phone"
+                name="phone"
+                placeholder="Phone Number*"
+                required
+                value={formData.phone}
+                onChange={handleChange}
+                className={cn(
+                  "w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500",
+                  fieldErrors.phone && "border-red-500 focus:ring-red-500 focus:border-red-500",
+                )}
+                aria-label="Phone Number"
+                aria-invalid={fieldErrors.phone ? "true" : "false"}
+                aria-describedby={fieldErrors.phone ? "phone-error" : undefined}
+              />
+              {fieldErrors.phone && (
+                <p id="phone-error" className="mt-1 text-sm text-red-500">
+                  {fieldErrors.phone}
+                </p>
+              )}
+            </div>
 
-            <input
-              type="email"
-              id="quick-email"
-              name="email"
-              placeholder="Email Address*"
-              required
-              value={formData.email}
-              onChange={handleChange}
-              className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-              aria-label="Email Address"
-            />
+            <div>
+              <input
+                type="email"
+                id="quick-email"
+                name="email"
+                placeholder="Email Address*"
+                required
+                value={formData.email}
+                onChange={handleChange}
+                className={cn(
+                  "w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500",
+                  fieldErrors.email && "border-red-500 focus:ring-red-500 focus:border-red-500",
+                )}
+                aria-label="Email Address"
+                aria-invalid={fieldErrors.email ? "true" : "false"}
+                aria-describedby={fieldErrors.email ? "email-error" : undefined}
+              />
+              {fieldErrors.email && (
+                <p id="email-error" className="mt-1 text-sm text-red-500">
+                  {fieldErrors.email}
+                </p>
+              )}
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -386,8 +572,13 @@ export default function QuickContactForm({ showBookingForm, setShowBookingForm }
                 name="service"
                 value={formData.service}
                 onChange={handleChange}
-                className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className={cn(
+                  "w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500",
+                  fieldErrors.service && "border-red-500 focus:ring-red-500 focus:border-red-500",
+                )}
                 aria-label="Service Needed"
+                aria-invalid={fieldErrors.service ? "true" : "false"}
+                aria-describedby={fieldErrors.service ? "service-error" : undefined}
               >
                 <option value="">Select Service Needed</option>
                 <option value="spring-repair">Spring Repair/Replacement</option>
@@ -398,6 +589,11 @@ export default function QuickContactForm({ showBookingForm, setShowBookingForm }
                 <option value="maintenance">Maintenance/Tune-up</option>
                 <option value="other">Other</option>
               </select>
+              {fieldErrors.service && (
+                <p id="service-error" className="mt-1 text-sm text-red-500">
+                  {fieldErrors.service}
+                </p>
+              )}
             </div>
 
             <div>
@@ -406,8 +602,13 @@ export default function QuickContactForm({ showBookingForm, setShowBookingForm }
                 name="serviceUrgency"
                 value={formData.serviceUrgency}
                 onChange={handleChange}
-                className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className={cn(
+                  "w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500",
+                  fieldErrors.serviceUrgency && "border-red-500 focus:ring-red-500 focus:border-red-500",
+                )}
                 aria-label="When do you need service?"
+                aria-invalid={fieldErrors.serviceUrgency ? "true" : "false"}
+                aria-describedby={fieldErrors.serviceUrgency ? "urgency-error" : undefined}
               >
                 <option value="">When do you need service?</option>
                 <option value="asap">ASAP</option>
@@ -416,6 +617,11 @@ export default function QuickContactForm({ showBookingForm, setShowBookingForm }
                 <option value="few-weeks">Within the next few weeks</option>
                 <option value="not-sure">Not sure yet</option>
               </select>
+              {fieldErrors.serviceUrgency && (
+                <p id="urgency-error" className="mt-1 text-sm text-red-500">
+                  {fieldErrors.serviceUrgency}
+                </p>
+              )}
             </div>
           </div>
 
@@ -452,11 +658,19 @@ export default function QuickContactForm({ showBookingForm, setShowBookingForm }
                 className={cn(
                   "w-full px-4 py-3 pl-10 border rounded-lg focus:ring-primary-500 focus:border-primary-500 transition-all duration-300 text-gray-900",
                   formData.zipCode && "border-gray-300",
+                  fieldErrors.zipCode && "border-red-500 focus:ring-red-500 focus:border-red-500",
                 )}
                 placeholder="Enter your 5-digit ZIP code"
                 aria-required="true"
                 autoComplete="postal-code"
+                aria-invalid={fieldErrors.zipCode ? "true" : "false"}
+                aria-describedby={fieldErrors.zipCode ? "zip-error" : undefined}
               />
+              {fieldErrors.zipCode && (
+                <p id="zip-error" className="mt-1 text-sm text-red-500">
+                  {fieldErrors.zipCode}
+                </p>
+              )}
             </div>
           </div>
 
@@ -510,11 +724,19 @@ export default function QuickContactForm({ showBookingForm, setShowBookingForm }
                   className={cn(
                     "w-full px-4 py-3 border rounded-lg focus:ring-primary-500 focus:border-primary-500 transition-all duration-300 text-gray-900",
                     formData.street && "border-gray-300",
+                    fieldErrors.street && "border-red-500 focus:ring-red-500 focus:border-red-500",
                   )}
                   placeholder="123 Main Street"
                   aria-required="true"
                   autoComplete="address-line1"
+                  aria-invalid={fieldErrors.street ? "true" : "false"}
+                  aria-describedby={fieldErrors.street ? "street-error" : undefined}
                 />
+                {fieldErrors.street && (
+                  <p id="street-error" className="mt-1 text-sm text-red-500">
+                    {fieldErrors.street}
+                  </p>
+                )}
               </div>
 
               {/* City */}
@@ -538,11 +760,19 @@ export default function QuickContactForm({ showBookingForm, setShowBookingForm }
                       "w-full px-4 py-3 pl-10 border rounded-lg focus:ring-primary-500 focus:border-primary-500 transition-all duration-300 text-gray-900",
                       formData.city && "border-gray-300",
                       cityConfirmed ? "bg-gray-100" : "",
+                      fieldErrors.city && "border-red-500 focus:ring-red-500 focus:border-red-500",
                     )}
                     placeholder="Your city"
                     aria-required="true"
                     autoComplete="address-level2"
+                    aria-invalid={fieldErrors.city ? "true" : "false"}
+                    aria-describedby={fieldErrors.city ? "city-error" : undefined}
                   />
+                  {fieldErrors.city && (
+                    <p id="city-error" className="mt-1 text-sm text-red-500">
+                      {fieldErrors.city}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -556,18 +786,27 @@ export default function QuickContactForm({ showBookingForm, setShowBookingForm }
                   name="state"
                   value={formData.state}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border rounded-lg focus:ring-primary-500 focus:border-primary-500 transition-all duration-300 text-gray-900"
+                  className={cn(
+                    "w-full px-4 py-3 border rounded-lg focus:ring-primary-500 focus:border-primary-500 transition-all duration-300 text-gray-900",
+                    fieldErrors.state && "border-red-500 focus:ring-red-500 focus:border-red-500",
+                  )}
                   aria-required="true"
                   autoComplete="address-level1"
+                  aria-invalid={fieldErrors.state ? "true" : "false"}
+                  aria-describedby={fieldErrors.state ? "state-error" : undefined}
                 >
                   <option value="">Select State</option>
-                  <option value="FL">Florida</option>
-                  <option value="AL">Alabama</option>
-                  <option value="GA">Georgia</option>
-                  <option value="SC">South Carolina</option>
-                  <option value="NC">North Carolina</option>
-                  {/* Add more states as needed */}
+                  {US_STATES.map((state) => (
+                    <option key={state.value} value={state.value}>
+                      {state.label}
+                    </option>
+                  ))}
                 </select>
+                {fieldErrors.state && (
+                  <p id="state-error" className="mt-1 text-sm text-red-500">
+                    {fieldErrors.state}
+                  </p>
+                )}
               </div>
 
               {/* Unit/Apt */}
