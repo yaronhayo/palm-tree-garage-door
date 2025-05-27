@@ -77,6 +77,9 @@
   }
   body {
     @apply bg-background text-foreground;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   h1,
   h2,
@@ -85,6 +88,7 @@
   h5,
   h6 {
     @apply text-primary-600 font-bold;
+    text-wrap: balance;
   }
   a {
     @apply transition-colors duration-200;
@@ -130,6 +134,12 @@
   textarea {
     @apply text-base;
     font-size: 16px !important; /* Prevent iOS zoom on focus */
+  }
+
+  /* Set explicit width and height on images to prevent layout shifts */
+  img {
+    height: auto;
+    width: 100%;
   }
 }
 
@@ -203,6 +213,12 @@
       width: 1rem !important;
       height: 1rem !important;
     }
+  }
+
+  /* Content-visibility for off-screen elements */
+  .content-visibility-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: 0 500px;
   }
 }
 
@@ -572,4 +588,30 @@ body.mobile-menu-open {
       transform: translateY(0);
     }
   }
+}
+
+/* Optimize for INP (Interaction to Next Paint) */
+button,
+a,
+input,
+select,
+textarea {
+  touch-action: manipulation;
+}
+
+/* Prevent text from shifting during font loading */
+html {
+  font-display: optional;
+}
+
+/* Optimize image rendering */
+img {
+  image-rendering: auto;
+}
+
+/* Prevent layout shifts from animations */
+.no-layout-shift {
+  transform: translateZ(0);
+  will-change: transform;
+  backface-visibility: hidden;
 }

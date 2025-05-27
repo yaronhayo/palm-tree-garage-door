@@ -17,6 +17,7 @@ const inter = Inter({
   display: "swap",
   preload: true,
   fallback: ["system-ui", "Arial", "sans-serif"],
+  variable: "--font-inter",
 })
 
 export const metadata: Metadata = {
@@ -101,9 +102,18 @@ export default function RootLayout({
   const gtmId = process.env.NEXT_PUBLIC_GTM_ID || process.env.GTM_ID || "GTM-MF948JFL"
 
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="en" className={`scroll-smooth ${inter.variable}`}>
       <head>
         <ResponsiveMetaTags />
+
+        {/* Preload critical assets */}
+        <link rel="preload" href="/logo.png" as="image" type="image/png" />
+        <link rel="preload" href="/images/service-truck.png" as="image" type="image/png" />
+        <link rel="preload" href="/images/garage-door-repair-service.png" as="image" type="image/png" />
+        <link rel="preconnect" href="https://res.cloudinary.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://res.cloudinary.com" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
 
         {/* Google Tag Manager - placed as high as possible in the head */}
         <script
@@ -116,14 +126,6 @@ export default function RootLayout({
           }}
         />
         {/* End Google Tag Manager */}
-
-        {/* Preload critical assets */}
-        <link rel="preload" href="/logo.png" as="image" type="image/png" />
-        <link rel="preload" href="/images/garage-door-repair-service.png" as="image" type="image/png" />
-        <link rel="preconnect" href="https://res.cloudinary.com" crossOrigin="anonymous" />
-        <link rel="dns-prefetch" href="https://res.cloudinary.com" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body className={`${inter.className} antialiased`}>
         {/* Google Tag Manager (noscript) - placed immediately after opening body tag */}

@@ -8,9 +8,10 @@ import { useRef } from "react"
 type LazyImageProps = ImageProps & {
   threshold?: number
   once?: boolean
+  fetchPriority?: "high" | "low" | "auto"
 }
 
-export default function LazyImage({ threshold = 0.1, once = true, ...props }: LazyImageProps) {
+export default function LazyImage({ threshold = 0.1, once = true, fetchPriority = "auto", ...props }: LazyImageProps) {
   const [isLoaded, setIsLoaded] = useState(false)
   const ref = useRef(null)
   const isInView = useInView(ref, { once, amount: threshold })
@@ -23,6 +24,14 @@ export default function LazyImage({ threshold = 0.1, once = true, ...props }: La
     }
   }, [isInView, shouldLoad])
 
+  // Determine if this image is likely to be an LCP candidate
+  const isLcpCandidate = props.priority || fetchPriority === "high"
+
+  // Pre-calculate dimensions to prevent layout shifts
+  const width = typeof props.width === "number" ? props.width : undefined
+  const height = typeof props.height === "number" ? props.height : undefined
+  const aspectRatio = width && height ? width / height : undefined
+
   return (
     <div
       ref={ref}
@@ -30,22 +39,28 @@ export default function LazyImage({ threshold = 0.1, once = true, ...props }: La
       style={{
         height: props.height || "auto",
         width: props.width || "auto",
+        // Set aspect ratio to prevent layout shifts
+        aspectRatio: aspectRatio ? `${aspectRatio}` : undefined,
       }}
+      aria-busy={!isLoaded}
     >
       {shouldLoad ? (
         <Image
           {...props}
-          className={`transition-opacity duration-500 ${isLoaded ? "opacity-100" : "opacity-0"}`}
+          fetchPriority={fetchPriority}
+          className={`transition-opacity duration-300 ${isLoaded ? "opacity-100" : "opacity-0"}`}
           onLoad={() => setIsLoaded(true)}
-          loading="lazy"
+          loading={isLcpCandidate ? "eager" : "lazy"}
+          // Ensure sizes is set for responsive images
+          sizes={props.sizes || "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"}
         />
       ) : (
         <div
-          className="bg-gray-200 animate-pulse"
+          className="bg-gray-200 animate-pulse w-full h-full"
           style={{
-            height: "100%",
-            width: "100%",
+            aspectRatio: aspectRatio ? `${aspectRatio}` : undefined,
           }}
+          aria-hidden="true"
         />
       )}
     </div>

@@ -69,6 +69,11 @@ export default function HeroSection() {
     }
   }
 
+  // Pre-calculate image dimensions to prevent layout shifts
+  const imageWidth = 1920
+  const imageHeight = 1080
+  const aspectRatio = imageWidth / imageHeight
+
   return (
     <section className="relative pt-28 sm:pt-32 pb-20">
       {/* Background Image with Overlay */}
@@ -93,12 +98,13 @@ export default function HeroSection() {
         />
 
         {!imageError ? (
-          <div className="w-full h-full relative">
+          <div className="w-full h-full relative" style={{ aspectRatio: `${aspectRatio}` }}>
             <Image
               src="/images/service-truck.png"
               alt="Palm Tree Garage Door Repairs service truck in South Florida"
               fill
               priority
+              fetchPriority="high"
               className={`object-cover transition-opacity duration-700 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
               sizes={isMobile ? "100vw" : isTablet ? "100vw" : "100vw"}
               quality={isMobile ? 80 : isTablet ? 85 : 90}
