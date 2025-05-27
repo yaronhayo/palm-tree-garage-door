@@ -1,4 +1,6 @@
 import { Resend } from "resend"
+import LeadNotificationEmail from "@/components/emails/LeadNotificationEmail"
+import ClientAutoresponderEmail from "@/components/emails/ClientAutoresponderEmail"
 
 // Create a Resend instance with error handling
 let resend: Resend
@@ -21,6 +23,18 @@ try {
   } as unknown as Resend
 }
 
+// Company name for email display
+const COMPANY_NAME = "Palm Tree Garage Door"
+
+// No-reply email for autoresponders
+const NO_REPLY_EMAIL = "DoNotReply@garagedoorspringsrepairfl.com"
+
+// Email types
+export enum EmailType {
+  LEAD_NOTIFICATION = "lead_notification",
+  CLIENT_AUTORESPONDER = "client_autoresponder",
+}
+
 // Define the FormData type
 export type FormData = {
   name: string
@@ -28,11 +42,15 @@ export type FormData = {
   phone: string
   message?: string
   service?: string
+  serviceUrgency?: string
   urgency?: string
   date?: string
   time?: string
   city?: string
+  state?: string
   zipCode?: string
+  street?: string
+  unit?: string
   formattedAddress?: string
   gateCode?: string
   specialInstructions?: string
@@ -41,19 +59,45 @@ export type FormData = {
   [key: string]: any // Allow for additional properties
 }
 
-// Function to send lead notification email
-export async function sendLeadNotificationEmail(formData: FormData, userInfo?: any) {
+// Helper function to get current time in Eastern Time
+function getCurrentEasternTime(): string {
+  const now = new Date()
+  return new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York",
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    hour12: true,
+    timeZoneName: "short",
+  }).format(now)
+}
+
+/**
+ * Send a lead notification email to the business
+ */
+export async function sendLeadNotificationEmail(
+  formData: FormData,
+  userInfo?: any,
+): Promise<{ success: boolean; error?: any; data?: any }> {
   try {
+    // Add current Eastern Time to userInfo
+    const enhancedUserInfo = {
+      ...userInfo,
+      submissionTimeET: getCurrentEasternTime(),
+    }
+
     // Format the subject line with customer name and zip code
     const zipCode = formData.zipCode || userInfo?.zipCode || "Unknown ZIP"
     const subject = `${formData.isEmergency ? "🚨 EMERGENCY: " : ""}New lead from ${formData.name} at ${zipCode}`
 
     // Send to both email addresses
     const { data, error } = await resend.emails.send({
-      from: `Palm Tree Garage Door <DoNotReply@garagedoorspringsrepairfl.com>`,
+      from: `${COMPANY_NAME} <${NO_REPLY_EMAIL}>`,
       to: ["palmtreegaragedoorrepair@gmail.com", "yaron@gettmarketing.com"],
       subject: subject,
-      react: (await import("../components/emails/LeadNotificationEmail")).default({ formData, userInfo }),
+      react: LeadNotificationEmail({ formData, userInfo: enhancedUserInfo }),
     })
 
     if (error) {
@@ -68,14 +112,18 @@ export async function sendLeadNotificationEmail(formData: FormData, userInfo?: a
   }
 }
 
-// Function to send client autoresponder email
-export async function sendClientAutoresponderEmail(formData: FormData) {
+/**
+ * Send an autoresponder email to the client
+ */
+export async function sendClientAutoresponderEmail(
+  formData: FormData,
+): Promise<{ success: boolean; error?: any; data?: any }> {
   try {
     const { data, error } = await resend.emails.send({
-      from: `Palm Tree Garage Door <support@palmtreegaragedoor.com>`,
+      from: `${COMPANY_NAME} <${NO_REPLY_EMAIL}>`,
       to: [formData.email],
-      subject: `Thank you for contacting Palm Tree Garage Door!`,
-      react: (await import("../components/emails/ClientAutoresponderEmail")).default({ formData }),
+      subject: `Thank you for contacting ${COMPANY_NAME}!`,
+      react: ClientAutoresponderEmail({ formData }),
     })
 
     if (error) {
@@ -93,16 +141,23 @@ export async function sendClientAutoresponderEmail(formData: FormData) {
 /**
  * Send both notification and autoresponder emails for form submissions
  */
-export async function sendFormSubmissionEmails(formData: FormData, userInfo?: any, recaptchaResult?: any) {
+export async function sendFormSubmissionEmails(
+  formData: FormData,
+  userInfo?: any,
+  recaptchaResult?: any,
+): Promise<{ success: boolean; error?: any; notification?: any; autoresponder?: any }> {
   try {
-    // Add recaptcha result to userInfo if provided
-    const enhancedUserInfo = recaptchaResult
-      ? {
-          ...userInfo,
-          recaptchaVerified: recaptchaResult.verified,
-          recaptchaScore: recaptchaResult.score,
-        }
-      : userInfo
+    // Add recaptcha result and Eastern Time to userInfo if provided
+    const enhancedUserInfo = {
+      ...(userInfo || {}),
+      submissionTimeET: getCurrentEasternTime(),
+      ...(recaptchaResult
+        ? {
+            recaptchaVerified: recaptchaResult.verified,
+            recaptchaScore: recaptchaResult.score,
+          }
+        : {}),
+    }
 
     // Send notification email to business
     const notificationResult = await sendLeadNotificationEmail(formData, enhancedUserInfo)

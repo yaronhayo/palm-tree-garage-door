@@ -6,20 +6,22 @@
  * Get the current time in Eastern Time (ET)
  */
 export function getCurrentEasternTime(): Date {
+  // Create a new date object for the current time
   const now = new Date()
 
-  // Convert to ET (UTC-5 or UTC-4 during daylight saving)
-  const etOffsetHours = isDaylightSavingTime(now) ? -4 : -5
-  const utcDate = new Date(now.toUTCString())
-  const etDate = new Date(utcDate.getTime() + etOffsetHours * 60 * 60 * 1000)
+  // Use the built-in toLocaleString with timeZone option to get Eastern Time
+  // This is more reliable than manual offset calculations
+  const etTimeStr = now.toLocaleString("en-US", { timeZone: "America/New_York" })
 
-  return etDate
+  // Create a new Date object from the Eastern Time string
+  return new Date(etTimeStr)
 }
 
 /**
  * Format a date to Eastern Time string
  */
 export function formatEasternTime(date: Date): string {
+  // Use the built-in toLocaleString with timeZone option
   return (
     date.toLocaleString("en-US", {
       timeZone: "America/New_York",
@@ -123,4 +125,39 @@ export function isWithinBusinessHours(): boolean {
   }
 
   return false
+}
+
+/**
+ * Convert a date to Eastern Time
+ * This is a more reliable method than manual offset calculations
+ */
+export function convertToEasternTime(date: Date): Date {
+  // Get the ISO string of the date
+  const dateStr = date.toISOString()
+
+  // Create a formatter that will output the time in Eastern Time
+  const formatter = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York",
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
+    hour12: false,
+  })
+
+  // Format the date to get Eastern Time components
+  const parts = formatter.formatToParts(date)
+
+  // Extract the components
+  const year = Number.parseInt(parts.find((part) => part.type === "year")?.value || "0")
+  const month = Number.parseInt(parts.find((part) => part.type === "month")?.value || "0") - 1 // Months are 0-indexed in JS
+  const day = Number.parseInt(parts.find((part) => part.type === "day")?.value || "0")
+  const hour = Number.parseInt(parts.find((part) => part.type === "hour")?.value || "0")
+  const minute = Number.parseInt(parts.find((part) => part.type === "minute")?.value || "0")
+  const second = Number.parseInt(parts.find((part) => part.type === "second")?.value || "0")
+
+  // Create a new date with Eastern Time components
+  return new Date(year, month, day, hour, minute, second)
 }

@@ -8,7 +8,7 @@ import { trackFormSubmission, FORM_TYPES } from "@/lib/analytics"
 import { cn } from "@/lib/utils"
 import { serviceAreas } from "@/data/service-areas"
 import { trackPhoneCall } from "@/lib/analytics"
-import { getCurrentEasternTime, formatEasternTime } from "@/lib/date-utils"
+import { formatEasternTime } from "@/lib/date-utils"
 import { useRecaptcha } from "@/hooks/useRecaptcha"
 
 interface QuickContactFormProps {
@@ -51,8 +51,7 @@ export default function QuickContactForm({ showBookingForm, setShowBookingForm }
     zipCode: "",
     city: "",
     state: "",
-    streetNumber: "",
-    streetName: "",
+    street: "", // Combined street field
     unit: "",
     gateCode: "",
     specialInstructions: "",
@@ -205,8 +204,9 @@ export default function QuickContactForm({ showBookingForm, setShowBookingForm }
       // Collect client-side user information
       const clientUserInfo = typeof window !== "undefined" ? collectClientUserInfo() : {}
 
-      // Get current Eastern Time
-      const easternTime = formatEasternTime(getCurrentEasternTime())
+      // Get exact submission time and convert to Eastern Time
+      const submissionDate = new Date()
+      const easternTime = formatEasternTime(submissionDate)
 
       // Prepare form data for submission
       const submissionData = {
@@ -229,6 +229,7 @@ export default function QuickContactForm({ showBookingForm, setShowBookingForm }
           userInfo: {
             ...clientUserInfo,
             submissionTimeEastern: easternTime,
+            exactSubmissionTime: submissionDate.toISOString(), // Store exact submission time
           },
         }),
       })
@@ -255,8 +256,7 @@ export default function QuickContactForm({ showBookingForm, setShowBookingForm }
         zipCode: "",
         city: "",
         state: "",
-        streetNumber: "",
-        streetName: "",
+        street: "",
         unit: "",
         gateCode: "",
         specialInstructions: "",
@@ -283,8 +283,7 @@ export default function QuickContactForm({ showBookingForm, setShowBookingForm }
   }, [showBookingForm])
 
   const getFormattedAddress = () => {
-    const parts = [formData.streetNumber, formData.streetName].filter(Boolean).join(" ")
-
+    const parts = [formData.street].filter(Boolean)
     const unitPart = formData.unit ? `Unit ${formData.unit}` : ""
     const cityStatePart = `${formData.city}, ${formData.state} ${formData.zipCode}`
 
@@ -433,7 +432,7 @@ export default function QuickContactForm({ showBookingForm, setShowBookingForm }
             ></textarea>
           </div>
 
-          {/* ZIP Code Field - First */}
+          {/* ZIP Code Field */}
           <div>
             <label htmlFor="zipCode" className="block text-sm font-medium text-gray-700 mb-1">
               ZIP Code <span className="text-red-500">*</span>
@@ -494,82 +493,84 @@ export default function QuickContactForm({ showBookingForm, setShowBookingForm }
             </div>
           )}
 
-          {/* Manual City Entry */}
+          {/* Address Fields - Reorganized */}
           {(cityLookupStatus === "not_found" || (cityLookupStatus === "found" && cityConfirmed)) && (
-            <div>
-              <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-1">
-                City <span className="text-red-500">*</span>
-              </label>
-              <div className="relative">
-                <ArrowRight
-                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5"
-                  aria-hidden="true"
-                />
+            <>
+              {/* Street */}
+              <div>
+                <label htmlFor="street" className="block text-sm font-medium text-gray-700 mb-1">
+                  Street <span className="text-red-500">*</span>
+                </label>
                 <input
                   type="text"
-                  id="city"
-                  name="city"
-                  value={formData.city}
+                  id="street"
+                  name="street"
+                  value={formData.street}
                   onChange={handleChange}
-                  readOnly={cityConfirmed}
                   className={cn(
-                    "w-full px-4 py-3 pl-10 border rounded-lg focus:ring-primary-500 focus:border-primary-500 transition-all duration-300 text-gray-900",
-                    formData.city && "border-gray-300",
-                    cityConfirmed ? "bg-gray-100" : "",
+                    "w-full px-4 py-3 border rounded-lg focus:ring-primary-500 focus:border-primary-500 transition-all duration-300 text-gray-900",
+                    formData.street && "border-gray-300",
                   )}
-                  placeholder="Your city"
+                  placeholder="123 Main Street"
                   aria-required="true"
-                  autoComplete="address-level2"
+                  autoComplete="address-line1"
                 />
               </div>
-            </div>
-          )}
 
-          {/* Street Address Fields */}
-          {(cityConfirmed || cityLookupStatus === "not_found") && (
-            <>
-              <div className="grid grid-cols-3 gap-3">
-                <div className="col-span-1">
-                  <label htmlFor="streetNumber" className="block text-sm font-medium text-gray-700 mb-1">
-                    Street # <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    id="streetNumber"
-                    name="streetNumber"
-                    value={formData.streetNumber}
-                    onChange={handleChange}
-                    className={cn(
-                      "w-full px-4 py-3 border rounded-lg focus:ring-primary-500 focus:border-primary-500 transition-all duration-300 text-gray-900",
-                      formData.streetNumber && "border-gray-300",
-                    )}
-                    placeholder="123"
-                    aria-required="true"
-                    autoComplete="address-line1"
+              {/* City */}
+              <div>
+                <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-1">
+                  City <span className="text-red-500">*</span>
+                </label>
+                <div className="relative">
+                  <ArrowRight
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5"
+                    aria-hidden="true"
                   />
-                </div>
-
-                <div className="col-span-2">
-                  <label htmlFor="streetName" className="block text-sm font-medium text-gray-700 mb-1">
-                    Street Name <span className="text-red-500">*</span>
-                  </label>
                   <input
                     type="text"
-                    id="streetName"
-                    name="streetName"
-                    value={formData.streetName}
+                    id="city"
+                    name="city"
+                    value={formData.city}
                     onChange={handleChange}
+                    readOnly={cityConfirmed}
                     className={cn(
-                      "w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500",
-                      formData.streetName && "border-gray-300",
+                      "w-full px-4 py-3 pl-10 border rounded-lg focus:ring-primary-500 focus:border-primary-500 transition-all duration-300 text-gray-900",
+                      formData.city && "border-gray-300",
+                      cityConfirmed ? "bg-gray-100" : "",
                     )}
-                    placeholder="Main Street"
+                    placeholder="Your city"
                     aria-required="true"
-                    autoComplete="address-line2"
+                    autoComplete="address-level2"
                   />
                 </div>
               </div>
 
+              {/* State */}
+              <div>
+                <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-1">
+                  State <span className="text-red-500">*</span>
+                </label>
+                <select
+                  id="state"
+                  name="state"
+                  value={formData.state}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 border rounded-lg focus:ring-primary-500 focus:border-primary-500 transition-all duration-300 text-gray-900"
+                  aria-required="true"
+                  autoComplete="address-level1"
+                >
+                  <option value="">Select State</option>
+                  <option value="FL">Florida</option>
+                  <option value="AL">Alabama</option>
+                  <option value="GA">Georgia</option>
+                  <option value="SC">South Carolina</option>
+                  <option value="NC">North Carolina</option>
+                  {/* Add more states as needed */}
+                </select>
+              </div>
+
+              {/* Unit/Apt */}
               <div>
                 <label htmlFor="unit" className="block text-sm font-medium text-gray-700 mb-1">
                   Unit/Apt # <span className="text-gray-400">(Optional)</span>
@@ -590,7 +591,7 @@ export default function QuickContactForm({ showBookingForm, setShowBookingForm }
           )}
 
           {/* Address Preview */}
-          {formData.city && formData.streetNumber && formData.streetName && (
+          {formData.city && formData.street && formData.state && (
             <div className="mt-4 p-3 bg-gray-50 border border-gray-200 rounded-lg">
               <p className="text-sm text-gray-500 mb-1">Your address:</p>
               <p className="font-medium text-primary-600">{getFormattedAddress()}</p>

@@ -7,8 +7,17 @@ interface LeadNotificationEmailProps {
 }
 
 export default function LeadNotificationEmail({ formData, userInfo }: LeadNotificationEmailProps) {
-  // Format the submission time in Eastern Time
-  const submissionTime = userInfo?.submissionTimeEastern || formatEasternTime(new Date())
+  // Get the exact submission time from userInfo
+  let submissionTime = ""
+
+  if (userInfo?.exactSubmissionTime) {
+    // If we have the exact submission time, format it in Eastern Time
+    const exactDate = new Date(userInfo.exactSubmissionTime)
+    submissionTime = formatEasternTime(exactDate)
+  } else {
+    // Fallback to the pre-formatted time or current time
+    submissionTime = userInfo?.submissionTimeEastern || formatEasternTime(new Date())
+  }
 
   // Format phone number for the call link
   const formattedPhone = formData.phone?.replace(/\D/g, "") || ""
@@ -138,6 +147,12 @@ export default function LeadNotificationEmail({ formData, userInfo }: LeadNotifi
                   <td style={{ padding: "8px 0" }}>{formData.city}</td>
                 </tr>
               )}
+              {formData.state && (
+                <tr>
+                  <td style={{ padding: "8px 0", fontWeight: "bold" }}>State:</td>
+                  <td style={{ padding: "8px 0" }}>{formData.state}</td>
+                </tr>
+              )}
               {formData.zipCode && (
                 <tr>
                   <td style={{ padding: "8px 0", fontWeight: "bold" }}>ZIP Code:</td>
@@ -176,6 +191,12 @@ export default function LeadNotificationEmail({ formData, userInfo }: LeadNotifi
                 <tr>
                   <td style={{ padding: "8px 0", fontWeight: "bold", width: "150px" }}>Service Requested:</td>
                   <td style={{ padding: "8px 0" }}>{formData.service}</td>
+                </tr>
+              )}
+              {formData.serviceUrgency && (
+                <tr>
+                  <td style={{ padding: "8px 0", fontWeight: "bold" }}>Service Urgency:</td>
+                  <td style={{ padding: "8px 0" }}>{formData.serviceUrgency}</td>
                 </tr>
               )}
               {formData.urgency && (
