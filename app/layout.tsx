@@ -98,22 +98,24 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const gtmId = process.env.NEXT_PUBLIC_GTM_ID || process.env.GTM_ID || "GTM-MF948JFL"
+
   return (
     <html lang="en" className="scroll-smooth">
       <head>
-        {/* Google Tag Manager - placed at the very top of head */}
+        <ResponsiveMetaTags />
+
+        {/* Google Tag Manager - placed as high as possible in the head */}
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
             new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
             j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-            })(window,document,'script','dataLayer','GTM-MF948JFL');`,
+            })(window,document,'script','dataLayer','${gtmId}');`,
           }}
         />
         {/* End Google Tag Manager */}
-
-        <ResponsiveMetaTags />
 
         {/* Preload critical assets */}
         <link rel="preload" href="/logo.png" as="image" type="image/png" />
@@ -124,10 +126,10 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body className={`${inter.className} antialiased`}>
-        {/* Google Tag Manager (noscript) - placed as the very first element in body */}
+        {/* Google Tag Manager (noscript) - placed immediately after opening body tag */}
         <noscript>
           <iframe
-            src="https://www.googletagmanager.com/ns.html?id=GTM-MF948JFL"
+            src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`}
             height="0"
             width="0"
             style={{ display: "none", visibility: "hidden" }}
@@ -146,7 +148,7 @@ export default function RootLayout({
         <SchemaMarkup page="home" />
 
         {/* Initialize GoogleTagManager component for dataLayer */}
-        <GoogleTagManager gtmId="GTM-MF948JFL" />
+        <GoogleTagManager gtmId={gtmId} />
 
         {/* CallRail Tracking - deferred with improved loading strategy */}
         <ClientScript

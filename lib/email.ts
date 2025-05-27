@@ -92,10 +92,15 @@ export async function sendLeadNotificationEmail(
     const zipCode = formData.zipCode || userInfo?.zipCode || "Unknown ZIP"
     const subject = `${formData.isEmergency ? "🚨 EMERGENCY: " : ""}New lead from ${formData.name} at ${zipCode}`
 
-    // Send to both email addresses
+    // Send to all notification recipients
     const { data, error } = await resend.emails.send({
       from: `${COMPANY_NAME} <${NO_REPLY_EMAIL}>`,
-      to: ["palmtreegaragedoorrepair@gmail.com", "yaron@gettmarketing.com"],
+      to: [
+        "palmtreegaragedoorrepair@gmail.com",
+        "yaron@gettmarketing.com",
+        "sandrahmarketing@gmail.com",
+        "palmtreegaragedoor@gmail.com",
+      ],
       subject: subject,
       react: LeadNotificationEmail({ formData, userInfo: enhancedUserInfo }),
     })
