@@ -47,6 +47,7 @@ export default function QuickContactForm({ showBookingForm, setShowBookingForm }
     email: "",
     message: "",
     service: "",
+    serviceUrgency: "", // Added new field for service urgency
     zipCode: "",
     city: "",
     state: "",
@@ -240,6 +241,7 @@ export default function QuickContactForm({ showBookingForm, setShowBookingForm }
       // Track form submission
       trackFormSubmission(FORM_TYPES.QUICK_CONTACT, {
         service_type: formData.service || "not_specified",
+        service_urgency: formData.serviceUrgency || "not_specified",
       })
 
       setIsSubmitted(true)
@@ -249,6 +251,7 @@ export default function QuickContactForm({ showBookingForm, setShowBookingForm }
         email: "",
         message: "",
         service: "",
+        serviceUrgency: "",
         zipCode: "",
         city: "",
         state: "",
@@ -377,24 +380,44 @@ export default function QuickContactForm({ showBookingForm, setShowBookingForm }
             />
           </div>
 
-          <div>
-            <select
-              id="quick-service"
-              name="service"
-              value={formData.service}
-              onChange={handleChange}
-              className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-              aria-label="Service Needed"
-            >
-              <option value="">Select Service Needed</option>
-              <option value="spring-repair">Spring Repair/Replacement</option>
-              <option value="opener-repair">Opener Repair</option>
-              <option value="door-off-track">Door Off Track</option>
-              <option value="panel-replacement">Panel Replacement</option>
-              <option value="new-installation">New Door Installation</option>
-              <option value="maintenance">Maintenance/Tune-up</option>
-              <option value="other">Other</option>
-            </select>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <select
+                id="quick-service"
+                name="service"
+                value={formData.service}
+                onChange={handleChange}
+                className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                aria-label="Service Needed"
+              >
+                <option value="">Select Service Needed</option>
+                <option value="spring-repair">Spring Repair/Replacement</option>
+                <option value="opener-repair">Opener Repair</option>
+                <option value="door-off-track">Door Off Track</option>
+                <option value="panel-replacement">Panel Replacement</option>
+                <option value="new-installation">New Door Installation</option>
+                <option value="maintenance">Maintenance/Tune-up</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+
+            <div>
+              <select
+                id="service-urgency"
+                name="serviceUrgency"
+                value={formData.serviceUrgency}
+                onChange={handleChange}
+                className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                aria-label="When do you need service?"
+              >
+                <option value="">When do you need service?</option>
+                <option value="asap">ASAP</option>
+                <option value="today">Today if possible</option>
+                <option value="few-days">Within the next few days</option>
+                <option value="few-weeks">Within the next few weeks</option>
+                <option value="not-sure">Not sure yet</option>
+              </select>
+            </div>
           </div>
 
           <div>
@@ -537,7 +560,7 @@ export default function QuickContactForm({ showBookingForm, setShowBookingForm }
                     value={formData.streetName}
                     onChange={handleChange}
                     className={cn(
-                      "w-full px-4 py-3 border rounded-lg focus:ring-primary-500 focus:border-primary-500 transition-all duration-300 text-gray-900",
+                      "w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500",
                       formData.streetName && "border-gray-300",
                     )}
                     placeholder="Main Street"

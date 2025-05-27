@@ -1,54 +1,13 @@
 "use client"
 
-import type React from "react"
-
 import { useState } from "react"
-import { Phone, Calendar, Clock, CheckCircle, ArrowRight, Mail, MapPin } from 'lucide-react'
+import { Phone, Clock, CheckCircle, Mail, MapPin } from "lucide-react"
 import { trackPhoneCall } from "@/lib/analytics"
+import QuickContactForm from "./forms/QuickContactForm"
 
 export default function BookingSection() {
+  const [showBookingForm, setShowBookingForm] = useState(false)
   const [formSubmitted, setFormSubmitted] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    service: "",
-    message: "",
-    address: "",
-    preferredDate: "",
-    preferredTime: "",
-  })
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-
-    try {
-      // Simulate form submission
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-      setFormSubmitted(true)
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        service: "",
-        message: "",
-        address: "",
-        preferredDate: "",
-        preferredTime: "",
-      })
-    } catch (error) {
-      console.error("Error submitting form:", error)
-    } finally {
-      setIsLoading(false)
-    }
-  }
 
   const handlePhoneClick = () => {
     trackPhoneCall("3213669723", "booking_section")
@@ -67,199 +26,21 @@ export default function BookingSection() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
           {/* Left Column - Form */}
-          <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
-            {formSubmitted ? (
-              <div className="text-center py-8">
-                <div className="bg-green-100 text-green-700 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6">
-                  <CheckCircle className="h-8 w-8" />
-                </div>
-                <h3 className="text-2xl font-bold text-primary-600 mb-4">Booking Request Received!</h3>
-                <p className="text-gray-600 mb-6">
-                  Thank you for scheduling with us. We'll contact you shortly to confirm your appointment.
-                </p>
-                <button
-                  onClick={() => setFormSubmitted(false)}
-                  className="bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 px-6 rounded-md transition-all duration-300 inline-flex items-center"
-                >
-                  <ArrowRight className="mr-2 h-5 w-5 rotate-180" />
-                  Book Another Service
-                </button>
-              </div>
+          <div className="bg-white rounded-lg shadow-xl p-6 border-l-4 border-accent-500 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-accent-500/10 rounded-full -mr-8 -mt-8"></div>
+            <div className="absolute bottom-0 left-0 w-16 h-16 bg-primary-600/10 rounded-full -ml-8 -mb-8"></div>
+            {typeof QuickContactForm === "function" ? (
+              <QuickContactForm showBookingForm={showBookingForm} setShowBookingForm={setShowBookingForm} />
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                      Your Name*
-                    </label>
-                    <input
-                      type="text"
-                      id="name"
-                      name="name"
-                      required
-                      value={formData.name}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-                      Phone Number*
-                    </label>
-                    <input
-                      type="tel"
-                      id="phone"
-                      name="phone"
-                      required
-                      value={formData.phone}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                    Email Address*
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    required
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">
-                    Service Address*
-                  </label>
-                  <input
-                    type="text"
-                    id="address"
-                    name="address"
-                    required
-                    value={formData.address}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                    placeholder="Street address, city, state, zip"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="service" className="block text-sm font-medium text-gray-700 mb-1">
-                    Service Needed*
-                  </label>
-                  <select
-                    id="service"
-                    name="service"
-                    required
-                    value={formData.service}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  >
-                    <option value="">Select a service</option>
-                    <option value="spring-repair">Spring Repair/Replacement</option>
-                    <option value="opener-repair">Opener Repair</option>
-                    <option value="door-off-track">Door Off Track</option>
-                    <option value="panel-replacement">Panel Replacement</option>
-                    <option value="new-installation">New Door Installation</option>
-                    <option value="maintenance">Maintenance/Tune-up</option>
-                    <option value="other">Other (please specify)</option>
-                  </select>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label htmlFor="preferredDate" className="block text-sm font-medium text-gray-700 mb-1">
-                      Preferred Date
-                    </label>
-                    <input
-                      type="date"
-                      id="preferredDate"
-                      name="preferredDate"
-                      value={formData.preferredDate}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="preferredTime" className="block text-sm font-medium text-gray-700 mb-1">
-                      Preferred Time
-                    </label>
-                    <select
-                      id="preferredTime"
-                      name="preferredTime"
-                      value={formData.preferredTime}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                    >
-                      <option value="">Select a time</option>
-                      <option value="morning">Morning (8am-12pm)</option>
-                      <option value="afternoon">Afternoon (12pm-4pm)</option>
-                      <option value="evening">Evening (4pm-8pm)</option>
-                      <option value="anytime">Anytime</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div>
-                  <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
-                    Additional Details
-                  </label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    rows={4}
-                    value={formData.message}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                    placeholder="Please provide any additional details about your garage door issue..."
-                  ></textarea>
-                </div>
-
-                <div className="flex justify-center">
-                  <button
-                    type="submit"
-                    disabled={isLoading}
-                    className="bg-accent-500 hover:bg-accent-600 text-primary-900 font-bold py-3 px-8 rounded-md transition-all duration-300 flex items-center justify-center"
-                  >
-                    {isLoading ? (
-                      <>
-                        <svg
-                          className="animate-spin -ml-1 mr-3 h-5 w-5 text-primary-900"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          ></circle>
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                          ></path>
-                        </svg>
-                        Processing...
-                      </>
-                    ) : (
-                      <>
-                        <Calendar className="mr-2 h-5 w-5" />
-                        Schedule Service
-                      </>
-                    )}
-                  </button>
-                </div>
-              </form>
+              <div className="p-4 text-center">
+                <p className="text-gray-700">Contact form is currently unavailable.</p>
+                <a
+                  href="tel:+13213669723"
+                  className="mt-4 inline-block bg-accent-500 hover:bg-accent-600 text-primary-900 font-bold py-2 px-4 rounded-md"
+                >
+                  Call Us
+                </a>
+              </div>
             )}
           </div>
 
