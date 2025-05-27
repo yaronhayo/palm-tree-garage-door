@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { Clock, Shield, Award, ArrowRight, Phone } from "lucide-react"
+import { Clock, Shield, Award, ArrowRight, Phone, Calendar } from "lucide-react"
 import { trackPhoneCall } from "@/lib/analytics"
 import QuickContactForm from "./forms/QuickContactForm"
 
@@ -135,7 +135,8 @@ export default function HeroSection() {
           {/* Left Column - Content */}
           <div>
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 leading-tight text-white">
-              Fast & Reliable Garage Door Repair in South Florida
+              <span className="text-accent-500 animate-text-glow">Fast & Reliable</span> Garage Door Repair in South
+              Florida
             </h1>
 
             <p className="text-lg sm:text-xl text-white mb-8">
@@ -146,23 +147,23 @@ export default function HeroSection() {
             <div className="space-y-4 mb-10">
               <div className="flex items-center">
                 <div className="bg-accent-500/20 p-2 rounded-full mr-3 flex-shrink-0">
-                  <Clock className="h-5 w-5 text-accent-500" />
+                  <Shield className="h-5 w-5 text-accent-500" />
                 </div>
-                <span className="text-base sm:text-lg text-white">Same-Day Service Available</span>
+                <span className="text-base sm:text-lg text-white">Lifetime Warranty</span>
               </div>
 
               <div className="flex items-center">
                 <div className="bg-accent-500/20 p-2 rounded-full mr-3 flex-shrink-0">
-                  <Shield className="h-5 w-5 text-accent-500" />
+                  <Clock className="h-5 w-5 text-accent-500" />
                 </div>
-                <span className="text-base sm:text-lg text-white">All Work Guaranteed</span>
+                <span className="text-base sm:text-lg text-white">Free Estimates</span>
               </div>
 
               <div className="flex items-center">
                 <div className="bg-accent-500/20 p-2 rounded-full mr-3 flex-shrink-0">
                   <Award className="h-5 w-5 text-accent-500" />
                 </div>
-                <span className="text-base sm:text-lg text-white">Licensed & Insured Technicians</span>
+                <span className="text-base sm:text-lg text-white">Seniors and Veterans Discounts Available</span>
               </div>
             </div>
 
@@ -185,6 +186,7 @@ export default function HeroSection() {
                   document.getElementById("booking")?.scrollIntoView({ behavior: "smooth" })
                 }}
               >
+                <Calendar className="mr-2 h-5 w-5" />
                 Book Online
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>

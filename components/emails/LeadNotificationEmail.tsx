@@ -24,13 +24,19 @@ export default function LeadNotificationEmail({ formData, userInfo }: LeadNotifi
         backgroundColor: "#f9f9f9",
       }}
     >
-      {/* Header with Logo */}
+      {/* Header with Business Name */}
       <div style={{ backgroundColor: "#0D423A", padding: "20px", textAlign: "center", borderRadius: "8px 8px 0 0" }}>
-        <img
-          src="https://palmtreegaragedoor.com/logo.png"
-          alt="Palm Tree Garage Door"
-          style={{ maxWidth: "200px", height: "auto" }}
-        />
+        <h1
+          style={{
+            color: "#ffffff",
+            fontSize: "28px",
+            fontWeight: "bold",
+            margin: "0",
+            fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
+          }}
+        >
+          Palm Tree Garage Door
+        </h1>
       </div>
 
       {/* Main Content */}
@@ -336,7 +342,7 @@ export default function LeadNotificationEmail({ formData, userInfo }: LeadNotifi
           </table>
         </div>
 
-        {/* User Technical Information (Collapsible) */}
+        {/* User Technical Information */}
         {userInfo && (
           <div
             style={{
@@ -369,6 +375,33 @@ export default function LeadNotificationEmail({ formData, userInfo }: LeadNotifi
                     <td style={{ padding: "4px 0" }}>{userInfo.ip}</td>
                   </tr>
                 )}
+                {(userInfo.city || userInfo.country) && (
+                  <tr>
+                    <td style={{ padding: "4px 0", fontWeight: "bold" }}>User Location:</td>
+                    <td style={{ padding: "4px 0" }}>
+                      {[userInfo.city, userInfo.region, userInfo.country].filter(Boolean).join(", ")}
+                      {userInfo.isVpn && <span style={{ color: "#d32f2f", marginLeft: "5px" }}> (VPN detected)</span>}
+                    </td>
+                  </tr>
+                )}
+                {userInfo.device && (
+                  <tr>
+                    <td style={{ padding: "4px 0", fontWeight: "bold" }}>Device Used:</td>
+                    <td style={{ padding: "4px 0" }}>{userInfo.device}</td>
+                  </tr>
+                )}
+                {userInfo.browser && (
+                  <tr>
+                    <td style={{ padding: "4px 0", fontWeight: "bold" }}>Browser:</td>
+                    <td style={{ padding: "4px 0" }}>{userInfo.browser}</td>
+                  </tr>
+                )}
+                {userInfo.os && (
+                  <tr>
+                    <td style={{ padding: "4px 0", fontWeight: "bold" }}>Operating System:</td>
+                    <td style={{ padding: "4px 0" }}>{userInfo.os}</td>
+                  </tr>
+                )}
                 {userInfo.screen && (
                   <tr>
                     <td style={{ padding: "4px 0", fontWeight: "bold" }}>Screen Size:</td>
@@ -377,28 +410,16 @@ export default function LeadNotificationEmail({ formData, userInfo }: LeadNotifi
                     </td>
                   </tr>
                 )}
-                {userInfo.userAgent && (
+                {userInfo.timezone && (
                   <tr>
-                    <td style={{ padding: "4px 0", fontWeight: "bold" }}>User Agent:</td>
-                    <td style={{ padding: "4px 0", fontSize: "12px" }}>{userInfo.userAgent}</td>
-                  </tr>
-                )}
-                {userInfo.platform && (
-                  <tr>
-                    <td style={{ padding: "4px 0", fontWeight: "bold" }}>Platform:</td>
-                    <td style={{ padding: "4px 0" }}>{userInfo.platform}</td>
+                    <td style={{ padding: "4px 0", fontWeight: "bold" }}>Timezone:</td>
+                    <td style={{ padding: "4px 0" }}>{userInfo.timezone}</td>
                   </tr>
                 )}
                 {userInfo.language && (
                   <tr>
                     <td style={{ padding: "4px 0", fontWeight: "bold" }}>Language:</td>
                     <td style={{ padding: "4px 0" }}>{userInfo.language}</td>
-                  </tr>
-                )}
-                {userInfo.timezone && (
-                  <tr>
-                    <td style={{ padding: "4px 0", fontWeight: "bold" }}>User Timezone:</td>
-                    <td style={{ padding: "4px 0" }}>{userInfo.timezone}</td>
                   </tr>
                 )}
                 {userInfo.recaptchaVerified !== undefined && (

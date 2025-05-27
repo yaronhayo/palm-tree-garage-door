@@ -2,9 +2,8 @@
 
 import { useState, useEffect, useRef } from "react"
 import { useKeenSlider } from "keen-slider/react"
-import { Star, ChevronLeft, ChevronRight, ArrowRight } from "lucide-react"
+import { Star, ChevronLeft, ChevronRight } from "lucide-react"
 import "keen-slider/keen-slider.min.css"
-import Link from "next/link"
 import { motion, useInView } from "framer-motion"
 import dynamic from "next/dynamic"
 
@@ -17,7 +16,6 @@ const TestimonialCard = dynamic(() => import("@/components/TestimonialCard"), {
       <div className="h-4 bg-gray-200 rounded w-1/2"></div>
     </div>
   ),
-  ssr: false,
 })
 
 // Replace the testimonialsData import with this local array
@@ -183,10 +181,6 @@ export default function TestimonialsSection() {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, amount: 0.2 })
 
-  // Calculate average rating - remove this calculation since we're hardcoding to 4.9
-  // const averageRating =
-  //   testimonialsData.reduce((sum, testimonial) => sum + testimonial.rating, 0) / testimonialsData.length
-
   // Update slides per view based on screen size
   useEffect(() => {
     const handleResize = () => {
@@ -294,83 +288,75 @@ export default function TestimonialsSection() {
           <span className="ml-2 text-lg font-semibold">4.9 out of 5</span>
         </motion.div>
         <motion.p
-          className="text-lg text-primary-700 max-w-2xl mx-auto"
+          className="text-lg text-primary-700 max-w-2xl mx-auto text-center mb-12"
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : { opacity: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
         >
           Based on <span className="font-semibold">268+</span> verified customer reviews
         </motion.p>
-      </div>
 
-      <div className="relative" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-        <div ref={keenSliderRef} className="keen-slider pb-12">
-          {testimonialsData.map((testimonial) => (
-            <div key={testimonial.id} className="keen-slider__slide">
-              <TestimonialCard testimonial={testimonial} />
-            </div>
-          ))}
-        </div>
-
-        {loaded && instanceRef.current && (
-          <>
-            <button
-              onClick={(e) => {
-                e.stopPropagation()
-                instanceRef.current?.prev()
-              }}
-              className={`absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 lg:-translate-x-6 bg-white border border-gray-300 rounded-full p-3 shadow-md hover:bg-gray-100 transition-colors ${
-                currentSlide === 0 ? "opacity-50 cursor-not-allowed" : "opacity-90 hover:opacity-100"
-              }`}
-              disabled={currentSlide === 0}
-              aria-label="Previous testimonial"
-            >
-              <ChevronLeft className="h-5 w-5 text-primary-600" />
-            </button>
-
-            <button
-              onClick={(e) => {
-                e.stopPropagation()
-                instanceRef.current?.next()
-              }}
-              className={`absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 lg:translate-x-6 bg-white border border-gray-300 rounded-full p-3 shadow-md hover:bg-gray-100 transition-colors ${
-                currentSlide === instanceRef.current.track.details.slides.length - slidesPerView
-                  ? "opacity-50 cursor-not-allowed"
-                  : "opacity-90 hover:opacity-100"
-              }`}
-              disabled={currentSlide === instanceRef.current.track.details.slides.length - slidesPerView}
-              aria-label="Next testimonial"
-            >
-              <ChevronRight className="h-5 w-5 text-primary-600" />
-            </button>
-          </>
-        )}
-
-        {/* Pagination dots */}
-        {loaded && instanceRef.current && (
-          <div className="flex justify-center mt-6 space-x-2">
-            {[...Array(instanceRef.current.track.details.slides.length - (slidesPerView - 1))].map((_, idx) => (
-              <button
-                key={idx}
-                onClick={() => instanceRef.current?.moveToIdx(idx)}
-                className={`h-2 w-2 rounded-full transition-all duration-300 ${
-                  currentSlide === idx ? "bg-primary-600 w-6" : "bg-gray-300 hover:bg-primary-400"
-                }`}
-                aria-label={`Go to testimonial ${idx + 1}`}
-              ></button>
+        <div className="relative" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+          <div ref={keenSliderRef} className="keen-slider pb-12">
+            {testimonialsData.map((testimonial) => (
+              <div key={testimonial.id} className="keen-slider__slide">
+                <TestimonialCard testimonial={testimonial} />
+              </div>
             ))}
           </div>
-        )}
-      </div>
 
-      <div className="text-center mt-12">
-        <Link
-          href="#booking"
-          className="bg-white hover:bg-gray-100 text-primary-900 border border-primary-200 font-bold py-3 px-8 rounded-md transition-colors inline-flex items-center group"
-        >
-          Join Our Satisfied Customers
-          <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-        </Link>
+          {loaded && instanceRef.current && (
+            <>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  instanceRef.current?.prev()
+                }}
+                className={`absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 lg:-translate-x-6 bg-white border border-gray-300 rounded-full p-3 shadow-md hover:bg-gray-100 transition-colors ${
+                  currentSlide === 0 ? "opacity-50 cursor-not-allowed" : "opacity-90 hover:opacity-100"
+                }`}
+                disabled={currentSlide === 0}
+                aria-label="Previous testimonial"
+              >
+                <ChevronLeft className="h-5 w-5 text-primary-600" />
+              </button>
+
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  instanceRef.current?.next()
+                }}
+                className={`absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 lg:translate-x-6 bg-white border border-gray-300 rounded-full p-3 shadow-md hover:bg-gray-100 transition-colors ${
+                  currentSlide === instanceRef.current.track.details.slides.length - slidesPerView
+                    ? "opacity-50 cursor-not-allowed"
+                    : "opacity-90 hover:opacity-100"
+                }`}
+                disabled={currentSlide === instanceRef.current.track.details.slides.length - slidesPerView}
+                aria-label="Next testimonial"
+              >
+                <ChevronRight className="h-5 w-5 text-primary-600" />
+              </button>
+            </>
+          )}
+
+          {/* Pagination dots */}
+          {loaded && instanceRef.current && (
+            <div className="flex justify-center mt-6 space-x-2">
+              {[...Array(Math.max(0, instanceRef.current.track.details.slides.length - (slidesPerView - 1)))].map(
+                (_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => instanceRef.current?.moveToIdx(idx)}
+                    className={`h-2 w-2 rounded-full transition-all duration-300 ${
+                      currentSlide === idx ? "bg-primary-600 w-6" : "bg-gray-300 hover:bg-primary-400"
+                    }`}
+                    aria-label={`Go to testimonial ${idx + 1}`}
+                  ></button>
+                ),
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </section>
   )

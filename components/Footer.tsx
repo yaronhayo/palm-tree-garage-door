@@ -1,5 +1,6 @@
 "use client"
 
+import type React from "react"
 import Link from "next/link"
 import Image from "next/image"
 import {
@@ -26,7 +27,7 @@ import { useState, useCallback } from "react"
 import { PrivacyPolicyModal } from "./PrivacyPolicyModal"
 import { TermsOfServiceModal } from "./TermsOfServiceModal"
 
-const Footer = () => {
+export default function Footer() {
   const pathname = usePathname()
   const [isPrivacyPolicyOpen, setIsPrivacyPolicyOpen] = useState(false)
   const [isTermsOfServiceOpen, setIsTermsOfServiceOpen] = useState(false)
@@ -45,7 +46,7 @@ const Footer = () => {
     })
   }, [])
 
-  const handleLogoClick = (e: any) => {
+  const handleLogoClick = (e: React.MouseEvent) => {
     // If we're already on the homepage, prevent default and scroll to top
     if (pathname === "/") {
       e.preventDefault()
@@ -58,7 +59,7 @@ const Footer = () => {
 
   // Handle smooth scrolling for anchor links
   const handleAnchorClick = useCallback(
-    (e: any, href: string) => {
+    (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
       // Only handle anchor links on the homepage
       if (pathname === "/" && href.startsWith("/#")) {
         e.preventDefault()
@@ -212,9 +213,9 @@ const Footer = () => {
                 </li>
                 <li>
                   <Link
-                    href="/#door-problems"
+                    href="/#common-issues"
                     className="text-gray-300 hover:text-accent-500 transition-colors flex items-center"
-                    onClick={(e) => handleAnchorClick(e, "/#door-problems")}
+                    onClick={(e) => handleAnchorClick(e, "/#common-issues")}
                   >
                     <AlertTriangle className="h-4 w-4 mr-2 text-accent-500" />
                     Problems We Solve
@@ -346,5 +347,3 @@ const Footer = () => {
     </>
   )
 }
-
-export default Footer

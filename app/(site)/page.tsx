@@ -2,6 +2,7 @@ import { Suspense } from "react"
 import HeroSection from "@/components/HeroSection"
 import ServicesGrid from "@/components/ServicesGrid"
 import dynamic from "next/dynamic"
+import SchemaMarkup from "@/components/SchemaMarkup"
 
 // Enhanced lazy loading with better loading states - removed ssr option
 const WhyChooseUs = dynamic(() => import("@/components/WhyChooseUs"), {
@@ -40,12 +41,25 @@ const SectionPlaceholder = ({ label }: { label: string }) => (
   </div>
 )
 
+// Metadata for the page
+export const metadata = {
+  title: "Palm Tree Garage Door Repair | South Florida's Trusted Garage Door Experts",
+  description:
+    "Professional garage door repair and installation services in South Florida. 24/7 emergency service, free estimates, and expert technicians for all garage door needs.",
+  alternates: {
+    canonical: "https://palmtreegaragedoor.com",
+  },
+}
+
 export default function Home() {
   return (
     <>
       {/* Critical above-the-fold content loaded immediately */}
       <HeroSection />
-      <ServicesGrid />
+
+      <section id="services">
+        <ServicesGrid />
+      </section>
 
       {/* Lazy load below-the-fold content with improved Suspense boundaries */}
       <Suspense fallback={<SectionPlaceholder label="Why Choose Us" />}>
@@ -53,26 +67,39 @@ export default function Home() {
       </Suspense>
 
       <Suspense fallback={<SectionPlaceholder label="Common Issues" />}>
-        <CommonIssuesSection />
+        <section id="common-issues">
+          <CommonIssuesSection />
+        </section>
       </Suspense>
 
       <EmergencyServiceSection />
 
       <Suspense fallback={<SectionPlaceholder label="Testimonials" />}>
-        <TestimonialsSection />
+        <section id="testimonials">
+          <TestimonialsSection />
+        </section>
       </Suspense>
 
       <Suspense fallback={<SectionPlaceholder label="Service Areas" />}>
-        <ServiceAreas />
+        <section id="service-areas">
+          <ServiceAreas />
+        </section>
       </Suspense>
 
       <Suspense fallback={<SectionPlaceholder label="FAQ" />}>
-        <FAQSection />
+        <section id="faq">
+          <FAQSection />
+        </section>
       </Suspense>
 
       <Suspense fallback={<SectionPlaceholder label="Booking" />}>
-        <BookingSection />
+        <section id="booking">
+          <BookingSection />
+        </section>
       </Suspense>
+
+      {/* Enhanced schema markup with active section tracking */}
+      <SchemaMarkup page="home" activeSection={null} />
     </>
   )
 }

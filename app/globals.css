@@ -33,6 +33,11 @@
     --ring: 164 55% 23%; /* Updated to match primary */
 
     --radius: 0.5rem;
+
+    /* Header heights for different screen sizes */
+    --header-height-mobile: 64px;
+    --header-height-tablet: 72px;
+    --header-height-desktop: 80px;
   }
 
   .dark {
@@ -84,8 +89,39 @@
   a {
     @apply transition-colors duration-200;
   }
+
+  /* Responsive scroll margins for sections */
   section[id] {
-    scroll-margin-top: 100px; /* Adjust this value based on your header height plus some extra space */
+    scroll-margin-top: calc(var(--header-height-mobile) + 16px); /* Mobile default with padding */
+  }
+
+  @media (min-width: 640px) {
+    section[id] {
+      scroll-margin-top: calc(var(--header-height-tablet) + 20px); /* Tablet with padding */
+    }
+  }
+
+  @media (min-width: 1024px) {
+    section[id] {
+      scroll-margin-top: calc(var(--header-height-desktop) + 24px); /* Desktop with padding */
+    }
+  }
+
+  /* Special handling for specific sections that need more space */
+  #services {
+    scroll-margin-top: calc(var(--header-height-mobile) + 8px);
+  }
+
+  @media (min-width: 640px) {
+    #services {
+      scroll-margin-top: calc(var(--header-height-tablet) + 12px);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    #services {
+      scroll-margin-top: calc(var(--header-height-desktop) + 16px);
+    }
   }
 
   /* Ensure form elements are properly sized on small screens */
@@ -195,6 +231,38 @@
 
 .animate-collapsible-up {
   animation: collapsible-up 0.2s ease-out;
+}
+
+/* Text glow animation for highlighted words */
+@keyframes text-glow {
+  0%,
+  100% {
+    opacity: 1;
+    text-shadow: 0 0 10px rgba(154, 223, 103, 0.5), 0 0 20px rgba(154, 223, 103, 0.3), 0 0 30px rgba(154, 223, 103, 0.1);
+  }
+  50% {
+    opacity: 0.9;
+    text-shadow: 0 0 20px rgba(154, 223, 103, 0.8), 0 0 30px rgba(154, 223, 103, 0.6), 0 0 40px rgba(154, 223, 103, 0.4);
+  }
+}
+
+.animate-text-glow {
+  animation: text-glow 3s ease-in-out infinite;
+  transition: all 0.3s ease;
+}
+
+/* Add hover effect for interactive feel */
+.animate-text-glow:hover {
+  animation-duration: 1.5s;
+  text-shadow: 0 0 25px rgba(154, 223, 103, 1), 0 0 35px rgba(154, 223, 103, 0.8), 0 0 45px rgba(154, 223, 103, 0.6);
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .animate-text-glow {
+    animation: none;
+    text-shadow: 0 0 10px rgba(154, 223, 103, 0.5);
+  }
 }
 
 /* Smooth scrolling for anchor links */
@@ -400,5 +468,108 @@ body.mobile-menu-open {
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+}
+
+/* Fix for iOS Safari 100vh issue */
+@supports (-webkit-touch-callout: none) {
+  .h-screen,
+  .min-h-screen {
+    height: -webkit-fill-available;
+  }
+
+  .h-[100vh] {
+    height: -webkit-fill-available;
+  }
+
+  .max-h-[80vh], .max-h-[75vh] {
+    max-height: 80%;
+  }
+}
+
+/* Fix for mobile browsers address bar resizing */
+@media (max-width: 768px) {
+  .fixed {
+    position: fixed;
+  }
+
+  .bottom-0 {
+    bottom: env(safe-area-inset-bottom, 0);
+  }
+
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 0.5rem);
+  }
+}
+
+/* Fix for notched phones */
+@supports (padding: max(0px)) {
+  .safe-padding-left {
+    padding-left: max(1rem, env(safe-area-inset-left));
+  }
+
+  .safe-padding-right {
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+
+  .safe-padding-bottom {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+}
+
+/* Fix for cookie consent on mobile */
+@media (max-width: 640px) {
+  .animate-fade-in-up {
+    animation: none;
+    transform: none;
+  }
+}
+
+/* Fix for modal scrolling on iOS */
+.overflow-y-auto {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Add these styles to the end of your globals.css file */
+
+/* Cookie consent positioning fixes */
+@media (max-width: 640px) {
+  .cookie-consent-mobile {
+    width: 100%;
+    border-radius: 0.5rem 0.5rem 0 0;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* Fix toggle button positioning */
+.toggle-switch-thumb {
+  transition: transform 0.2s ease;
+}
+
+.toggle-switch-on .toggle-switch-thumb {
+  transform: translateX(100%);
+}
+
+/* Ensure consistent borders */
+.consistent-border {
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+/* Fix for cookie consent animation on mobile */
+@media (max-width: 640px) {
+  .cookie-consent-animation {
+    animation: slide-in-bottom 0.3s ease forwards;
+  }
+
+  @keyframes slide-in-bottom {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
   }
 }

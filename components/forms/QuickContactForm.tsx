@@ -70,8 +70,78 @@ export default function QuickContactForm({ showBookingForm, setShowBookingForm }
 
   const { executeRecaptcha, error: recaptchaError } = useRecaptcha()
 
+  // Enhance form validation for better data quality
+  // Add a validateForm function similar to BookingForm
+
+  function validateForm(): boolean {
+    let isValid = true
+    let errorMessage = ""
+
+    // Name validation
+    if (!formData.name.trim()) {
+      errorMessage = "Please enter your name"
+      isValid = false
+    }
+    // Email validation
+    else if (!formData.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      errorMessage = "Please enter a valid email address"
+      isValid = false
+    }
+    // Phone validation
+    else if (!formData.phone.trim()) {
+      errorMessage = "Please enter your phone number"
+      isValid = false
+    } else {
+      // Remove all non-numeric characters and check length
+      const cleanPhone = formData.phone.replace(/\D/g, "")
+      if (cleanPhone.length < 10 || cleanPhone.length > 11) {
+        errorMessage = "Please enter a valid 10-digit phone number"
+        isValid = false
+      }
+    }
+    // ZIP code validation if provided
+    if (formData.zipCode && !/^\d{5}$/.test(formData.zipCode)) {
+      errorMessage = "Please enter a valid 5-digit ZIP code"
+      isValid = false
+    }
+
+    if (!isValid) {
+      setError(errorMessage)
+    } else {
+      setError(null)
+    }
+
+    return isValid
+  }
+
+  // Add input formatting for phone numbers
+  // Add this function:
+
+  function formatPhoneNumber(value: string): string {
+    if (!value) return value
+
+    // Remove all non-numeric characters
+    const phoneNumber = value.replace(/\D/g, "")
+
+    // Format the phone number as (XXX) XXX-XXXX
+    if (phoneNumber.length <= 3) {
+      return phoneNumber
+    } else if (phoneNumber.length <= 6) {
+      return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3)}`
+    } else {
+      return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 10)}`
+    }
+  }
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
+
+    // Inside handleChange, add this special case for phone formatting
+    if (name === "phone") {
+      const formattedPhone = formatPhoneNumber(value)
+      setFormData((prev) => ({ ...prev, [name]: formattedPhone }))
+      return // Skip the regular setFormData below
+    }
 
     // Reset city lookup if zip code is changed
     if (name === "zipCode" && value !== formData.zipCode) {
@@ -91,6 +161,7 @@ export default function QuickContactForm({ showBookingForm, setShowBookingForm }
       }
     }
 
+    // Then keep the regular setFormData for other fields
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
@@ -112,6 +183,12 @@ export default function QuickContactForm({ showBookingForm, setShowBookingForm }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    // Validate form before submission
+    if (!validateForm()) {
+      return
+    }
+
     setIsSubmitting(true)
     setError(null)
 
@@ -526,7 +603,7 @@ export default function QuickContactForm({ showBookingForm, setShowBookingForm }
                     name="gateCode"
                     value={formData.gateCode}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 pl-10 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 transition-all duration-300 text-gray-900"
+                    className="w-full px-4 py-3 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                     placeholder="Enter gate code if applicable"
                   />
                 </div>

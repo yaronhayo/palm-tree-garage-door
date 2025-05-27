@@ -99,6 +99,7 @@ function SocialProofPopup() {
   const shownProofsRef = useRef<Set<string>>(new Set())
   const [isDismissed, setIsDismissed] = useState<boolean>(false)
   const [isAtTop, setIsAtTop] = useState(true)
+  const [isMobile, setIsMobile] = useState(false)
 
   // Check if notifications were previously dismissed in this session
   useEffect(() => {
@@ -110,6 +111,14 @@ function SocialProofPopup() {
     } catch (e) {
       console.error("Error accessing sessionStorage:", e)
     }
+
+    // Check if mobile
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640)
+    }
+    checkMobile()
+    window.addEventListener("resize", checkMobile)
+    return () => window.removeEventListener("resize", checkMobile)
   }, [])
 
   // Track scroll position to hide popup when at top
@@ -248,9 +257,12 @@ function SocialProofPopup() {
   return (
     <div
       ref={popupRef}
-      className={`fixed bottom-4 left-4 z-40 max-w-[280px] sm:max-w-[320px] transform transition-all duration-500 ease-in-out ${
+      className={`fixed ${
+        isMobile ? "bottom-2 left-2 right-2" : "bottom-4 left-4"
+      } z-40 max-w-[280px] sm:max-w-[320px] transform transition-all duration-500 ease-in-out ${
         isVisible && !isAtTop ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"
       }`}
+      style={{ width: isMobile ? "calc(100% - 16px)" : "auto" }}
       aria-live="polite"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}

@@ -102,44 +102,83 @@ export default function BookingForm({ prefilledCity }: BookingFormProps) {
     let isValid = true
     const newErrors = { ...formErrors }
 
+    // Name validation - ensure it contains at least first and last name
     if (!formData.name.trim()) {
       newErrors.name = "Name is required"
       isValid = false
+    } else if (formData.name.trim().split(" ").length < 2) {
+      newErrors.name = "Please enter your full name"
+      isValid = false
     }
 
+    // Phone validation - ensure it's a valid format
     if (!formData.phone.trim()) {
       newErrors.phone = "Phone number is required"
       isValid = false
+    } else {
+      // Remove all non-numeric characters and check length
+      const cleanPhone = formData.phone.replace(/\D/g, "")
+      if (cleanPhone.length < 10 || cleanPhone.length > 11) {
+        newErrors.phone = "Please enter a valid 10-digit phone number"
+        isValid = false
+      }
     }
 
+    // Email validation with regex
     if (!formData.email.trim()) {
       newErrors.email = "Email is required"
       isValid = false
+    } else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      if (!emailRegex.test(formData.email)) {
+        newErrors.email = "Please enter a valid email address"
+        isValid = false
+      }
     }
 
+    // Service validation
     if (!formData.service) {
       newErrors.service = "Please select a service"
       isValid = false
     }
 
+    // Date validation - ensure it's not in the past
     if (!formData.date) {
       newErrors.date = "Please select a date"
       isValid = false
+    } else {
+      const selectedDate = new Date(formData.date)
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+
+      if (selectedDate < today) {
+        newErrors.date = "Please select a future date"
+        isValid = false
+      }
     }
 
+    // Time validation
     if (!formData.time) {
       newErrors.time = "Please select a time"
       isValid = false
     }
 
+    // City validation
     if (!formData.city.trim()) {
       newErrors.city = "City is required"
       isValid = false
     }
 
+    // ZIP code validation - ensure it's 5 digits
     if (!formData.zipCode.trim()) {
       newErrors.zipCode = "ZIP code is required"
       isValid = false
+    } else {
+      const zipRegex = /^\d{5}$/
+      if (!zipRegex.test(formData.zipCode)) {
+        newErrors.zipCode = "Please enter a valid 5-digit ZIP code"
+        isValid = false
+      }
     }
 
     setFormErrors(newErrors)
@@ -256,6 +295,44 @@ export default function BookingForm({ prefilledCity }: BookingFormProps) {
     }
   }
 
+  // Update the handleChange function to provide real-time validation feedback
+  // Add this after the existing handleChange function
+
+  function handleInputBlur(e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
+    const { name, value } = e.target
+
+    // Validate specific fields on blur for immediate feedback
+    switch (name) {
+      case "email":
+        if (value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+          setFormErrors((prev) => ({
+            ...prev,
+            email: "Please enter a valid email address",
+          }))
+        }
+        break
+      case "phone":
+        if (value) {
+          const cleanPhone = value.replace(/\D/g, "")
+          if (cleanPhone.length < 10 || cleanPhone.length > 11) {
+            setFormErrors((prev) => ({
+              ...prev,
+              phone: "Please enter a valid 10-digit phone number",
+            }))
+          }
+        }
+        break
+      case "zipCode":
+        if (value && !/^\d{5}$/.test(value)) {
+          setFormErrors((prev) => ({
+            ...prev,
+            zipCode: "Please enter a valid 5-digit ZIP code",
+          }))
+        }
+        break
+    }
+  }
+
   // Get today's date in YYYY-MM-DD format for min date attribute
   // Use Eastern Time for the date
   const today = getCurrentEasternTime().toISOString().split("T")[0]
@@ -323,6 +400,7 @@ export default function BookingForm({ prefilledCity }: BookingFormProps) {
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
+                onBlur={handleInputBlur}
                 className={cn(
                   "w-full px-4 py-2 border rounded-md focus:ring-primary-500 focus:border-primary-500",
                   formErrors.phone ? "border-red-500" : "border-gray-300",
@@ -343,6 +421,7 @@ export default function BookingForm({ prefilledCity }: BookingFormProps) {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
+                onBlur={handleInputBlur}
                 className={cn(
                   "w-full px-4 py-2 border rounded-md focus:ring-primary-500 focus:border-primary-500",
                   formErrors.email ? "border-red-500" : "border-gray-300",
@@ -385,6 +464,7 @@ export default function BookingForm({ prefilledCity }: BookingFormProps) {
                 name="zipCode"
                 value={formData.zipCode}
                 onChange={handleChange}
+                onBlur={handleInputBlur}
                 className={cn(
                   "w-full px-4 py-2 border rounded-md focus:ring-primary-500 focus:border-primary-500",
                   formErrors.zipCode ? "border-red-500" : "border-gray-300",

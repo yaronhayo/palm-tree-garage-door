@@ -9,6 +9,7 @@ import GoogleTagManager from "@/components/GoogleTagManager"
 import ClientScript from "@/components/ClientScript"
 import { CookieConsent } from "@/components/CookieConsent"
 import SocialProofPopup from "@/components/SocialProofPopup"
+import ResponsiveMetaTags from "@/components/ResponsiveMetaTags"
 
 // Optimize font loading with display swap
 const inter = Inter({
@@ -89,6 +90,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 5,
   themeColor: "#0D423A",
+  viewportFit: "cover",
 }
 
 export default function RootLayout({
@@ -101,6 +103,8 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <head>
+        <ResponsiveMetaTags />
+
         {/* Google Tag Manager - placed as high as possible in the head */}
         <script
           dangerouslySetInnerHTML={{

@@ -1,846 +1,314 @@
-/**
- * Schema Utility Functions
- *
- * These functions generate JSON-LD schema markup for SEO.
- * They are used by the SchemaMarkup component to add structured data to pages.
- *
- * @export - These functions use named exports as they are utility functions
- */
-
-import type { ServiceArea } from "@/data/service-areas"
-import type { FAQItem } from "@/data/faq-items"
-import type { Testimonial } from "@/components/Testimonials"
-import type { FAQCategory } from "@/data/faq-categories"
-
-// Company information - centralized for consistency
-const COMPANY = {
-  name: "Palm Tree Garage Door",
-  legalName: "Palm Tree Garage Door LLC",
-  url: "https://palmtreegaragedoor.com",
-  logo: "https://palmtreegaragedoor.com/logo.png",
-  email: "info@palmtreegaragedoor.com",
-  phone: "+1-954-864-2525",
-  description:
-    "Palm Tree Garage Door provides professional garage door repair, installation, and maintenance services in South Florida. We offer 24/7 emergency service, free estimates, and guaranteed workmanship.",
-  foundingDate: "2018-01-01",
-  priceRange: "$$",
-  currenciesAccepted: "USD",
-  paymentAccepted: "Cash, Credit Card, Debit Card, Check, PayPal",
-  taxID: "12-3456789", // Replace with actual tax ID if available
-  vatID: "", // Add if applicable
-  slogan: "South Florida's Most Trusted Garage Door Experts",
-  awards: [
-    "Best Garage Door Service 2022 - South Florida Business Awards",
-    "Top-Rated Service Provider 2021 - HomeAdvisor",
-  ],
-  hasCredential: [
-    {
-      "@type": "EducationalOccupationalCredential",
-      credentialCategory: "certification",
-      name: "Certified Garage Door Technician",
-      recognizedBy: {
-        "@type": "Organization",
-        name: "International Door Association",
-      },
-    },
-  ],
-  memberOf: [
-    {
-      "@type": "Organization",
-      name: "International Door Association",
-    },
-    {
-      "@type": "Organization",
-      name: "Florida Garage Door Association",
-    },
-  ],
-  numberOfEmployees: {
-    "@type": "QuantitativeValue",
-    value: "10",
-  },
-  social: {
-    facebook: "https://facebook.com/palmtreegaragedoor",
-    instagram: "https://instagram.com/palmtreegaragedoor",
-    twitter: "https://twitter.com/palmtreegdoor",
-    yelp: "https://yelp.com/biz/palm-tree-garage-door",
-    google: "https://g.page/palm-tree-garage-door",
-  },
-  images: [
-    "https://palmtreegaragedoor.com/images/storefront.jpg",
-    "https://palmtreegaragedoor.com/images/service-truck.png",
-    "https://palmtreegaragedoor.com/images/team.jpg",
-  ],
-  mainLocation: {
-    name: "Palm Tree Garage Door - Headquarters",
-    streetAddress: "123 Palm Tree Way",
-    addressLocality: "Delray Beach",
-    addressRegion: "FL",
-    postalCode: "33444",
-    addressCountry: "US",
-    latitude: 26.4614625,
-    longitude: -80.0728201,
-    telephone: "+1-954-864-2525",
-    faxNumber: "+1-954-864-2526", // If applicable
-    email: "info@palmtreegaragedoor.com",
-  },
-  additionalLocations: [
-    {
-      name: "Palm Tree Garage Door - Coral Springs",
-      streetAddress: "456 Coral Way",
-      addressLocality: "Coral Springs",
-      addressRegion: "FL",
-      postalCode: "33065",
-      addressCountry: "US",
-      latitude: 26.271185,
-      longitude: -80.270256,
-      telephone: "+1-954-864-2527",
-    },
-    {
-      name: "Palm Tree Garage Door - Plantation",
-      streetAddress: "789 Plantation Blvd",
-      addressLocality: "Plantation",
-      addressRegion: "FL",
-      postalCode: "33324",
-      addressCountry: "US",
-      latitude: 26.124,
-      longitude: -80.2608,
-      telephone: "+1-954-864-2528",
-    },
-  ],
-  openingHours: [
-    {
-      dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-      opens: "08:00",
-      closes: "18:00",
-    },
-    {
-      dayOfWeek: ["Saturday"],
-      opens: "09:00",
-      closes: "16:00",
-    },
-    {
-      dayOfWeek: ["Sunday"],
-      opens: "10:00",
-      closes: "14:00",
-    },
-  ],
-  specialOpeningHours: [
-    {
-      dayOfWeek: "Sunday",
-      opens: "00:00",
-      closes: "23:59",
-      validFrom: "2023-12-24",
-      validThrough: "2023-12-24",
-      description: "Christmas Eve - Emergency Service Only",
-    },
-    {
-      dayOfWeek: "Sunday",
-      opens: "00:00",
-      closes: "23:59",
-      validFrom: "2023-12-25",
-      validThrough: "2023-12-25",
-      description: "Christmas Day - Emergency Service Only",
-    },
-  ],
-  services: [
-    {
-      name: "Garage Door Repair",
-      description:
-        "Professional garage door repair services for all makes and models. Fast, reliable service with a satisfaction guarantee.",
-      price: "89.00",
-      image: "https://palmtreegaragedoor.com/images/services/door-repair.png",
-    },
-    {
-      name: "Spring Replacement",
-      description:
-        "Expert garage door spring replacement services. We use high-quality springs rated for 10,000+ cycles for lasting performance.",
-      price: "175.00",
-      image: "https://palmtreegaragedoor.com/images/services/spring-replacement.png",
-    },
-    {
-      name: "Opener Repair",
-      description:
-        "Garage door opener repair and replacement services for all major brands. Fast diagnosis and affordable solutions.",
-      price: "95.00",
-      image: "https://palmtreegaragedoor.com/images/services/opener-repair.png",
-    },
-    {
-      name: "New Installation",
-      description:
-        "Professional garage door installation services. Wide selection of styles, materials, and features to match your home.",
-      price: "900.00",
-      image: "https://palmtreegaragedoor.com/images/services/new-installation.png",
-    },
-    {
-      name: "Maintenance & Tune-Up",
-      description:
-        "Comprehensive garage door maintenance services to keep your door operating smoothly and prevent costly repairs.",
-      price: "75.00",
-      image: "https://palmtreegaragedoor.com/images/services/maintenance.png",
-    },
-    {
-      name: "Emergency Service",
-      description:
-        "24/7 emergency garage door repair services. Fast response times and reliable solutions when you need them most.",
-      price: "125.00",
-      image: "https://palmtreegaragedoor.com/images/services/emergency.png",
-    },
-  ],
+// Types for schema generation
+interface LocalBusinessSchemaOptions {
+  name: string
+  description: string
+  logo: string
+  url: string
+  telephone: string
+  email: string
+  priceRange: string
+  openingHours: string
 }
 
-// Generate LocalBusiness schema
-export function generateLocalBusinessSchema(serviceAreas: ServiceArea[]) {
-  // Get the main service area (first in the list)
-  const mainArea = serviceAreas[0]
+interface WebPageSchemaOptions {
+  url: string
+  name: string
+  description: string
+  activeSection?: string
+}
 
-  // Create the base schema
-  const schema = {
-    "@context": "https://schema.org",
-    "@type": ["LocalBusiness", "HomeAndConstructionBusiness"],
-    "@id": `${COMPANY.url}/#organization`,
-    name: COMPANY.name,
-    legalName: COMPANY.legalName,
-    alternateName: "Palm Tree Garage Doors",
-    url: COMPANY.url,
-    logo: {
-      "@type": "ImageObject",
-      url: COMPANY.logo,
-      width: "180",
-      height: "60",
-    },
-    image: COMPANY.images,
-    description: COMPANY.description,
-    slogan: COMPANY.slogan,
-    email: COMPANY.email,
-    telephone: COMPANY.phone,
-    faxNumber: COMPANY.mainLocation.faxNumber,
-    taxID: COMPANY.taxID,
-    vatID: COMPANY.vatID,
-    foundingDate: COMPANY.foundingDate,
-    foundingLocation: {
-      "@type": "Place",
-      address: {
-        "@type": "PostalAddress",
-        addressLocality: "Delray Beach",
-        addressRegion: "FL",
-        addressCountry: "US",
-      },
-    },
-    founders: [
-      {
-        "@type": "Person",
-        name: "John Smith", // Replace with actual founder name
-        jobTitle: "Founder & CEO",
-      },
-    ],
-    numberOfEmployees: COMPANY.numberOfEmployees,
-    award: COMPANY.awards,
-    hasCredential: COMPANY.hasCredential,
-    memberOf: COMPANY.memberOf,
-    priceRange: COMPANY.priceRange,
-    currenciesAccepted: COMPANY.currenciesAccepted,
-    paymentAccepted: COMPANY.paymentAccepted,
-    openingHoursSpecification: COMPANY.openingHours.map((hours) => ({
-      "@type": "OpeningHoursSpecification",
-      dayOfWeek: hours.dayOfWeek,
-      opens: hours.opens,
-      closes: hours.closes,
-    })),
-    specialOpeningHoursSpecification: COMPANY.specialOpeningHours.map((hours) => ({
-      "@type": "OpeningHoursSpecification",
-      dayOfWeek: hours.dayOfWeek,
-      opens: hours.opens,
-      closes: hours.closes,
-      validFrom: hours.validFrom,
-      validThrough: hours.validThrough,
-      description: hours.description,
-    })),
-    hasOfferCatalog: {
-      "@type": "OfferCatalog",
-      name: "Garage Door Services",
-      itemListElement: COMPANY.services.map((service, index) => ({
-        "@type": "Offer",
-        itemOffered: {
-          "@type": "Service",
-          name: service.name,
-          description: service.description,
-          url: `${COMPANY.url}/services/${service.name.toLowerCase().replace(/\s+/g, "-")}`,
-          provider: {
-            "@type": "LocalBusiness",
-            name: COMPANY.name,
-          },
-          offers: {
-            "@type": "Offer",
-            price: service.price,
-            priceCurrency: "USD",
-            availability: "https://schema.org/InStock",
-            priceValidUntil: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split("T")[0],
-          },
-          image: service.image,
-        },
-        position: index + 1,
-      })),
-    },
+interface FAQSchemaOptions {
+  includeMetadata?: boolean
+  includeCategories?: boolean
+  pageUrl?: string
+}
+
+/**
+ * Generate LocalBusiness schema for the company
+ */
+export function generateLocalBusinessSchema(serviceAreas: any[], options: Partial<LocalBusinessSchemaOptions> = {}) {
+  const defaultOptions: LocalBusinessSchemaOptions = {
+    name: "Palm Tree Garage Door Repair",
+    description: "Professional garage door repair and installation services in South Florida.",
+    logo: "https://palmtreegaragedoor.com/logo.png",
+    url: "https://palmtreegaragedoor.com",
+    telephone: "(321) 366-9723",
+    email: "palmtreegaragedoor@gmail.com",
+    priceRange: "$$$",
+    openingHours: "Mo-Su 00:00-23:59", // 24/7 service
+  }
+
+  const opts = { ...defaultOptions, ...options }
+
+  // Create service area locations
+  const serviceAreaLocations = serviceAreas.map((area) => ({
+    "@type": "City",
+    name: area.city,
     address: {
       "@type": "PostalAddress",
-      streetAddress: COMPANY.mainLocation.streetAddress || mainArea.address || "123 Palm Tree Way",
-      addressLocality: COMPANY.mainLocation.addressLocality || mainArea.city,
-      addressRegion: COMPANY.mainLocation.addressRegion || "FL",
-      postalCode: COMPANY.mainLocation.postalCode || mainArea.zipCode || "33444",
-      addressCountry: COMPANY.mainLocation.addressCountry || "US",
+      addressLocality: area.city,
+      addressRegion: area.state,
+      postalCode: area.zipCodes[0], // Use first zip code as example
+    },
+  }))
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "GarageDoorRepair", // More specific type than just LocalBusiness
+    "@id": `${opts.url}#localbusiness`,
+    name: opts.name,
+    description: opts.description,
+    url: opts.url,
+    telephone: opts.telephone,
+    email: opts.email,
+    logo: {
+      "@type": "ImageObject",
+      url: opts.logo,
+    },
+    image: opts.logo,
+    priceRange: opts.priceRange,
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "South Florida",
+      addressRegion: "FL",
+      addressCountry: "US",
     },
     geo: {
       "@type": "GeoCoordinates",
-      latitude: COMPANY.mainLocation.latitude || mainArea.latitude || 26.4614625,
-      longitude: COMPANY.mainLocation.longitude || mainArea.longitude || -80.0728201,
+      latitude: 26.1224386, // South Florida coordinates (approximate)
+      longitude: -80.1373174,
     },
-    location: [
-      {
-        "@type": "Place",
-        name: COMPANY.mainLocation.name,
-        address: {
-          "@type": "PostalAddress",
-          streetAddress: COMPANY.mainLocation.streetAddress,
-          addressLocality: COMPANY.mainLocation.addressLocality,
-          addressRegion: COMPANY.mainLocation.addressRegion,
-          postalCode: COMPANY.mainLocation.postalCode,
-          addressCountry: COMPANY.mainLocation.addressCountry,
-        },
-        geo: {
-          "@type": "GeoCoordinates",
-          latitude: COMPANY.mainLocation.latitude,
-          longitude: COMPANY.mainLocation.longitude,
-        },
-        telephone: COMPANY.mainLocation.telephone,
-        faxNumber: COMPANY.mainLocation.faxNumber,
-      },
-      ...COMPANY.additionalLocations.map((location) => ({
-        "@type": "Place",
-        name: location.name,
-        address: {
-          "@type": "PostalAddress",
-          streetAddress: location.streetAddress,
-          addressLocality: location.addressLocality,
-          addressRegion: location.addressRegion,
-          postalCode: location.postalCode,
-          addressCountry: location.addressCountry,
-        },
-        geo: {
-          "@type": "GeoCoordinates",
-          latitude: location.latitude,
-          longitude: location.longitude,
-        },
-        telephone: location.telephone,
-      })),
-    ],
-    areaServed: [
-      {
-        "@type": "GeoCircle",
-        geoMidpoint: {
-          "@type": "GeoCoordinates",
-          latitude: COMPANY.mainLocation.latitude,
-          longitude: COMPANY.mainLocation.longitude,
-        },
-        geoRadius: "50000",
-      },
-      ...serviceAreas.map((area) => ({
-        "@type": "City",
-        name: area.city,
-        "@id": `${COMPANY.url}/service-areas#${area.city.toLowerCase().replace(/\s+/g, "-")}`,
-      })),
-    ],
-    potentialAction: [
-      {
-        "@type": "ReserveAction",
-        target: {
-          "@type": "EntryPoint",
-          urlTemplate: `${COMPANY.url}/book-service`,
-          inLanguage: "en-US",
-          actionPlatform: [
-            "http://schema.org/DesktopWebPlatform",
-            "http://schema.org/IOSPlatform",
-            "http://schema.org/AndroidPlatform",
-          ],
-        },
-        result: {
-          "@type": "Reservation",
-          name: "Garage Door Service Appointment",
-        },
-      },
-      {
-        "@type": "OrderAction",
-        target: {
-          "@type": "EntryPoint",
-          urlTemplate: `${COMPANY.url}/quote`,
-          inLanguage: "en-US",
-          actionPlatform: [
-            "http://schema.org/DesktopWebPlatform",
-            "http://schema.org/IOSPlatform",
-            "http://schema.org/AndroidPlatform",
-          ],
-        },
-        deliveryMethod: [
-          "http://purl.org/goodrelations/v1#DeliveryModeOwnFleet",
-          "http://purl.org/goodrelations/v1#DeliveryModePickUp",
-        ],
-      },
-    ],
+    areaServed: serviceAreaLocations,
+    openingHoursSpecification: {
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+      opens: "00:00",
+      closes: "23:59",
+    },
     sameAs: [
-      COMPANY.social.facebook,
-      COMPANY.social.instagram,
-      COMPANY.social.twitter,
-      COMPANY.social.yelp,
-      COMPANY.social.google,
+      "https://www.facebook.com/palmtreegaragedoor",
+      "https://www.instagram.com/palmtreegaragedoor",
+      "https://twitter.com/palmtreegaragedoor",
     ],
+    paymentAccepted: "Cash, Credit Card",
+    currenciesAccepted: "USD",
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: "Garage Door Services",
+      itemListElement: [
+        {
+          "@type": "Offer",
+          itemOffered: {
+            "@type": "Service",
+            name: "Garage Door Repair",
+          },
+        },
+        {
+          "@type": "Offer",
+          itemOffered: {
+            "@type": "Service",
+            name: "Garage Door Installation",
+          },
+        },
+        {
+          "@type": "Offer",
+          itemOffered: {
+            "@type": "Service",
+            name: "Garage Door Spring Replacement",
+          },
+        },
+        {
+          "@type": "Offer",
+          itemOffered: {
+            "@type": "Service",
+            name: "Garage Door Opener Repair",
+          },
+        },
+      ],
+    },
+  }
+}
+
+/**
+ * Generate WebPage schema for the current page
+ */
+export function generateWebPageSchema(options: WebPageSchemaOptions) {
+  const schema: any = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": `${options.url}#webpage`,
+    url: options.url,
+    name: options.name,
+    description: options.description,
+    isPartOf: {
+      "@id": `${options.url.split("/")[0]}//#website`,
+    },
+    inLanguage: "en-US",
+    datePublished: "2023-01-01T00:00:00+00:00",
+    dateModified: new Date().toISOString(),
+  }
+
+  // Add mainEntity if there's an active section
+  if (options.activeSection) {
+    schema.mainEntity = {
+      "@id": `${options.url}#${options.activeSection}`,
+    }
   }
 
   return schema
 }
 
-// Generate Service schema
+/**
+ * Generate Service schema for a specific service
+ */
 export function generateServiceSchema(
-  name: string,
-  description: string,
-  price: string,
-  image: string,
-  serviceAreas: ServiceArea[],
+  serviceName: string,
+  serviceDescription: string,
+  servicePrice: string,
+  serviceImage: string,
+  serviceAreas: any[],
 ) {
+  // Create area served array
+  const areaServed = serviceAreas.map((area) => ({
+    "@type": "City",
+    name: `${area.city}, ${area.state}`,
+  }))
+
   return {
     "@context": "https://schema.org",
     "@type": "Service",
-    name: `${name} - ${COMPANY.name}`,
-    description: description,
+    name: serviceName,
+    description: serviceDescription,
     provider: {
-      "@type": "HomeAndConstructionBusiness",
-      name: COMPANY.name,
-      url: COMPANY.url,
+      "@type": "LocalBusiness",
+      name: "Palm Tree Garage Door Repair",
+      url: "https://palmtreegaragedoor.com",
     },
-    areaServed: serviceAreas.map((area) => ({
-      "@type": "City",
-      name: area.city,
-    })),
-    offers: {
-      "@type": "Offer",
-      price: price,
-      priceCurrency: "USD",
-      availability: "https://schema.org/InStock",
-      priceValidUntil: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split("T")[0],
-      acceptedPaymentMethod: [
+    areaServed: areaServed,
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: "Garage Door Services",
+      itemListElement: [
         {
-          "@type": "PaymentMethod",
-          name: "Cash",
-        },
-        {
-          "@type": "PaymentMethod",
-          name: "Credit Card",
-        },
-        {
-          "@type": "PaymentMethod",
-          name: "Debit Card",
+          "@type": "Offer",
+          itemOffered: {
+            "@type": "Service",
+            name: serviceName,
+            description: serviceDescription,
+            image: serviceImage,
+            offers: {
+              "@type": "Offer",
+              price: servicePrice.replace(/[^0-9.]/g, ""),
+              priceCurrency: "USD",
+            },
+          },
         },
       ],
-      deliveryLeadTime: {
-        "@type": "QuantitativeValue",
-        value: "1",
-        unitCode: "DAY",
-      },
-      seller: {
-        "@type": "LocalBusiness",
-        name: COMPANY.name,
-        url: COMPANY.url,
-      },
     },
-    serviceOutput: {
-      "@type": "Thing",
-      name: `Repaired or Installed ${name}`,
-    },
-    termsOfService: `${COMPANY.url}/terms-of-service`,
-    serviceType: "Garage Door Service",
-    image: image,
-    url: `${COMPANY.url}/services/${name.toLowerCase().replace(/\s+/g, "-")}`,
   }
 }
 
-// Enhanced FAQ schema generation
-export function generateFAQSchema(
-  faqItems: FAQItem[],
-  options?: {
-    includeMetadata?: boolean
-    includeCategories?: boolean
-    pageUrl?: string
-  },
-) {
-  const baseSchema = {
+/**
+ * Generate FAQ schema for FAQ sections
+ */
+export function generateFAQSchema(faqItems: any[], options: FAQSchemaOptions = {}) {
+  const mainEntity = faqItems.map((item) => ({
+    "@type": "Question",
+    name: item.question,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: item.answer,
+    },
+    ...(item.category && options.includeCategories
+      ? {
+          mainEntityOfPage: {
+            "@type": "WebPage",
+            "@id": `${options.pageUrl || "https://palmtreegaragedoor.com/faq"}#${item.category
+              .toLowerCase()
+              .replace(/\s+/g, "-")}`,
+          },
+        }
+      : {}),
+  }))
+
+  return {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    "@id": `${COMPANY.url}/faq`,
-    name: "Frequently Asked Questions - Palm Tree Garage Door",
-    description:
-      "Find answers to common questions about garage door repair, installation, maintenance, and costs in South Florida.",
-    url: options?.pageUrl || `${COMPANY.url}/faq`,
-    isPartOf: {
-      "@type": "WebSite",
-      "@id": `${COMPANY.url}/#website`,
-      name: COMPANY.name,
-      url: COMPANY.url,
-    },
-    breadcrumb: {
-      "@type": "BreadcrumbList",
-      itemListElement: [
-        {
-          "@type": "ListItem",
-          position: 1,
-          name: "Home",
-          item: COMPANY.url,
-        },
-        {
-          "@type": "ListItem",
-          position: 2,
-          name: "FAQ",
-          item: `${COMPANY.url}/faq`,
-        },
-      ],
-    },
-    mainEntity: faqItems.map((item) => {
-      const question: any = {
-        "@type": "Question",
-        "@id": `${COMPANY.url}/faq#${item.question
-          .toLowerCase()
-          .replace(/\s+/g, "-")
-          .replace(/[^a-z0-9-]/g, "")}`,
-        name: item.question,
-        answerCount: 1,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: item.answer,
-          ...(options?.includeMetadata && {
-            dateCreated: item.datePublished,
-            dateModified: item.dateModified,
-            author: {
-              "@type": "Organization",
-              name: item.author || COMPANY.name,
-            },
-            upvoteCount: item.upvoteCount || 0,
-          }),
-        },
-      }
-
-      // Add related services as mentions
-      if (item.relatedServices && item.relatedServices.length > 0) {
-        question.acceptedAnswer.mentions = item.relatedServices.map((service) => ({
-          "@type": "Service",
-          name: service,
-          provider: {
-            "@type": "LocalBusiness",
-            name: COMPANY.name,
-          },
-        }))
-      }
-
-      // Add category information
-      if (options?.includeCategories && item.category) {
-        question.about = {
-          "@type": "Thing",
-          name: item.category,
+    ...(options.includeMetadata
+      ? {
+          name: "Frequently Asked Questions About Garage Door Repair",
+          description: "Find answers to common questions about garage door repair and installation services.",
         }
-      }
-
-      // Add keywords as tags
-      if (item.keywords && item.keywords.length > 0) {
-        question.keywords = item.keywords.join(", ")
-      }
-
-      return question
-    }),
+      : {}),
+    mainEntity,
   }
-
-  // Add aggregate rating if available
-  const totalUpvotes = faqItems.reduce((sum, item) => sum + (item.upvoteCount || 0), 0)
-  if (totalUpvotes > 0) {
-    baseSchema.aggregateRating = {
-      "@type": "AggregateRating",
-      ratingValue: "4.8",
-      ratingCount: totalUpvotes,
-      bestRating: "5",
-      worstRating: "1",
-    }
-  }
-
-  // Add publisher information
-  baseSchema.publisher = {
-    "@type": "Organization",
-    "@id": `${COMPANY.url}/#organization`,
-    name: COMPANY.name,
-    logo: {
-      "@type": "ImageObject",
-      url: COMPANY.logo,
-    },
-  }
-
-  // Add date information
-  const dates = faqItems
-    .map((item) => item.dateModified || item.datePublished)
-    .filter(Boolean)
-    .sort()
-
-  if (dates.length > 0) {
-    baseSchema.datePublished = dates[0]
-    baseSchema.dateModified = dates[dates.length - 1]
-  }
-
-  return baseSchema
 }
 
-// Generate FAQ Category schema
-export function generateFAQCategorySchema(category: FAQCategory) {
+/**
+ * Generate FAQ Category schema
+ */
+export function generateFAQCategorySchema(category: any) {
   return {
     "@context": "https://schema.org",
-    "@type": "CollectionPage",
-    "@id": `${COMPANY.url}/faq/${category.slug}`,
-    name: `${category.name} - Garage Door FAQ`,
-    description: category.description,
-    url: `${COMPANY.url}/faq/${category.slug}`,
+    "@type": "WebPage",
+    "@id": `https://palmtreegaragedoor.com/faq#${category.id}`,
+    name: `${category.name} - Frequently Asked Questions`,
+    description: `Answers to common questions about ${category.name.toLowerCase()} for garage doors.`,
     isPartOf: {
-      "@type": "FAQPage",
-      "@id": `${COMPANY.url}/faq`,
-      name: "Frequently Asked Questions",
-    },
-    breadcrumb: {
-      "@type": "BreadcrumbList",
-      itemListElement: [
-        {
-          "@type": "ListItem",
-          position: 1,
-          name: "Home",
-          item: COMPANY.url,
-        },
-        {
-          "@type": "ListItem",
-          position: 2,
-          name: "FAQ",
-          item: `${COMPANY.url}/faq`,
-        },
-        {
-          "@type": "ListItem",
-          position: 3,
-          name: category.name,
-          item: `${COMPANY.url}/faq/${category.slug}`,
-        },
-      ],
-    },
-    mainEntity: {
-      "@type": "ItemList",
-      numberOfItems: category.items.length,
-      itemListElement: category.items.map((item, index) => ({
-        "@type": "ListItem",
-        position: index + 1,
-        item: {
-          "@type": "Question",
-          name: item.question,
-          url: `${COMPANY.url}/faq#${item.question
-            .toLowerCase()
-            .replace(/\s+/g, "-")
-            .replace(/[^a-z0-9-]/g, "")}`,
-        },
-      })),
+      "@id": "https://palmtreegaragedoor.com/faq#webpage",
     },
   }
 }
 
-// Generate HowTo schema for maintenance FAQs
-export function generateHowToSchema(faqItem: FAQItem) {
-  // Convert FAQ answer to step-by-step instructions
-  const steps = faqItem.answer.split(/\d+\)/).filter((step) => step.trim())
-
-  return {
-    "@context": "https://schema.org",
-    "@type": "HowTo",
-    name: faqItem.question,
-    description: steps[0] || faqItem.answer.substring(0, 160),
-    image: {
-      "@type": "ImageObject",
-      url: `${COMPANY.url}/images/how-to/${faqItem.question
-        .toLowerCase()
-        .replace(/\s+/g, "-")
-        .replace(/[^a-z0-9-]/g, "")}.jpg`,
-    },
-    estimatedCost: {
-      "@type": "MonetaryAmount",
-      currency: "USD",
-      value: "0", // DIY cost
-    },
-    supply: [
-      {
-        "@type": "HowToSupply",
-        name: "Silicone spray lubricant",
-      },
-      {
-        "@type": "HowToSupply",
-        name: "Adjustable wrench",
-      },
-    ],
-    tool: [
-      {
-        "@type": "HowToTool",
-        name: "Screwdriver",
-      },
-      {
-        "@type": "HowToTool",
-        name: "Level",
-      },
-    ],
-    step: steps.map((stepText, index) => ({
-      "@type": "HowToStep",
-      name: `Step ${index + 1}`,
-      text: stepText.trim(),
-      image: {
-        "@type": "ImageObject",
-        url: `${COMPANY.url}/images/how-to/step-${index + 1}.jpg`,
-      },
-    })),
-    totalTime: "PT30M", // 30 minutes
-    performTime: "PT20M", // 20 minutes
-    prepTime: "PT10M", // 10 minutes
-    yield: "1 maintained garage door",
-  }
-}
-
-// Generate QAPage schema for individual questions
-export function generateQAPageSchema(faqItem: FAQItem) {
-  return {
-    "@context": "https://schema.org",
-    "@type": "QAPage",
-    "@id": `${COMPANY.url}/faq/${faqItem.question
-      .toLowerCase()
-      .replace(/\s+/g, "-")
-      .replace(/[^a-z0-9-]/g, "")}`,
-    name: faqItem.question,
-    description: faqItem.answer.substring(0, 160) + "...",
-    url: `${COMPANY.url}/faq/${faqItem.question
-      .toLowerCase()
-      .replace(/\s+/g, "-")
-      .replace(/[^a-z0-9-]/g, "")}`,
-    mainEntity: {
-      "@type": "Question",
-      name: faqItem.question,
-      text: faqItem.question,
-      answerCount: 1,
-      upvoteCount: faqItem.upvoteCount || 0,
-      dateCreated: faqItem.datePublished,
-      dateModified: faqItem.dateModified,
-      author: {
-        "@type": "Person",
-        name: "Customer",
-      },
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: faqItem.answer,
-        dateCreated: faqItem.datePublished,
-        dateModified: faqItem.dateModified,
-        upvoteCount: faqItem.upvoteCount || 0,
-        author: {
-          "@type": "Organization",
-          name: COMPANY.name,
-        },
-      },
-      suggestedAnswer: [
-        {
-          "@type": "Answer",
-          text: "For personalized assistance with your specific situation, please contact our expert technicians at (954) 864-2525.",
-          author: {
-            "@type": "Organization",
-            name: COMPANY.name,
-          },
-        },
-      ],
-    },
-    breadcrumb: {
-      "@type": "BreadcrumbList",
-      itemListElement: [
-        {
-          "@type": "ListItem",
-          position: 1,
-          name: "Home",
-          item: COMPANY.url,
-        },
-        {
-          "@type": "ListItem",
-          position: 2,
-          name: "FAQ",
-          item: `${COMPANY.url}/faq`,
-        },
-        {
-          "@type": "ListItem",
-          position: 3,
-          name: faqItem.category,
-          item: `${COMPANY.url}/faq/${faqItem.category.toLowerCase().replace(/\s+/g, "-")}`,
-        },
-        {
-          "@type": "ListItem",
-          position: 4,
-          name: faqItem.question,
-          item: `${COMPANY.url}/faq/${faqItem.question
-            .toLowerCase()
-            .replace(/\s+/g, "-")
-            .replace(/[^a-z0-9-]/g, "")}`,
-        },
-      ],
-    },
-    isPartOf: {
-      "@type": "WebSite",
-      "@id": `${COMPANY.url}/#website`,
-      name: COMPANY.name,
-      url: COMPANY.url,
-    },
-    speakable: {
-      "@type": "SpeakableSpecification",
-      cssSelector: [".question", ".answer"],
-    },
-  }
-}
-
-// Generate Review schema
-export function generateReviewSchema(testimonial: Testimonial) {
+/**
+ * Generate Review schema for testimonials
+ */
+export function generateReviewSchema(testimonial: any) {
   return {
     "@context": "https://schema.org",
     "@type": "Review",
     itemReviewed: {
-      "@type": "HomeAndConstructionBusiness",
-      name: COMPANY.name,
-      url: COMPANY.url,
+      "@type": "LocalBusiness",
+      name: "Palm Tree Garage Door Repair",
+      image: "https://palmtreegaragedoor.com/logo.png",
+      telephone: "(321) 366-9723",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: testimonial.location || "South Florida",
+        addressRegion: "FL",
+        addressCountry: "US",
+      },
     },
     reviewRating: {
       "@type": "Rating",
-      ratingValue: testimonial.rating,
-      bestRating: "5",
-      worstRating: "1",
+      ratingValue: testimonial.rating || 5,
+      bestRating: 5,
     },
+    name: `${testimonial.name}'s review of Palm Tree Garage Door Repair`,
     author: {
       "@type": "Person",
       name: testimonial.name,
     },
+    datePublished: testimonial.date || new Date().toISOString().split("T")[0],
     reviewBody: testimonial.text,
-    datePublished: testimonial.date,
-    publisher: {
-      "@type": "Organization",
-      name: COMPANY.name,
-    },
   }
 }
 
-// Generate AggregateRating schema
-export function generateAggregateRatingSchema(testimonials: Testimonial[]) {
+/**
+ * Generate AggregateRating schema for overall ratings
+ */
+export function generateAggregateRatingSchema(testimonials: any[]) {
   // Calculate average rating
-  const totalRating = testimonials.reduce((sum, testimonial) => sum + testimonial.rating, 0)
+  const totalRating = testimonials.reduce((sum, testimonial) => sum + (testimonial.rating || 5), 0)
   const averageRating = (totalRating / testimonials.length).toFixed(1)
 
   return {
     "@context": "https://schema.org",
     "@type": "AggregateRating",
     itemReviewed: {
-      "@type": "HomeAndConstructionBusiness",
-      name: COMPANY.name,
-      url: COMPANY.url,
+      "@type": "LocalBusiness",
+      name: "Palm Tree Garage Door Repair",
+      image: "https://palmtreegaragedoor.com/logo.png",
     },
     ratingValue: averageRating,
     bestRating: "5",
@@ -850,16 +318,18 @@ export function generateAggregateRatingSchema(testimonials: Testimonial[]) {
   }
 }
 
-// Generate BreadcrumbList schema
-export function generateBreadcrumbListSchema(items: { name: string; url: string }[]) {
+/**
+ * Generate BreadcrumbList schema
+ */
+export function generateBreadcrumbListSchema(breadcrumbs: { name: string; url: string }[]) {
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
-    itemListElement: items.map((item, index) => ({
+    itemListElement: breadcrumbs.map((breadcrumb, index) => ({
       "@type": "ListItem",
       position: index + 1,
-      name: item.name,
-      item: item.url,
+      name: breadcrumb.name,
+      item: breadcrumb.url,
     })),
   }
 }

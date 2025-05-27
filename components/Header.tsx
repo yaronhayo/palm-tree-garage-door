@@ -1,6 +1,7 @@
 "use client"
 
 import type React from "react"
+
 import { useState, useEffect, useRef, useCallback } from "react"
 import Link from "next/link"
 import Image from "next/image"
@@ -65,14 +66,14 @@ export default function Header() {
         // Determine which section is currently in view
         const sections = ["services", "common-issues", "testimonials", "faq", "booking"]
         const headerHeight = headerRef.current?.offsetHeight || 80
-        const buffer = 120 // Additional buffer to account for scroll margin
+        const buffer = headerHeight + 50 // Additional buffer for scroll detection
 
         // Find the active section
         for (const section of sections) {
           const element = document.getElementById(section)
           if (element) {
             const rect = element.getBoundingClientRect()
-            if (rect.top <= headerHeight + buffer && rect.bottom > headerHeight) {
+            if (rect.top <= buffer && rect.bottom > buffer) {
               setActiveSection(section)
               break
             }
@@ -269,7 +270,7 @@ export default function Header() {
 
             <div className="flex items-center space-x-3">
               <Link
-                href="#booking"
+                href="/#booking"
                 className={`flex items-center bg-white hover:bg-gray-100 text-primary-600 font-bold py-2 px-4 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary-600 ${
                   activeSection === "booking" ? "bg-gray-100 ring-2 ring-white" : ""
                 }`}
@@ -297,7 +298,7 @@ export default function Header() {
 
           <div className="md:hidden flex items-center">
             <Link
-              href="#booking"
+              href="/#booking"
               className="mr-2 flex items-center bg-white hover:bg-gray-100 text-primary-600 font-bold py-2 px-2 xs:px-3 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary-600"
               onClick={(e) => handleAnchorClick(e, "/#booking")}
               aria-label="Book a service appointment"
@@ -426,7 +427,7 @@ export default function Header() {
 
               <div className="pt-4 xs:pt-6 space-y-3 xs:space-y-4">
                 <Link
-                  href="#booking"
+                  href="/#booking"
                   className={`flex items-center justify-between bg-white hover:bg-gray-100 text-primary-600 font-bold p-3 xs:p-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-white active:scale-98 ${
                     activeSection === "booking" ? "bg-gray-100 ring-2 ring-white" : ""
                   }`}
