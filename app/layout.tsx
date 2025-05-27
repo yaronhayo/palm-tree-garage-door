@@ -5,10 +5,12 @@ import { Inter } from "next/font/google"
 import Header from "@/components/Header"
 import Footer from "@/components/Footer"
 import SchemaMarkup from "@/components/SchemaMarkup"
+import GoogleTagManager from "@/components/GoogleTagManager"
 import ClientScript from "@/components/ClientScript"
 import { CookieConsent } from "@/components/CookieConsent"
 import SocialProofPopup from "@/components/SocialProofPopup"
 import ResponsiveMetaTags from "@/components/ResponsiveMetaTags"
+import Script from "next/script"
 
 // Optimize font loading with display swap
 const inter = Inter({
@@ -97,19 +99,23 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const gtmId = "GTM-MF948JFL"
+
   return (
     <html lang="en" className="scroll-smooth">
       <head>
         <ResponsiveMetaTags />
 
-        {/* Google Tag Manager - placed as high as possible in the head */}
-        <script
+        {/* Google Tag Manager - using Next.js Script component for better loading */}
+        <Script
+          id="google-tag-manager"
+          strategy="afterInteractive"
           dangerouslySetInnerHTML={{
             __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
             new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
             j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-            })(window,document,'script','dataLayer','GTM-MF948JFL');`,
+            })(window,document,'script','dataLayer','${gtmId}');`,
           }}
         />
         {/* End Google Tag Manager */}
@@ -126,7 +132,7 @@ export default function RootLayout({
         {/* Google Tag Manager (noscript) - placed immediately after opening body tag */}
         <noscript>
           <iframe
-            src="https://www.googletagmanager.com/ns.html?id=GTM-MF948JFL"
+            src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`}
             height="0"
             width="0"
             style={{ display: "none", visibility: "hidden" }}
@@ -143,6 +149,9 @@ export default function RootLayout({
         <CookieConsent />
         <SocialProofPopup />
         <SchemaMarkup page="home" />
+
+        {/* Initialize GoogleTagManager component for dataLayer */}
+        <GoogleTagManager gtmId={gtmId} />
 
         {/* CallRail Tracking - deferred with improved loading strategy */}
         <ClientScript
