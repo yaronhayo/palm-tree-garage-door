@@ -5,7 +5,6 @@ import { Inter } from "next/font/google"
 import Header from "@/components/Header"
 import Footer from "@/components/Footer"
 import SchemaMarkup from "@/components/SchemaMarkup"
-import GoogleTagManager from "@/components/GoogleTagManager"
 import ClientScript from "@/components/ClientScript"
 import { CookieConsent } from "@/components/CookieConsent"
 import SocialProofPopup from "@/components/SocialProofPopup"
@@ -98,8 +97,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const gtmId = process.env.NEXT_PUBLIC_GTM_ID || process.env.GTM_ID || "GTM-MF948JFL"
-
   return (
     <html lang="en" className="scroll-smooth">
       <head>
@@ -112,7 +109,7 @@ export default function RootLayout({
             new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
             j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-            })(window,document,'script','dataLayer','${gtmId}');`,
+            })(window,document,'script','dataLayer','GTM-MF948JFL');`,
           }}
         />
         {/* End Google Tag Manager */}
@@ -129,7 +126,7 @@ export default function RootLayout({
         {/* Google Tag Manager (noscript) - placed immediately after opening body tag */}
         <noscript>
           <iframe
-            src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`}
+            src="https://www.googletagmanager.com/ns.html?id=GTM-MF948JFL"
             height="0"
             width="0"
             style={{ display: "none", visibility: "hidden" }}
@@ -146,9 +143,6 @@ export default function RootLayout({
         <CookieConsent />
         <SocialProofPopup />
         <SchemaMarkup page="home" />
-
-        {/* Initialize GoogleTagManager component for dataLayer */}
-        <GoogleTagManager gtmId={gtmId} />
 
         {/* CallRail Tracking - deferred with improved loading strategy */}
         <ClientScript
