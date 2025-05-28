@@ -225,7 +225,7 @@ export default function Header() {
     >
       <SkipToContent contentId="main-content" />
 
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4 max-w-7xl">
         <div className="flex items-center justify-between">
           <Link
             href="/"
@@ -257,7 +257,7 @@ export default function Header() {
                 <Link
                   key={item.path}
                   href={item.path}
-                  className={`text-white hover:text-accent-300 font-medium flex items-center mr-5 focus:outline-none focus:ring-2 focus:ring-accent-300 focus:ring-offset-2 focus:ring-offset-primary-600 rounded-md px-2 py-1 ${
+                  className={`text-white hover:text-accent-300 font-medium flex items-center mr-5 focus:outline-none focus:ring-2 focus:ring-accent-300 focus:ring-offset-2 focus:ring-offset-primary-600 rounded-md px-2 py-1 whitespace-nowrap ${
                     activeSection === item.id ? "text-accent-300 font-bold" : ""
                   }`}
                   onClick={(e) => handleAnchorClick(e, item.path)}
@@ -271,7 +271,7 @@ export default function Header() {
             <div className="flex items-center space-x-3">
               <Link
                 href="/#booking"
-                className={`flex items-center bg-white hover:bg-gray-100 text-primary-600 font-bold py-2 px-4 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary-600 ${
+                className={`flex items-center bg-white hover:bg-gray-100 text-primary-600 font-bold py-2 px-4 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary-600 whitespace-nowrap ${
                   activeSection === "booking" ? "bg-gray-100 ring-2 ring-white" : ""
                 }`}
                 aria-label="Book a service appointment"
@@ -283,7 +283,7 @@ export default function Header() {
 
               <Link
                 href="tel:+13213669723"
-                className="flex items-center bg-accent-500 hover:bg-accent-600 text-primary-900 font-bold py-2 px-4 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-accent-300 focus:ring-offset-2 focus:ring-offset-primary-600"
+                className="flex items-center bg-accent-500 hover:bg-accent-600 text-primary-900 font-bold py-2 px-4 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-accent-300 focus:ring-offset-2 focus:ring-offset-primary-600 whitespace-nowrap"
                 onClick={handlePhoneClick}
                 data-call-tracking="true"
                 aria-label="Call us at (321) 366-9723"
@@ -408,7 +408,7 @@ export default function Header() {
                 <Link
                   key={item.path}
                   href={item.path}
-                  className={`text-white hover:bg-primary-600/50 font-medium flex items-center justify-between p-3 xs:p-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-300 active:scale-98 transition-all ${
+                  className={`text-white hover:bg-primary-600/50 font-medium flex items-center justify-between p-3 xs:p-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-300 active:scale-98 transition-all whitespace-nowrap ${
                     activeSection === item.id ? "bg-primary-600/50 border-l-4 border-accent-300" : ""
                   }`}
                   onClick={(e) => {
@@ -428,7 +428,7 @@ export default function Header() {
               <div className="pt-4 xs:pt-6 space-y-3 xs:space-y-4">
                 <Link
                   href="/#booking"
-                  className={`flex items-center justify-between bg-white hover:bg-gray-100 text-primary-600 font-bold p-3 xs:p-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-white active:scale-98 ${
+                  className={`flex items-center justify-between bg-white hover:bg-gray-100 text-primary-600 font-bold p-3 xs:p-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-white active:scale-98 whitespace-nowrap ${
                     activeSection === "booking" ? "bg-gray-100 ring-2 ring-white" : ""
                   }`}
                   onClick={(e) => {
@@ -449,7 +449,7 @@ export default function Header() {
 
                 <Link
                   href="tel:+13213669723"
-                  className="flex items-center justify-between bg-accent-500 hover:bg-accent-600 text-primary-900 font-bold p-3 xs:p-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-accent-300 active:scale-98"
+                  className="flex items-center justify-between bg-accent-500 hover:bg-accent-600 text-primary-900 font-bold p-3 xs:p-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-accent-300 active:scale-98 whitespace-nowrap"
                   onClick={() => {
                     handlePhoneClick()
                     setIsMenuOpen(false)

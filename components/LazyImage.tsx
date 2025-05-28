@@ -1,66 +1,98 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import Image, { type ImageProps } from "next/image"
-import { useInView } from "framer-motion"
-import { useRef } from "react"
+import { useState, useEffect, useRef } from "react"
+import Image from "next/image"
 
-type LazyImageProps = ImageProps & {
-  threshold?: number
-  once?: boolean
-  fetchPriority?: "high" | "low" | "auto"
+interface LazyImageProps {
+  src: string
+  alt: string
+  width: number
+  height: number
+  className?: string
+  priority?: boolean
+  sizes?: string
+  quality?: number
+  placeholder?: "blur" | "empty" | "data:image/..."
+  blurDataURL?: string
 }
 
-export default function LazyImage({ threshold = 0.1, once = true, fetchPriority = "auto", ...props }: LazyImageProps) {
+export default function LazyImage({
+  src,
+  alt,
+  width,
+  height,
+  className = "",
+  priority = false,
+  sizes = "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw",
+  quality = 85,
+  placeholder = "empty",
+  blurDataURL,
+}: LazyImageProps) {
   const [isLoaded, setIsLoaded] = useState(false)
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once, amount: threshold })
-  const [shouldLoad, setShouldLoad] = useState(false)
+  const [isInView, setIsInView] = useState(false)
+  const imgRef = useRef<HTMLDivElement>(null)
 
-  // Only load the image when it's in view
   useEffect(() => {
-    if (isInView && !shouldLoad) {
-      setShouldLoad(true)
+    if (!imgRef.current || priority) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries
+        setIsInView(entry.isIntersecting)
+      },
+      {
+        rootMargin: "200px", // Load images 200px before they come into view
+        threshold: 0.01,
+      },
+    )
+
+    observer.observe(imgRef.current)
+
+    return () => {
+      if (imgRef.current) {
+        observer.unobserve(imgRef.current)
+      }
     }
-  }, [isInView, shouldLoad])
+  }, [priority])
 
-  // Determine if this image is likely to be an LCP candidate
-  const isLcpCandidate = props.priority || fetchPriority === "high"
-
-  // Pre-calculate dimensions to prevent layout shifts
-  const width = typeof props.width === "number" ? props.width : undefined
-  const height = typeof props.height === "number" ? props.height : undefined
-  const aspectRatio = width && height ? width / height : undefined
+  // For priority images, set isInView to true immediately
+  useEffect(() => {
+    if (priority) {
+      setIsInView(true)
+    }
+  }, [priority])
 
   return (
     <div
-      ref={ref}
-      className={`relative ${props.className || ""} overflow-hidden`}
+      ref={imgRef}
+      className={`relative overflow-hidden ${className}`}
       style={{
-        height: props.height || "auto",
-        width: props.width || "auto",
-        // Set aspect ratio to prevent layout shifts
-        aspectRatio: aspectRatio ? `${aspectRatio}` : undefined,
+        aspectRatio: `${width}/${height}`,
+        width: "100%",
+        height: "auto",
+        background: "#f0f0f0",
       }}
-      aria-busy={!isLoaded}
     >
-      {shouldLoad ? (
+      {(isInView || priority) && (
         <Image
-          {...props}
-          fetchPriority={fetchPriority}
-          className={`transition-opacity duration-300 ${isLoaded ? "opacity-100" : "opacity-0"}`}
+          src={src || "/placeholder.svg"}
+          alt={alt}
+          width={width}
+          height={height}
+          className={`transition-opacity duration-500 ${isLoaded ? "opacity-100" : "opacity-0"}`}
           onLoad={() => setIsLoaded(true)}
-          loading={isLcpCandidate ? "eager" : "lazy"}
-          // Ensure sizes is set for responsive images
-          sizes={props.sizes || "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"}
-        />
-      ) : (
-        <div
-          className="bg-gray-200 animate-pulse w-full h-full"
+          priority={priority}
+          sizes={sizes}
+          quality={quality}
+          placeholder={placeholder}
+          blurDataURL={blurDataURL}
+          loading={priority ? "eager" : "lazy"}
+          fetchPriority={priority ? "high" : "auto"}
           style={{
-            aspectRatio: aspectRatio ? `${aspectRatio}` : undefined,
+            objectFit: "cover",
+            width: "100%",
+            height: "100%",
           }}
-          aria-hidden="true"
         />
       )}
     </div>

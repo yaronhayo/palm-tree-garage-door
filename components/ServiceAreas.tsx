@@ -234,36 +234,38 @@ export default function ServiceAreas() {
 
         {/* City Modal */}
         {isModalOpen && selectedCity && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center sm:items-start justify-center p-2 sm:p-4 pt-4 sm:pt-16">
-            <div className="bg-white rounded-xl max-w-3xl w-[95%] sm:w-full max-h-[90vh] sm:max-h-[80vh] overflow-y-auto mt-0 sm:mt-20">
-              <div className="sticky top-0 bg-white border-b border-gray-200 rounded-t-xl">
-                <div className="flex justify-between items-center p-4">
-                  <h3 className="text-lg sm:text-xl font-bold text-primary-600 flex items-center">
-                    <MapPin className="h-5 w-5 mr-2 text-accent-500" />
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-2 sm:p-4">
+            <div className="bg-white rounded-xl max-w-3xl w-[95%] sm:w-full max-h-[90vh] overflow-y-auto overscroll-contain">
+              <div className="sticky top-0 bg-white border-b border-gray-200 rounded-t-xl z-10">
+                <div className="flex justify-between items-center p-3 sm:p-4">
+                  <h3 className="text-base sm:text-xl font-bold text-primary-600 flex items-center">
+                    <MapPin className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2 text-accent-500" />
                     {selectedCity.name}
                   </h3>
                   <button
                     onClick={closeCityModal}
-                    className="text-gray-500 hover:text-gray-700 focus:outline-none p-2 -mr-1"
+                    className="text-gray-500 hover:text-gray-700 focus:outline-none p-1 sm:p-2 -mr-1 touch-target-fix"
                     aria-label="Close"
                   >
-                    <X className="h-7 w-7" />
+                    <X className="h-6 w-6 sm:h-7 sm:w-7" />
                   </button>
                 </div>
               </div>
 
-              <div className="p-5 sm:p-6">
-                <div className="mb-6">
-                  <h4 className="text-lg font-semibold text-primary-600 mb-2">About {selectedCity.name}</h4>
-                  <p className="text-gray-600 mb-4">{selectedCity.description}</p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                    <div className="bg-gray-50 p-3 rounded-lg">
-                      <p className="text-sm text-gray-500">County</p>
-                      <p className="font-medium text-gray-700">{selectedCity.county}</p>
+              <div className="p-3 sm:p-5">
+                <div className="mb-4 sm:mb-6">
+                  <h4 className="text-base sm:text-lg font-semibold text-primary-600 mb-2">
+                    About {selectedCity.name}
+                  </h4>
+                  <p className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4">{selectedCity.description}</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-3 sm:mb-4">
+                    <div className="bg-gray-50 p-2 sm:p-3 rounded-lg">
+                      <p className="text-xs sm:text-sm text-gray-500">County</p>
+                      <p className="font-medium text-gray-700 text-sm sm:text-base">{selectedCity.county}</p>
                     </div>
-                    <div className="bg-gray-50 p-3 rounded-lg">
-                      <p className="text-sm text-gray-500">Population</p>
-                      <p className="font-medium text-gray-700">{selectedCity.population}</p>
+                    <div className="bg-gray-50 p-2 sm:p-3 rounded-lg">
+                      <p className="text-xs sm:text-sm text-gray-500">Population</p>
+                      <p className="font-medium text-gray-700 text-sm sm:text-base">{selectedCity.population}</p>
                     </div>
                   </div>
                 </div>
@@ -321,15 +323,15 @@ export default function ServiceAreas() {
                   )
                 })()}
 
-                <div className="mt-6 flex flex-col sm:flex-row gap-4">
+                <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row gap-2 sm:gap-4">
                   <a
                     href="tel:+13213669723"
-                    className="bg-primary-600 hover:bg-primary-700 text-white font-bold py-4 sm:py-3 px-6 rounded-md transition-all duration-300 flex items-center justify-center"
+                    className="bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 px-4 sm:px-6 rounded-md transition-all duration-300 flex items-center justify-center"
                     onClick={handlePhoneClick}
                     data-call-tracking="true"
                   >
-                    <Phone className="mr-2 h-5 w-5" />
-                    <span className="text-base">Call For Service in {selectedCity.name}</span>
+                    <Phone className="mr-1 sm:mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+                    <span className="text-sm sm:text-base">Call For Service in {selectedCity.name}</span>
                   </a>
                   <button
                     onClick={() => {
@@ -338,10 +340,10 @@ export default function ServiceAreas() {
                         document.getElementById("booking")?.scrollIntoView({ behavior: "smooth" })
                       }, 100)
                     }}
-                    className="bg-accent-500 hover:bg-accent-600 text-primary-900 font-bold py-4 sm:py-3 px-6 rounded-md transition-all duration-300 flex items-center justify-center"
+                    className="bg-accent-500 hover:bg-accent-600 text-primary-900 font-bold py-3 px-4 sm:px-6 rounded-md transition-all duration-300 flex items-center justify-center"
                   >
-                    <ArrowRight className="mr-2 h-5 w-5" />
-                    <span className="text-base">Book Service</span>
+                    <ArrowRight className="mr-1 sm:mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+                    <span className="text-sm sm:text-base">Book Service</span>
                   </button>
                 </div>
               </div>

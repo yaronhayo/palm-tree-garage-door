@@ -1,10 +1,9 @@
 import { Suspense } from "react"
 import HeroSection from "@/components/HeroSection"
 import ServicesGrid from "@/components/ServicesGrid"
-import dynamic from "next/dynamic"
 import SchemaMarkup from "@/components/SchemaMarkup"
 
-// Enhanced lazy loading with better loading states - removed ssr option
+// Enhanced lazy loading with better loading states
 const WhyChooseUs = dynamic(() => import("@/components/WhyChooseUs"), {
   loading: () => <SectionPlaceholder label="Why Choose Us" />,
 })
@@ -31,6 +30,7 @@ const BookingSection = dynamic(() => import("@/components/BookingSection"), {
 
 // Import EmergencyServiceSection normally since it's relatively small
 import EmergencyServiceSection from "@/components/EmergencyServiceSection"
+import dynamic from "next/dynamic"
 
 // Improved loading placeholder with label for better UX
 const SectionPlaceholder = ({ label }: { label: string }) => (

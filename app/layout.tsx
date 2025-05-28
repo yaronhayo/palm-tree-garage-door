@@ -6,10 +6,10 @@ import Header from "@/components/Header"
 import Footer from "@/components/Footer"
 import SchemaMarkup from "@/components/SchemaMarkup"
 import GoogleTagManager from "@/components/GoogleTagManager"
-import ClientScript from "@/components/ClientScript"
 import { CookieConsent } from "@/components/CookieConsent"
 import SocialProofPopup from "@/components/SocialProofPopup"
 import ResponsiveMetaTags from "@/components/ResponsiveMetaTags"
+import { ErrorBoundary } from "@/components/ErrorBoundary"
 
 // Optimize font loading with display swap
 const inter = Inter({
@@ -115,6 +115,13 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
 
+        {/* Preload critical CSS */}
+        <link
+          rel="preload"
+          href={`https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap`}
+          as="style"
+        />
+
         {/* Google Tag Manager - placed as high as possible in the head */}
         <script
           dangerouslySetInnerHTML={{
@@ -140,24 +147,19 @@ export default function RootLayout({
         </noscript>
         {/* End Google Tag Manager (noscript) */}
 
-        <Header />
-        <main id="main-content">{children}</main>
-        <Footer />
+        <ErrorBoundary>
+          <Header />
+          <main id="main-content">{children}</main>
+          <Footer />
 
-        {/* Non-critical UI elements */}
-        <CookieConsent />
-        <SocialProofPopup />
-        <SchemaMarkup page="home" />
+          {/* Non-critical UI elements */}
+          <CookieConsent />
+          <SocialProofPopup />
+          <SchemaMarkup page="home" />
 
-        {/* Initialize GoogleTagManager component for dataLayer */}
-        <GoogleTagManager gtmId={gtmId} />
-
-        {/* CallRail Tracking - deferred with improved loading strategy */}
-        <ClientScript
-          id="callrail-tracking"
-          strategy="lazyOnload"
-          src="//cdn.callrail.com/companies/988425603/06b6d7a2f8e273d0c684/12/swap.js"
-        />
+          {/* Initialize GoogleTagManager component for dataLayer */}
+          <GoogleTagManager gtmId={gtmId} />
+        </ErrorBoundary>
       </body>
     </html>
   )

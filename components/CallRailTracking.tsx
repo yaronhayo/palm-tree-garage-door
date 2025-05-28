@@ -4,37 +4,9 @@ import { useEffect } from "react"
 
 const CallRailTracking = () => {
   useEffect(() => {
-    // Implement the functions inline
-    const initializeCallRail = () => {
-      if (typeof window !== "undefined" && window.CallTrk) {
-        try {
-          window.CallTrk.swap()
-        } catch (error) {
-          console.error("CallRail initialization error:", error)
-        }
-      }
-    }
-
-    const swapPhoneNumbers = () => {
-      if (typeof window !== "undefined" && window.CallTrk) {
-        try {
-          window.CallTrk.swap()
-        } catch (error) {
-          console.error("CallRail swap error:", error)
-        }
-      }
-    }
-
-    initializeCallRail()
-
-    // Re-swap phone numbers on route changes (if using a router)
-    // Example using useRouter from next/router:
-    // router.events.on('routeChangeComplete', swapPhoneNumbers);
-    // return () => {
-    //   router.events.off('routeChangeComplete', swapPhoneNumbers);
-    // };
-
-    // You might need to adjust this based on your routing library
+    // This component is now just a placeholder
+    // CallRail will be loaded through GTM
+    console.log("CallRail tracking should be configured in GTM")
   }, [])
 
   return null // This component doesn't render anything

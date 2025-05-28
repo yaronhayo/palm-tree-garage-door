@@ -79,7 +79,7 @@ export default function ServicePopup({ service, isOpen, onClose }: ServicePopupP
         <div className="flex min-h-full items-center justify-center p-2 xs:p-3 sm:p-4">
           {/* Modal Content */}
           <div
-            className="relative bg-white rounded-xl shadow-2xl w-full max-w-4xl overflow-hidden"
+            className="relative bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] md:max-h-[85vh] overflow-hidden"
             role="dialog"
             aria-modal="true"
             aria-labelledby={`service-popup-${service.title.toLowerCase().replace(/\s+/g, "-")}`}
@@ -99,7 +99,7 @@ export default function ServicePopup({ service, isOpen, onClose }: ServicePopupP
             </div>
 
             {/* Content with max height and scrolling */}
-            <div className="max-h-[80vh] md:max-h-[75vh] overflow-y-auto">
+            <div className="max-h-[80vh] md:max-h-[75vh] overflow-y-auto overscroll-contain">
               {/* Two-column layout on desktop, single column on mobile */}
               <div className="grid md:grid-cols-2">
                 {/* Left column - Image and quick info */}
@@ -125,7 +125,7 @@ export default function ServicePopup({ service, isOpen, onClose }: ServicePopupP
                       alt={`Garage Door ${service.title} service`}
                       width={500}
                       height={300}
-                      className="w-full h-48 sm:h-56 object-contain bg-gray-50"
+                      className="w-full h-40 xs:h-48 sm:h-56 object-contain bg-gray-50"
                     />
                   </div>
 
@@ -198,23 +198,23 @@ export default function ServicePopup({ service, isOpen, onClose }: ServicePopupP
               </div>
 
               {/* CTAs - Full width at the bottom, always visible */}
-              <div className="sticky bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-3 sm:p-4 shadow-md">
+              <div className="sticky bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-2 xs:p-3 sm:p-4 shadow-md">
                 <div className="container mx-auto">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 xs:gap-3">
                     <a
                       href="tel:+13213669723"
-                      className="flex items-center justify-center bg-accent-500 hover:bg-accent-600 text-primary-900 font-bold py-2 sm:py-3 px-3 sm:px-4 rounded-lg transition-all duration-200 touch-target-fix"
+                      className="flex items-center justify-center bg-accent-500 hover:bg-accent-600 text-primary-900 font-bold py-2 xs:py-3 px-2 xs:px-4 rounded-lg transition-all duration-200 touch-target-fix"
                       data-call-tracking="true"
                     >
-                      <Phone className="mr-2 h-4 w-4" />
-                      <span>Call Now</span>
+                      <Phone className="mr-1 xs:mr-2 h-4 w-4" />
+                      <span className="text-sm xs:text-base">Call Now</span>
                     </a>
                     <button
                       onClick={handleBookingClick}
-                      className="flex items-center justify-center bg-primary-600 hover:bg-primary-700 text-white font-bold py-2 sm:py-3 px-3 sm:px-4 rounded-lg transition-all duration-200 touch-target-fix"
+                      className="flex items-center justify-center bg-primary-600 hover:bg-primary-700 text-white font-bold py-2 xs:py-3 px-2 xs:px-4 rounded-lg transition-all duration-200 touch-target-fix"
                     >
-                      <Calendar className="mr-2 h-4 w-4" />
-                      <span>Schedule Service</span>
+                      <Calendar className="mr-1 xs:mr-2 h-4 w-4" />
+                      <span className="text-sm xs:text-base">Schedule Service</span>
                     </button>
                   </div>
                   <p className="text-center text-xs text-gray-600 mt-2">

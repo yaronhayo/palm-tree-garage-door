@@ -105,6 +105,7 @@ export default function HeroSection() {
               fill
               priority
               fetchPriority="high"
+              loading="eager"
               className={`object-cover transition-opacity duration-700 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
               sizes={isMobile ? "100vw" : isTablet ? "100vw" : "100vw"}
               quality={isMobile ? 80 : isTablet ? 85 : 90}

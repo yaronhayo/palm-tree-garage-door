@@ -1,3 +1,8 @@
+/**
+ * IMPORTANT: This file is maintained for backward compatibility.
+ * All tracking should be configured in Google Tag Manager moving forward.
+ * Functions in this file will pass events to dataLayer for GTM to handle.
+ */
 import { loadScript, isScriptLoaded } from "@/lib/script-loader"
 import { trackPageView as trackPageViewEvent } from "@/lib/analytics-events"
 
@@ -214,7 +219,7 @@ export function trackEvent(params: EventParams): void {
     return
   }
 
-  // Track in dataLayer
+  // Track in dataLayer only (GTM will handle the rest)
   window.dataLayer.push({
     event: "customEvent",
     eventAction: action,
@@ -224,23 +229,9 @@ export function trackEvent(params: EventParams): void {
     ...customParams,
   })
 
-  // Track in Google Analytics if available
-  if (window.gtag) {
-    try {
-      window.gtag("event", action, {
-        event_category: category,
-        event_label: label,
-        value: value,
-        ...customParams,
-      })
-    } catch (error) {
-      console.error("Error tracking event:", error)
-    }
-  }
-
   // Debug logging in development
   if (process.env.NODE_ENV === "development") {
-    console.debug("Analytics Event:", {
+    console.debug("Analytics Event pushed to dataLayer:", {
       action,
       category,
       label,
