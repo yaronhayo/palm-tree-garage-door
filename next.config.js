@@ -30,14 +30,24 @@ const nextConfig = {
             name: "framework",
             test: /[\\/]node_modules[\\/](react|react-dom|scheduler|prop-types)[\\/]/,
             priority: 40,
-            // Don't let webpack eliminate react code in production
             enforce: true,
           },
           lib: {
             test: /[\\/]node_modules[\\/]/,
             name(module) {
-              const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1]
-              return `npm.${packageName.replace("@", "")}`
+              // Handle cases where module.context might not match the expected pattern
+              if (!module.context) {
+                return "npm.libs"
+              }
+
+              const match = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)
+              if (!match || !match[1]) {
+                return "npm.libs"
+              }
+
+              const packageName = match[1]
+              // Clean up the package name
+              return `npm.${packageName.replace("@", "").replace("/", "-")}`
             },
             priority: 30,
             minChunks: 1,
@@ -49,7 +59,9 @@ const nextConfig = {
             priority: 20,
           },
           shared: {
-            name: false,
+            name(module, chunks, cacheGroupKey) {
+              return `${cacheGroupKey}-shared`
+            },
             priority: 10,
             minChunks: 2,
             reuseExistingChunk: true,
