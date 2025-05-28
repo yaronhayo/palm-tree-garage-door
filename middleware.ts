@@ -8,11 +8,11 @@ export function middleware(request: NextRequest) {
 
   // Check if the request is coming from the old domain
   const host = request.headers.get("host") || ""
-  const isOldDomain = host.includes("garagedoorspringsrepairfl.com")
+  const isOldDomain = host.includes("palmtreegaragedoor.com")
 
   if (isOldDomain) {
     // Create the new URL for the redirect
-    const newHost = "palmtreegaragedoor.com" // Replace with your actual domain
+    const newHost = "garagedoorspringsrepairfl.com" // Updated to correct domain
     url.host = newHost
     url.protocol = "https"
 

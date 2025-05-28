@@ -18,7 +18,7 @@ export function formatSlug(text: string): string {
  * @param baseUrl The base URL of the site
  * @returns A canonical URL
  */
-export function getCanonicalUrl(path: string, baseUrl = "https://palmtreegaragedoor.com"): string {
+export function getCanonicalUrl(path: string, baseUrl = "https://garagedoorspringsrepairfl.com"): string {
   // Remove any hash fragments
   const cleanPath = path.split("#")[0]
 
@@ -35,7 +35,7 @@ export function getCanonicalUrl(path: string, baseUrl = "https://palmtreegaraged
  * @returns An array of breadcrumb objects
  */
 export function createBreadcrumbs(path: string): Array<{ name: string; url: string }> {
-  const baseUrl = "https://palmtreegaragedoor.com"
+  const baseUrl = "https://garagedoorspringsrepairfl.com"
   const segments = path.split("/").filter(Boolean)
 
   // Always start with home

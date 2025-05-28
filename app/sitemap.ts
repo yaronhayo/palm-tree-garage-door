@@ -5,7 +5,7 @@ import { serviceAreas } from "@/data/service-areas"
 export const dynamic = "force-static"
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = process.env.SITE_URL || "https://palmtreegaragedoor.com"
+  const baseUrl = process.env.SITE_URL || "https://garagedoorspringsrepairfl.com"
   const currentDate = new Date()
 
   // Base pages

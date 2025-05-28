@@ -32,7 +32,7 @@ interface SchemaMarkupProps {
   activeSection?: string | null
 }
 
-const COMPANY_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://palmtreegaragedoor.com"
+const COMPANY_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://garagedoorspringsrepairfl.com"
 const COMPANY_NAME = "Palm Tree Garage Door Repair"
 const COMPANY_DESCRIPTION =
   "Professional garage door repair and installation services in South Florida. 24/7 emergency service, free estimates, and expert technicians for all garage door needs."

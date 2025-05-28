@@ -35,10 +35,10 @@ export function getSiteUrl(): string {
     return window.location.origin
   }
 
-  return process.env.SITE_URL || "https://palmtreegaragedoor.com"
+  return process.env.SITE_URL || "https://garagedoorspringsrepairfl.com"
 }
 
 /**
  * Business email from environment variables
  */
-export const BUSINESS_EMAIL = process.env.BUSINESS_EMAIL || "info@palmtreegaragedoor.com"
+export const BUSINESS_EMAIL = process.env.BUSINESS_EMAIL || "palmtreegaragedoor@gmail.com"
