@@ -38,8 +38,8 @@ export const FORM_TYPES = {
   REVIEW: "review",
 }
 
-// Placeholder GTM ID for development
-const PLACEHOLDER_GTM_ID = "GTM-XXXXX"
+// Use the correct GTM ID
+const PLACEHOLDER_GTM_ID = "GTM-MF948JFL"
 
 /**
  * Clean and validate a GTM ID
@@ -47,16 +47,19 @@ const PLACEHOLDER_GTM_ID = "GTM-XXXXX"
  * @returns The cleaned GTM ID or a default value
  */
 export function cleanGtmId(gtmId: string): string {
-  if (!gtmId) return PLACEHOLDER_GTM_ID // Return a placeholder for development
+  if (!gtmId) return "GTM-MF948JFL" // Return the correct GTM ID if none provided
 
   // If it's already in the correct format, return it
   const gtmIdPattern = /^GTM-[A-Z0-9]+$/
   if (gtmIdPattern.test(gtmId)) return gtmId
 
+  // If it's the correct GTM ID, return it
+  if (gtmId === "GTM-MF948JFL") return gtmId
+
   // Special case for GTM-AW-11312386644
   if (gtmId === "GTM-AW-11312386644") {
-    console.warn("Using default GTM ID instead of malformed ID: GTM-AW-11312386644")
-    return PLACEHOLDER_GTM_ID // Return a placeholder for development
+    console.warn("Using correct GTM ID instead of malformed ID: GTM-AW-11312386644")
+    return "GTM-MF948JFL"
   }
 
   // If it contains "AW-", it might be a Google Ads ID mixed with GTM
@@ -76,16 +79,16 @@ export function cleanGtmId(gtmId: string): string {
     return fallbackId
   }
 
-  // If all else fails, return a placeholder for development
-  console.warn(`Invalid GTM ID format: ${gtmId}. Using placeholder instead.`)
-  return PLACEHOLDER_GTM_ID
+  // If all else fails, return the correct GTM ID
+  console.warn(`Invalid GTM ID format: ${gtmId}. Using correct GTM ID instead.`)
+  return "GTM-MF948JFL"
 }
 
 /**
  * Check if a GTM ID is a placeholder or development ID
  */
 export function isPlaceholderGtmId(gtmId: string): boolean {
-  return !gtmId || gtmId === PLACEHOLDER_GTM_ID
+  return !gtmId || (gtmId !== "GTM-MF948JFL" && gtmId === PLACEHOLDER_GTM_ID)
 }
 
 // Define GA_CONFIG directly in this file instead of importing it

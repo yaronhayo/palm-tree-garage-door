@@ -36,8 +36,130 @@ function collectClientUserInfo() {
       height: window.screen.height,
     },
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    // Add more client-side information as needed
+    browser: detectBrowser(navigator.userAgent),
+    os: detectOS(navigator.userAgent),
+    device: detectDevice(navigator.userAgent),
   }
+}
+
+// Detect browser from user agent
+function detectBrowser(userAgent: string): string {
+  if (!userAgent) return "Unknown browser"
+
+  if (userAgent.includes("Chrome") && !userAgent.includes("Chromium") && !userAgent.includes("Edg")) {
+    return "Chrome"
+  } else if (userAgent.includes("Firefox") && !userAgent.includes("Seamonkey")) {
+    return "Firefox"
+  } else if (userAgent.includes("Safari") && !userAgent.includes("Chrome") && !userAgent.includes("Chromium")) {
+    return "Safari"
+  } else if (userAgent.includes("Edg")) {
+    return "Edge"
+  } else if (userAgent.includes("MSIE") || userAgent.includes("Trident/")) {
+    return "Internet Explorer"
+  } else if (userAgent.includes("Opera") || userAgent.includes("OPR")) {
+    return "Opera"
+  }
+
+  return "Unknown browser"
+}
+
+// Detect operating system from user agent
+function detectOS(userAgent: string): string {
+  if (!userAgent) return "Unknown OS"
+
+  if (userAgent.includes("Windows")) {
+    return "Windows"
+  } else if (userAgent.includes("Mac OS")) {
+    return "macOS"
+  } else if (userAgent.includes("Android")) {
+    return "Android"
+  } else if (userAgent.includes("iOS") || userAgent.includes("iPhone") || userAgent.includes("iPad")) {
+    return "iOS"
+  } else if (userAgent.includes("Linux")) {
+    return "Linux"
+  }
+
+  return "Unknown OS"
+}
+
+// Detect device from user agent
+function detectDevice(userAgent: string): string {
+  if (!userAgent) return "Unknown device"
+
+  // iPhone detection
+  const iPhoneRegex = /iPhone(?:\s+(\d+))?/i
+  const iPhoneMatch = userAgent.match(iPhoneRegex)
+  if (iPhoneMatch) {
+    // Try to determine iPhone model
+    if (userAgent.includes("iPhone14,") || userAgent.includes("iPhone15,")) {
+      return "iPhone 13/14 Series"
+    } else if (userAgent.includes("iPhone12,") || userAgent.includes("iPhone13,")) {
+      return "iPhone 11/12 Series"
+    } else if (userAgent.includes("iPhone10,")) {
+      return "iPhone X/XS/XR"
+    } else {
+      return "iPhone"
+    }
+  }
+
+  // iPad detection
+  if (userAgent.includes("iPad")) {
+    if (userAgent.includes("iPad Pro")) {
+      return "iPad Pro"
+    } else if (userAgent.includes("iPad Air")) {
+      return "iPad Air"
+    } else {
+      return "iPad"
+    }
+  }
+
+  // Mac detection
+  if (userAgent.includes("Macintosh")) {
+    if (userAgent.includes("MacBook Pro")) {
+      return "MacBook Pro"
+    } else if (userAgent.includes("MacBook Air")) {
+      return "MacBook Air"
+    } else if (userAgent.includes("iMac")) {
+      return "iMac"
+    } else {
+      return "Mac"
+    }
+  }
+
+  // Samsung detection
+  const samsungRegex = /SM-[A-Z0-9]+/i
+  const samsungMatch = userAgent.match(samsungRegex)
+  if (samsungMatch) {
+    const model = samsungMatch[0]
+    if (model.includes("SM-G") || model.includes("SM-N")) {
+      return `Samsung Galaxy (${model})`
+    } else {
+      return `Samsung (${model})`
+    }
+  }
+
+  // Google Pixel detection
+  if (userAgent.includes("Pixel")) {
+    const pixelRegex = /Pixel\s+(\d+)/i
+    const pixelMatch = userAgent.match(pixelRegex)
+    if (pixelMatch && pixelMatch[1]) {
+      return `Google Pixel ${pixelMatch[1]}`
+    } else {
+      return "Google Pixel"
+    }
+  }
+
+  // Generic Android detection
+  if (userAgent.includes("Android")) {
+    return "Android Device"
+  }
+
+  // Desktop detection
+  if (userAgent.includes("Windows")) {
+    return "Windows PC"
+  }
+
+  return "Unknown device"
 }
 
 // US States data
@@ -352,7 +474,7 @@ export default function QuickContactForm({ showBookingForm, setShowBookingForm }
         console.warn("reCAPTCHA execution failed, continuing without verification:", recaptchaError)
       }
 
-      // Collect client-side user information
+      // Collect client-side user information with enhanced detection
       const clientUserInfo = typeof window !== "undefined" ? collectClientUserInfo() : {}
 
       // Get exact submission time and convert to Eastern Time

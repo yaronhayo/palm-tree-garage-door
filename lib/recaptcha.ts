@@ -195,3 +195,8 @@ export async function executeRecaptcha(action: string): Promise<string> {
     return ""
   }
 }
+
+/**
+ * Alias for validateRecaptcha for backward compatibility
+ */
+export const verifyRecaptcha = validateRecaptcha

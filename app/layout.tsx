@@ -100,7 +100,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const gtmId = process.env.NEXT_PUBLIC_GTM_ID || process.env.GTM_ID || "GTM-MF948JFL"
+  const gtmId = "GTM-MF948JFL"
 
   return (
     <html lang="en" className={`scroll-smooth ${inter.variable}`}>
@@ -136,10 +136,10 @@ export default function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-            })(window,document,'script','dataLayer','${gtmId}');`,
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-MF948JFL');`,
           }}
         />
         {/* End Google Tag Manager */}
@@ -148,7 +148,7 @@ export default function RootLayout({
         {/* Google Tag Manager (noscript) - placed immediately after opening body tag */}
         <noscript>
           <iframe
-            src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`}
+            src="https://www.googletagmanager.com/ns.html?id=GTM-MF948JFL"
             height="0"
             width="0"
             style={{ display: "none", visibility: "hidden" }}
