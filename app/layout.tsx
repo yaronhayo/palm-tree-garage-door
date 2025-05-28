@@ -22,13 +22,13 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | Palm Tree Garage Door Repair",
-    default: "Palm Tree Garage Door Repair | South Florida's Trusted Garage Door Experts",
+    template: "%s | Garage Door Springs Repair FL",
+    default: "Garage Door Springs Repair FL | South Florida's Trusted Garage Door Experts",
   },
   description:
-    "Palm Tree Garage Door provides professional garage door repair and installation services in South Florida. 24/7 emergency service, free estimates, and expert technicians for all garage door needs.",
+    "Garage Door Springs Repair FL provides professional garage door repair and installation services in South Florida. 24/7 emergency service, free estimates, and expert technicians for all garage door needs.",
   keywords: [
-    "Palm Tree Garage Door",
+    "Garage Door Springs Repair FL",
     "garage door repair South Florida",
     "garage door installation",
     "garage door service",
@@ -36,12 +36,12 @@ export const metadata: Metadata = {
     "emergency garage door repair",
     "garage door spring replacement",
     "garage door opener repair",
-    "Palm Tree Garage Door Repair",
+    "Garage Door Springs Repair FL",
     "best garage door company South Florida",
   ],
-  authors: [{ name: "Palm Tree Garage Door" }],
-  creator: "Palm Tree Garage Door",
-  publisher: "Palm Tree Garage Door",
+  authors: [{ name: "Garage Door Springs Repair FL" }],
+  creator: "Garage Door Springs Repair FL",
+  publisher: "Garage Door Springs Repair FL",
   icons: {
     icon: "/logo.png",
     apple: "/logo.png",
@@ -49,29 +49,30 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://palmtreegaragedoor.com/",
-    siteName: "Palm Tree Garage Door Repair",
-    title: "Palm Tree Garage Door Repair | South Florida's Trusted Garage Door Experts",
+    url: "https://garagedoorspringsrepairfl.com/",
+    siteName: "Garage Door Springs Repair FL",
+    title: "Garage Door Springs Repair FL | South Florida's Trusted Garage Door Experts",
     description:
-      "Professional garage door repair and installation services in South Florida. 24/7 emergency service by Palm Tree Garage Door experts.",
+      "Professional garage door repair and installation services in South Florida. 24/7 emergency service by Garage Door Springs Repair FL experts.",
     images: [
       {
         url: "/logo.png",
         width: 1200,
         height: 630,
-        alt: "Palm Tree Garage Door Repair",
+        alt: "Garage Door Springs Repair FL",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Palm Tree Garage Door Repair | South Florida's Trusted Garage Door Experts",
-    description: "Professional garage door repair and installation services in South Florida by Palm Tree Garage Door.",
+    title: "Garage Door Springs Repair FL | South Florida's Trusted Garage Door Experts",
+    description:
+      "Professional garage door repair and installation services in South Florida by Garage Door Springs Repair FL.",
     images: ["/logo.png"],
-    creator: "@palmtreegaragedoor",
+    creator: "@garagedoorspringsrepairfl",
   },
   alternates: {
-    canonical: "https://palmtreegaragedoor.com",
+    canonical: "https://garagedoorspringsrepairfl.com",
   },
   robots: {
     index: true,
@@ -121,6 +122,15 @@ export default function RootLayout({
           href={`https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap`}
           as="style"
         />
+
+        {/* Add preload for critical JavaScript */}
+        <link rel="preload" href="/_next/static/chunks/main.js" as="script" />
+
+        {/* Add resource hints for third-party domains */}
+        <link rel="preconnect" href="https://www.googletagmanager.com" />
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+        <link rel="preconnect" href="https://www.google-analytics.com" />
+        <link rel="dns-prefetch" href="https://www.google-analytics.com" />
 
         {/* Google Tag Manager - placed as high as possible in the head */}
         <script

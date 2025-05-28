@@ -1,110 +1,93 @@
 /**
- * Comprehensive image utilities for the application
+ * Optimizes image loading and processing
  */
 
-// Check if we're in the browser
-const isBrowser = typeof window !== "undefined"
-
-/**
- * Convert image URL to WebP format if possible
- */
-export function getWebPUrl(url: string): string {
-  // If it's already a WebP or SVG, return as is
-  if (url.endsWith(".webp") || url.endsWith(".svg")) return url
-
-  // If it's a Cloudinary URL, add WebP format
-  if (url.includes("res.cloudinary.com")) {
-    return url.replace(/\.(jpe?g|png)/i, ".webp")
-  }
-
-  // If it's a Vercel Blob URL, we can't modify it
-  if (url.includes("blob.vercel-storage.com")) return url
-
-  // For local images, try to use WebP version if available
-  const urlWithoutExt = url.replace(/\.(jpe?g|png|gif)$/i, "")
-  return `${urlWithoutExt}.webp`
+// Define common image sizes for responsive images
+export const imageSizes = {
+  thumbnail: { width: 100, height: 100 },
+  small: { width: 300, height: 200 },
+  medium: { width: 600, height: 400 },
+  large: { width: 900, height: 600 },
+  hero: { width: 1200, height: 600 },
+  full: { width: 1920, height: 1080 },
 }
 
-/**
- * Generate responsive image sizes string for Next.js Image component
- */
-export function generateImageSizes(mobile = "100vw", tablet = "50vw", desktop = "33vw"): string {
-  return `(max-width: 640px) ${mobile}, (max-width: 1024px) ${tablet}, ${desktop}`
-}
+// Generate srcSet for responsive images
+export function generateSrcSet(basePath: string, formats = ["webp", "jpg"]) {
+  const widths = [320, 640, 960, 1280, 1920]
 
-/**
- * Get image dimensions from URL if possible
- * Works with Cloudinary URLs that include dimensions
- */
-export function getImageDimensionsFromUrl(url: string): { width: number; height: number } | null {
-  // Default dimensions if we can't determine
-  const defaultDimensions = { width: 1200, height: 800 }
+  return formats.map((format) => {
+    const srcSet = widths.map((width) => `${basePath}?w=${width}&fmt=${format} ${width}w`).join(", ")
 
-  try {
-    // Check for Cloudinary URLs with dimensions
-    if (url.includes("res.cloudinary.com")) {
-      const match = url.match(/\/w_(\d+),h_(\d+)\//)
-      if (match && match[1] && match[2]) {
-        return {
-          width: Number.parseInt(match[1], 10),
-          height: Number.parseInt(match[2], 10),
-        }
-      }
+    return {
+      type: `image/${format}`,
+      srcSet,
     }
-
-    return defaultDimensions
-  } catch (error) {
-    console.error("Error parsing image dimensions:", error)
-    return defaultDimensions
-  }
+  })
 }
 
-/**
- * Preload critical images
- */
-export function preloadCriticalImages(imageUrls: string[]): void {
-  if (!isBrowser) return
+// Generate sizes attribute for responsive images
+export function generateSizes(sizes = "100vw") {
+  return sizes
+}
 
-  imageUrls.forEach((url) => {
+// Preload critical images
+export function preloadCriticalImages(images: string[]) {
+  if (typeof window === "undefined") return
+
+  images.forEach((src) => {
     const link = document.createElement("link")
     link.rel = "preload"
     link.as = "image"
-    link.href = url
-    link.type = url.endsWith(".svg") ? "image/svg+xml" : url.endsWith(".webp") ? "image/webp" : "image/png"
+    link.href = src
+    link.type = "image/webp" // Assume WebP for best performance
     document.head.appendChild(link)
   })
 }
 
-/**
- * Check if an image exists
- */
-export async function checkImageExists(url: string): Promise<boolean> {
-  if (!isBrowser) return true
-
-  try {
-    const response = await fetch(url, { method: "HEAD" })
-    return response.ok
-  } catch (error) {
-    console.error(`Error checking if image exists: ${url}`, error)
-    return false
-  }
+// Calculate aspect ratio to prevent layout shifts
+export function calculateAspectRatio(width: number, height: number) {
+  return (height / width) * 100
 }
 
-/**
- * Get appropriate image format based on browser support
- */
-export function getOptimalImageFormat(): "webp" | "avif" | "original" {
-  if (!isBrowser) return "webp"
+// Generate blur data URL placeholder
+export function generateBlurPlaceholder(width = 10, height = 10, color = "lightgray") {
+  return `data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 ${width} ${height}'%3E%3Crect width='${width}' height='${height}' fill='${encodeURIComponent(color)}'/%3E%3C/svg%3E`
+}
 
-  // Check for AVIF support
-  if (document.createElement("canvas").toDataURL("image/avif").indexOf("data:image/avif") === 0) {
-    return "avif"
+// Optimize image loading based on viewport
+export function shouldLazyLoad(priority: boolean, isAboveTheFold: boolean) {
+  return !priority && !isAboveTheFold
+}
+
+// Get appropriate image quality based on connection
+export function getOptimalQuality() {
+  if (typeof navigator === "undefined") return 75
+
+  // Check connection type if available
+  if ("connection" in navigator) {
+    const connection = (navigator as any).connection
+    if (connection) {
+      const { effectiveType, saveData } = connection
+
+      // Lower quality for slow connections or data saver
+      if (saveData) return 60
+
+      // Adjust quality based on connection type
+      switch (effectiveType) {
+        case "4g":
+          return 80
+        case "3g":
+          return 70
+        case "2g":
+          return 60
+        case "slow-2g":
+          return 50
+        default:
+          return 75
+      }
+    }
   }
 
-  // Check for WebP support
-  if (document.createElement("canvas").toDataURL("image/webp").indexOf("data:image/webp") === 0) {
-    return "webp"
-  }
-
-  return "original"
+  return 75 // Default quality
 }

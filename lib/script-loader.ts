@@ -15,6 +15,7 @@ export interface ScriptOptions {
   onError?: (error: Error) => void
   trackPerformance?: boolean
   attributes?: Record<string, string>
+  priority?: "high" | "low" | "auto"
 }
 
 /**
@@ -48,13 +49,14 @@ export function loadScript(src: string, options: ScriptOptions = {}): Promise<vo
     onError,
     trackPerformance = false,
     attributes = {},
+    priority,
   } = options
 
   return new Promise((resolve, reject) => {
     // Create script element
     const script = document.createElement("script")
     script.src = src
-    script.async = async
+    script.async = async !== false
     script.defer = defer
 
     if (id) {
@@ -65,6 +67,16 @@ export function loadScript(src: string, options: ScriptOptions = {}): Promise<vo
     Object.entries(attributes).forEach(([key, value]) => {
       script.setAttribute(key, value)
     })
+
+    // Add fetchpriority attribute for modern browsers
+    if (priority) {
+      script.setAttribute("fetchpriority", priority)
+    }
+
+    // Add loading attribute for better resource prioritization
+    if (priority === "low") {
+      script.setAttribute("loading", "lazy")
+    }
 
     // Start performance measurement
     let startTime: number | null = null
@@ -133,6 +145,15 @@ export function loadScript(src: string, options: ScriptOptions = {}): Promise<vo
         })
       }
     }
+
+    // Use requestIdleCallback to load non-critical scripts
+    if (priority === "low" && "requestIdleCallback" in window) {
+      ;(window as any).requestIdleCallback(() => {
+        document.head.appendChild(script)
+      })
+    } else {
+      document.head.appendChild(script)
+    }
   })
 }
 
@@ -164,4 +185,35 @@ export function dnsPrefetch(url: string): void {
   link.href = url
 
   document.head.appendChild(link)
+}
+
+/**
+ * Preloads a script without executing it
+ */
+export function preloadScript(src: string) {
+  if (typeof window === "undefined") {
+    return
+  }
+
+  const link = document.createElement("link")
+  link.rel = "preload"
+  link.as = "script"
+  link.href = src
+  document.head.appendChild(link)
+}
+
+/**
+ * Loads multiple scripts in parallel
+ */
+export function loadScripts(
+  scripts: Array<{
+    src: string
+    async?: boolean
+    defer?: boolean
+    id?: string
+    onLoad?: () => void
+    priority?: "high" | "low" | "auto"
+  }>,
+) {
+  return Promise.all(scripts.map((script) => loadScript(script.src, script)))
 }
