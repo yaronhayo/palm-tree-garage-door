@@ -16,9 +16,12 @@ const nextConfig = {
     removeConsole: process.env.NODE_ENV === "production",
   },
   webpack: (config, { dev, isServer }) => {
-    // Only run in production builds
-    if (!dev) {
-      // Split chunks for better caching and loading
+    // Only apply optimizations for client bundles in production
+    if (!dev && !isServer) {
+      // Enable terser minification
+      config.optimization.minimize = true
+
+      // Use simpler chunk splitting that won't cause SSR issues
       config.optimization.splitChunks = {
         chunks: "all",
         maxInitialRequests: 25,
@@ -26,51 +29,31 @@ const nextConfig = {
         cacheGroups: {
           default: false,
           vendors: false,
+          // Framework chunk
           framework: {
             name: "framework",
-            test: /[\\/]node_modules[\\/](react|react-dom|scheduler|prop-types)[\\/]/,
+            chunks: "all",
+            // This regex matches packages that are definitely client-side only
+            test: /[\\/]node_modules[\\/](react|react-dom|scheduler|prop-types|next)[\\/]/,
             priority: 40,
             enforce: true,
           },
+          // Library chunk for node_modules
           lib: {
-            test: /[\\/]node_modules[\\/]/,
-            name(module) {
-              // Handle cases where module.context might not match the expected pattern
-              if (!module.context) {
-                return "npm.libs"
-              }
-
-              const match = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)
-              if (!match || !match[1]) {
-                return "npm.libs"
-              }
-
-              const packageName = match[1]
-              // Clean up the package name
-              return `npm.${packageName.replace("@", "").replace("/", "-")}`
-            },
-            priority: 30,
-            minChunks: 1,
-            reuseExistingChunk: true,
-          },
-          commons: {
             name: "commons",
-            minChunks: 2,
-            priority: 20,
+            chunks: "all",
+            test: /[\\/]node_modules[\\/]/,
+            priority: 30,
           },
+          // Shared app code
           shared: {
-            name(module, chunks, cacheGroupKey) {
-              return `${cacheGroupKey}-shared`
-            },
-            priority: 10,
+            name: "shared",
             minChunks: 2,
+            priority: 10,
             reuseExistingChunk: true,
           },
         },
       }
-
-      // Add terser optimization
-      config.optimization.minimize = true
     }
 
     return config
