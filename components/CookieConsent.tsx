@@ -140,7 +140,7 @@ export function CookieConsent() {
             : "bottom-4 left-1/2 transform -translate-x-1/2 z-50 max-w-sm w-[90%]"
         }`}
       >
-        <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
+        <div className="bg-gray-50 rounded-lg shadow-md border border-gray-200 overflow-hidden">
           {!showDetails ? (
             <div className="p-3">
               <div className="flex items-start gap-2 mb-2">
