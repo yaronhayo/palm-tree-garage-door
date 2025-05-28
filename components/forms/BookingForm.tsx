@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { ArrowRight, Calendar, Clock } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -47,6 +47,20 @@ export default function BookingForm({ prefilledCity }: BookingFormProps) {
   })
 
   const { executeRecaptcha, error: recaptchaError } = useRecaptcha()
+  const [showRecaptchaMessage, setShowRecaptchaMessage] = useState(false)
+
+  // Only show reCAPTCHA error message after a delay to prevent flashing
+  useEffect(() => {
+    if (recaptchaError) {
+      const timer = setTimeout(() => {
+        setShowRecaptchaMessage(true)
+      }, 3000) // Show message after 3 seconds if error persists
+
+      return () => clearTimeout(timer)
+    } else {
+      setShowRecaptchaMessage(false)
+    }
+  }, [recaptchaError])
 
   const serviceOptions = [
     { value: "", label: "Select a service" },
@@ -341,7 +355,7 @@ export default function BookingForm({ prefilledCity }: BookingFormProps) {
     <div className="bg-white rounded-lg shadow-xl p-6 md:p-8">
       <h2 className="text-2xl font-bold text-primary-600 mb-6">Schedule Your Service</h2>
 
-      {recaptchaError && (
+      {recaptchaError && showRecaptchaMessage && (
         <div className="p-3 mb-4 bg-yellow-50 border border-yellow-200 rounded-md">
           <p className="text-sm text-yellow-700">
             <span className="font-medium">Note:</span> Security verification is currently unavailable. Your form will
