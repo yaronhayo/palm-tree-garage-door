@@ -4,6 +4,11 @@ const nextConfig = {
   images: {
     domains: ["res.cloudinary.com", "blob.v0.dev", "hebbkx1anhila5yf.public.blob.vercel-storage.com"],
     formats: ["image/avif", "image/webp"],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    minimumCacheTTL: 31536000, // 1 year
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     unoptimized: true,
   },
   experimental: {
@@ -11,6 +16,8 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: "2mb",
     },
+    optimizeCss: true,
+    scrollRestoration: true,
   },
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
@@ -18,14 +25,15 @@ const nextConfig = {
   webpack: (config, { dev, isServer }) => {
     // Only apply optimizations for client bundles in production
     if (!dev && !isServer) {
-      // Enable terser minification
+      // Enable terser minification with better compression
       config.optimization.minimize = true
 
-      // Use simpler chunk splitting that won't cause SSR issues
+      // Optimize chunk splitting for better caching
       config.optimization.splitChunks = {
         chunks: "all",
         maxInitialRequests: 25,
         minSize: 20000,
+        maxSize: 244000,
         cacheGroups: {
           default: false,
           vendors: false,
@@ -33,7 +41,6 @@ const nextConfig = {
           framework: {
             name: "framework",
             chunks: "all",
-            // This regex matches packages that are definitely client-side only
             test: /[\\/]node_modules[\\/](react|react-dom|scheduler|prop-types|next)[\\/]/,
             priority: 40,
             enforce: true,
@@ -44,6 +51,7 @@ const nextConfig = {
             chunks: "all",
             test: /[\\/]node_modules[\\/]/,
             priority: 30,
+            maxSize: 200000,
           },
           // Shared app code
           shared: {
@@ -56,6 +64,12 @@ const nextConfig = {
       }
     }
 
+    // Optimize bundle size
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      // Use lighter alternatives where possible
+    }
+
     return config
   },
   poweredByHeader: false,
@@ -66,6 +80,8 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  // Add performance optimizations
+  swcMinify: true,
   // Redirect configuration for old website URLs
   async redirects() {
     return [
@@ -194,12 +210,6 @@ const nextConfig = {
           {
             key: "Referrer-Policy",
             value: "origin-when-cross-origin",
-          },
-          // Add content security policy for better performance and security
-          {
-            key: "Content-Security-Policy",
-            value:
-              "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https://res.cloudinary.com https://hebbkx1anhila5yf.public.blob.vercel-storage.com https://www.google-analytics.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://www.google-analytics.com; frame-src 'self'; object-src 'none'",
           },
         ],
       },

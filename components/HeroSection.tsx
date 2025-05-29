@@ -13,24 +13,6 @@ export default function HeroSection() {
   const [imageError, setImageError] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [isTablet, setIsTablet] = useState(false)
-  const [loadingProgress, setLoadingProgress] = useState(0)
-
-  // Simulate loading progress
-  useEffect(() => {
-    if (!imageLoaded && !imageError) {
-      const interval = setInterval(() => {
-        setLoadingProgress((prev) => {
-          // Cap at 90% until the image actually loads
-          const next = prev + (90 - prev) * 0.1
-          return Math.min(next, 90)
-        })
-      }, 100)
-
-      return () => clearInterval(interval)
-    } else if (imageLoaded) {
-      setLoadingProgress(100)
-    }
-  }, [imageLoaded, imageError])
 
   // Detect screen size
   useEffect(() => {
@@ -69,10 +51,8 @@ export default function HeroSection() {
     }
   }
 
-  // Pre-calculate image dimensions to prevent layout shifts
-  const imageWidth = 1920
-  const imageHeight = 1080
-  const aspectRatio = imageWidth / imageHeight
+  // Optimized responsive sizes for better performance
+  const imageSizes = "(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 100vw"
 
   return (
     <section className="relative pt-28 sm:pt-32 pb-20">
@@ -89,16 +69,8 @@ export default function HeroSection() {
           }}
         />
 
-        {/* Loading progress bar */}
-        <div
-          className={`absolute top-0 left-0 h-1 bg-accent-500 transition-all duration-300 ${
-            imageLoaded ? "opacity-0" : "opacity-100"
-          }`}
-          style={{ width: `${loadingProgress}%` }}
-        />
-
         {!imageError ? (
-          <div className="w-full h-full relative" style={{ aspectRatio: `${aspectRatio}` }}>
+          <div className="w-full h-full relative">
             <Image
               src="/images/service-truck.png"
               alt="Palm Tree Garage Door Repairs service truck in South Florida"
@@ -107,17 +79,17 @@ export default function HeroSection() {
               fetchPriority="high"
               loading="eager"
               className={`object-cover transition-opacity duration-700 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
-              sizes={isMobile ? "100vw" : isTablet ? "100vw" : "100vw"}
-              quality={isMobile ? 80 : isTablet ? 85 : 90}
+              sizes={imageSizes}
+              quality={isMobile ? 75 : isTablet ? 80 : 85}
               onLoad={() => {
                 setImageLoaded(true)
-                setLoadingProgress(100)
               }}
               onError={() => {
                 setImageError(true)
-                setLoadingProgress(100)
               }}
               style={{ objectPosition: getObjectPosition() }}
+              placeholder="blur"
+              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
             />
           </div>
         ) : (
@@ -141,12 +113,12 @@ export default function HeroSection() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
           {/* Left Column - Content */}
           <div>
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 leading-tight text-white">
+            <h1 className="critical-hero-title text-4xl sm:text-5xl md:text-6xl font-bold mb-6 leading-tight text-white">
               <span className="text-accent-500 animate-text-glow">Fast & Reliable</span> Garage Door Repair in South
               Florida
             </h1>
 
-            <p className="text-lg sm:text-xl text-white mb-8">
+            <p className="critical-hero-text text-lg sm:text-xl text-white mb-8">
               We provide 24/7 emergency service with expert technicians. We fix all garage door problems quickly and
               affordably throughout South Florida.
             </p>

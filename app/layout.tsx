@@ -11,13 +11,14 @@ import SocialProofPopup from "@/components/SocialProofPopup"
 import ResponsiveMetaTags from "@/components/ResponsiveMetaTags"
 import { ErrorBoundary } from "@/components/ErrorBoundary"
 
-// Optimize font loading with display swap
+// Optimize font loading with display swap and preload
 const inter = Inter({
   subsets: ["latin"],
   display: "swap",
   preload: true,
   fallback: ["system-ui", "Arial", "sans-serif"],
   variable: "--font-inter",
+  weight: ["400", "500", "600", "700"], // Only load needed weights
 })
 
 export const metadata: Metadata = {
@@ -107,30 +108,40 @@ export default function RootLayout({
       <head>
         <ResponsiveMetaTags />
 
-        {/* Preload critical assets */}
-        <link rel="preload" href="/logo.png" as="image" type="image/png" />
-        <link rel="preload" href="/images/service-truck.png" as="image" type="image/png" />
-        <link rel="preload" href="/images/garage-door-repair-service.png" as="image" type="image/png" />
-        <link rel="preconnect" href="https://res.cloudinary.com" crossOrigin="anonymous" />
-        <link rel="dns-prefetch" href="https://res.cloudinary.com" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-
-        {/* Preload critical CSS */}
-        <link
-          rel="preload"
-          href={`https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap`}
-          as="style"
+        {/* Critical CSS - inline the most important styles */}
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `
+            .critical-hero{position:relative;padding-top:7rem;padding-bottom:5rem}
+            .critical-hero-content{position:relative;z-index:10}
+            .critical-hero-title{font-size:2.25rem;font-weight:700;color:white;margin-bottom:1.5rem;line-height:1.2}
+            .critical-hero-text{font-size:1.125rem;color:white;margin-bottom:2rem}
+            .bg-primary-800{background-color:#0d423a}
+            .text-white{color:white}
+            .text-accent-500{color:#9adf67}
+            .bg-white{background-color:white}
+            .bg-accent-500{background-color:#9adf67}
+            .text-primary-900{color:#072722}
+            .font-bold{font-weight:700}
+            @media(min-width:640px){.critical-hero-title{font-size:3rem}}
+          `,
+          }}
         />
 
-        {/* Add preload for critical JavaScript */}
-        <link rel="preload" href="/_next/static/chunks/main.js" as="script" />
+        {/* Preload critical assets with high priority */}
+        <link rel="preload" href="/logo.png" as="image" type="image/png" fetchPriority="high" />
+        <link rel="preload" href="/images/service-truck.png" as="image" type="image/png" fetchPriority="high" />
 
-        {/* Add resource hints for third-party domains */}
+        {/* Preconnect to external domains */}
+        <link rel="preconnect" href="https://res.cloudinary.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://www.googletagmanager.com" />
-        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
         <link rel="preconnect" href="https://www.google-analytics.com" />
+
+        {/* DNS prefetch for performance */}
+        <link rel="dns-prefetch" href="https://res.cloudinary.com" />
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
         <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+        <link rel="dns-prefetch" href="https://hebbkx1anhila5yf.public.blob.vercel-storage.com" />
 
         {/* Google Tag Manager - placed as high as possible in the head */}
         <script
@@ -162,7 +173,7 @@ export default function RootLayout({
           <main id="main-content">{children}</main>
           <Footer />
 
-          {/* Non-critical UI elements */}
+          {/* Non-critical UI elements - load after main content */}
           <CookieConsent />
           <SocialProofPopup />
           <SchemaMarkup page="home" />
