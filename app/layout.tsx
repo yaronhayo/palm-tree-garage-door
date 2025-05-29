@@ -120,8 +120,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  // Use the correct GTM ID
-  const gtmId = process.env.NEXT_PUBLIC_GTM_ID || "GTM-MF948JFL"
+  // Use the correct GTM container ID that's already working on the site
+  const gtmId = "GTM-WPZNV4T3"
 
   return (
     <html lang="en" className={`scroll-smooth ${inter.variable}`}>
@@ -168,7 +168,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         {/* Google Tag Manager (noscript) */}
         <noscript>
           <iframe
-            src="https://www.googletagmanager.com/ns.html?id=${gtmId}"
+            src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`}
             height="0"
             width="0"
             style={{ display: "none", visibility: "hidden" }}

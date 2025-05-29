@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect } from "react"
+import { usePathname, useSearchParams } from "next/navigation"
 
 interface GoogleTagManagerProps {
   gtmId: string
@@ -13,48 +14,48 @@ declare global {
 }
 
 export default function GoogleTagManager({ gtmId }: GoogleTagManagerProps) {
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+
   useEffect(() => {
     // Initialize dataLayer if it doesn't exist
     if (typeof window !== "undefined") {
       window.dataLayer = window.dataLayer || []
-
-      // Push a page view event to dataLayer
-      window.dataLayer.push({
-        event: "pageview",
-        page: {
-          path: window.location.pathname,
-          title: document.title,
-          search: window.location.search,
-        },
-      })
-
-      // Log GTM initialization for debugging
-      console.log("Google Tag Manager initialized with ID:", gtmId)
-    }
-  }, [gtmId])
-
-  // Listen for route changes in Next.js
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const handleRouteChange = (url: string) => {
-        // Push page view event to dataLayer on route change
-        window.dataLayer.push({
-          event: "pageview",
-          page: {
-            path: url,
-            title: document.title,
-          },
-        })
-      }
-
-      // Add event listener for route changes
-      document.addEventListener("routeChangeComplete", handleRouteChange as any)
-
-      return () => {
-        document.removeEventListener("routeChangeComplete", handleRouteChange as any)
-      }
     }
   }, [])
+
+  // Track page views on route changes
+  useEffect(() => {
+    if (typeof window === "undefined") return
+
+    // Send pageview with path and search
+    window.dataLayer.push({
+      event: "page_view",
+      page: {
+        path: pathname,
+        title: document.title,
+        search: searchParams?.toString() || "",
+        url: window.location.href,
+      },
+    })
+
+    // Log for debugging
+    console.log(`[GTM] Page view tracked: ${pathname}${searchParams ? `?${searchParams}` : ""}`)
+  }, [pathname, searchParams])
+
+  // Support for enhanced conversions
+  useEffect(() => {
+    if (typeof window === "undefined") return
+
+    // Add support for enhanced conversions
+    window.dataLayer.push({
+      "gtm.start": new Date().getTime(),
+      event: "gtm.js",
+    })
+
+    // Log GTM initialization
+    console.log(`[GTM] Initialized with ID: ${gtmId}`)
+  }, [gtmId])
 
   return null
 }
