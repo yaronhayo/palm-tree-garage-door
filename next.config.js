@@ -31,6 +31,7 @@ const nextConfig = {
       bodySizeLimit: "2mb",
     },
     scrollRestoration: true,
+    // Removed optimizeCss: true as it requires 'critters' package
   },
 
   compiler: {
@@ -95,7 +96,7 @@ const nextConfig = {
           {
             key: "Content-Security-Policy",
             value:
-              "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com https://*.googleadservices.com https://*.g.doubleclick.net https://*.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https://res.cloudinary.com https://*.google-analytics.com https://*.googletagmanager.com https://*.g.doubleclick.net https://*.google.com https://hebbkx1anhila5yf.public.blob.vercel-storage.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.g.doubleclick.net https://*.googleadservices.com; frame-src 'self' https://*.googletagmanager.com https://*.google.com https://*.youtube.com; object-src 'none'",
+              "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com https://*.googleadservices.com https://*.g.doubleclick.net https://*.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https://res.cloudinary.com https://*.google-analytics.com https://*.googletagmanager.com https://*.g.doubleclick.net https://*.google.com https://hebbkx1anhila5yf.public.blob.vercel-storage.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.g.doubleclick.net; frame-src 'self' https://*.googletagmanager.com https://*.google.com https://*.youtube.com; object-src 'none'",
           },
         ],
       },
@@ -176,11 +177,11 @@ const nextConfig = {
   },
 
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: true, // Added update
   },
 
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: true, // Added update
   },
 
   // Redirect configuration for old website URLs

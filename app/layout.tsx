@@ -1,14 +1,15 @@
 import type React from "react"
+import "./globals.css"
 import type { Metadata, Viewport } from "next"
 import { Inter } from "next/font/google"
 import Header from "@/components/Header"
 import Footer from "@/components/Footer"
 import SchemaMarkup from "@/components/SchemaMarkup"
+import GoogleTagManager from "@/components/GoogleTagManager"
 import { CookieConsent } from "@/components/CookieConsent"
 import SocialProofPopup from "@/components/SocialProofPopup"
 import ResponsiveMetaTags from "@/components/ResponsiveMetaTags"
 import { ErrorBoundary } from "@/components/ErrorBoundary"
-import ClientGoogleTagManager from "@/components/ClientGoogleTagManager"
 
 // Optimize font loading with display swap and subset
 const inter = Inter({
@@ -119,9 +120,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  // Use the correct GTM container ID that's already working on the site
-  const gtmId = "GTM-WPZNV4T3"
-
   return (
     <html lang="en" className={`scroll-smooth ${inter.variable}`}>
       <head>
@@ -151,23 +149,23 @@ export default function RootLayout({
           media="(min-width: 768px)"
         />
 
-        {/* Google Tag Manager */}
+        {/* Google Tag Manager - ONLY GTM-MF948JFL */}
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','${gtmId}');`,
+})(window,document,'script','dataLayer','GTM-MF948JFL');`,
           }}
         />
         {/* End Google Tag Manager */}
       </head>
       <body className={`${inter.className} antialiased`}>
-        {/* Google Tag Manager (noscript) */}
+        {/* Google Tag Manager (noscript) - ONLY GTM-MF948JFL */}
         <noscript>
           <iframe
-            src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`}
+            src="https://www.googletagmanager.com/ns.html?id=GTM-MF948JFL"
             height="0"
             width="0"
             style={{ display: "none", visibility: "hidden" }}
@@ -187,13 +185,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             <CookieConsent />
             <SocialProofPopup />
             <SchemaMarkup page="home" />
-            <ClientGoogleTagManager gtmId={gtmId} />
+            <GoogleTagManager gtmId="GTM-MF948JFL" />
           </div>
         </ErrorBoundary>
       </body>
     </html>
   )
 }
-
-
-import './globals.css'
