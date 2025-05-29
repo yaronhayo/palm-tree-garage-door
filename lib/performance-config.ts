@@ -1,90 +1,85 @@
 /**
- * Performance configuration and optimization settings
+ * Performance optimization utilities - Simplified for deployment
  */
 
-export const performanceConfig = {
-  // Image optimization settings
-  images: {
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
-    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    formats: ["image/webp", "image/avif"],
-    minimumCacheTTL: 60 * 60 * 24 * 365, // 1 year
-    quality: 85,
-  },
+// Preload critical resources
+export function preloadCriticalResources() {
+  if (typeof window === "undefined") return
 
-  // Resource hints
-  resourceHints: {
-    preconnect: [
-      "https://res.cloudinary.com",
-      "https://www.googletagmanager.com",
-      "https://www.google-analytics.com",
-      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com",
-    ],
-    dnsPrefetch: ["https://fonts.googleapis.com", "https://fonts.gstatic.com"],
-  },
+  // Preload critical images
+  const criticalImages = ["/logo.png", "/images/service-truck.png"]
 
-  // Critical resources to preload
-  criticalResources: [
-    { href: "/logo.png", as: "image", type: "image/png" },
-    { href: "/images/service-truck.png", as: "image", type: "image/png" },
-  ],
-
-  // Lazy loading configuration
-  lazyLoading: {
-    rootMargin: "50px",
-    threshold: 0.01,
-  },
-
-  // Performance budgets
-  budgets: {
-    javascript: 150 * 1024, // 150KB
-    css: 50 * 1024, // 50KB
-    images: 1000 * 1024, // 1MB total
-    fonts: 100 * 1024, // 100KB
-  },
-
-  // Cache control headers
-  cacheControl: {
-    static: "public, max-age=31536000, immutable",
-    images: "public, max-age=31536000, immutable",
-    json: "public, max-age=3600, stale-while-revalidate=86400",
-    html: "public, max-age=0, must-revalidate",
-  },
+  criticalImages.forEach((src) => {
+    const link = document.createElement("link")
+    link.rel = "preload"
+    link.as = "image"
+    link.href = src
+    link.fetchPriority = "high"
+    document.head.appendChild(link)
+  })
 }
 
-// Performance monitoring thresholds
-export const performanceThresholds = {
-  lcp: 2500, // 2.5s
-  fid: 100, // 100ms
-  cls: 0.1, // 0.1
-  ttfb: 800, // 800ms
-  fcp: 1800, // 1.8s
-  tbt: 200, // 200ms
-}
-
-// Optimization utilities
-export function shouldOptimizeImage(size: number): boolean {
-  return size > 50 * 1024 // Optimize images larger than 50KB
-}
-
-export function getOptimalImageFormat(userAgent?: string): string {
-  if (!userAgent) return "webp"
-
-  // Check for AVIF support
-  if (userAgent.includes("Chrome") || userAgent.includes("Firefox")) {
-    return "avif"
+// Optimize images for WebP format
+export function getOptimizedImageUrl(src: string, width?: number, quality = 75): string {
+  // If it's already a WebP or optimized URL, return as is
+  if (src.includes(".webp") || src.includes("w=") || src.includes("q=")) {
+    return src
   }
 
-  // Default to WebP
-  return "webp"
-}
-
-export function calculatePriority(element: string): "high" | "low" | "auto" {
-  const highPriorityElements = ["hero-image", "logo", "above-fold"]
-
-  if (highPriorityElements.some((el) => element.includes(el))) {
-    return "high"
+  // For Vercel blob storage URLs
+  if (src.includes("blob.vercel-storage.com")) {
+    const url = new URL(src)
+    if (width) url.searchParams.set("w", width.toString())
+    url.searchParams.set("q", quality.toString())
+    return url.toString()
   }
 
-  return "auto"
+  // For other images, return as is (Next.js Image component will optimize)
+  return src
+}
+
+// Calculate optimal image sizes
+export function getResponsiveSizes(breakpoints: { [key: string]: string } = {}) {
+  const defaultBreakpoints = {
+    sm: "100vw",
+    md: "50vw",
+    lg: "33vw",
+    xl: "25vw",
+    ...breakpoints,
+  }
+
+  return `(max-width: 640px) ${defaultBreakpoints.sm}, (max-width: 768px) ${defaultBreakpoints.md}, (max-width: 1024px) ${defaultBreakpoints.lg}, ${defaultBreakpoints.xl}`
+}
+
+// Monitor Core Web Vitals - Simplified
+export function initWebVitals() {
+  if (typeof window === "undefined") return
+
+  // Basic performance monitoring without complex observers
+  if (window.gtag) {
+    window.addEventListener("load", () => {
+      // Simple performance tracking
+      const navigation = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming
+      if (navigation) {
+        window.gtag("event", "page_load_time", {
+          event_category: "Performance",
+          value: Math.round(navigation.loadEventEnd - navigation.fetchStart),
+        })
+      }
+    })
+  }
+}
+
+// Inline critical CSS - Simplified
+export function inlineCriticalCSS() {
+  return `
+    .hero-section{position:relative;padding-top:7rem;padding-bottom:5rem}
+    .bg-primary-800{background-color:#0d423a}
+    .text-white{color:#ffffff}
+    .text-accent-500{color:#9adf67}
+    .bg-white{background-color:#ffffff}
+    .bg-accent-500{background-color:#9adf67}
+    .text-primary-900{color:#072722}
+    .font-bold{font-weight:700}
+  `
 }

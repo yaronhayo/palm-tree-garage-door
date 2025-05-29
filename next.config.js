@@ -9,18 +9,33 @@ const nextConfig = {
 
   // Image optimization
   images: {
-    domains: ["res.cloudinary.com", "images.unsplash.com", "hebbkx1anhila5yf.public.blob.vercel-storage.com"],
+    domains: [
+      "res.cloudinary.com",
+      "blob.v0.dev",
+      "images.unsplash.com",
+      "hebbkx1anhila5yf.public.blob.vercel-storage.com",
+    ],
     formats: ["image/avif", "image/webp"],
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    minimumCacheTTL: 60 * 60 * 24 * 365,
-    unoptimized: true, // Added update
+    minimumCacheTTL: 31536000, // 1 year
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    unoptimized: true,
   },
 
   // Optimize bundle splitting
   experimental: {
-    optimizeCss: true,
-    optimizePackageImports: ["lucide-react", "@radix-ui/react-slot", "class-variance-authority"],
+    optimizePackageImports: ["lucide-react"],
+    serverActions: {
+      bodySizeLimit: "2mb",
+    },
+    scrollRestoration: true,
+    // Removed optimizeCss: true as it requires 'critters' package
+  },
+
+  compiler: {
+    removeConsole: process.env.NODE_ENV === "production",
   },
 
   // Configure compression
@@ -55,6 +70,10 @@ const nextConfig = {
             value: "on",
           },
           {
+            key: "Strict-Transport-Security",
+            value: "max-age=63072000; includeSubDomains; preload",
+          },
+          {
             key: "X-Content-Type-Options",
             value: "nosniff",
           },
@@ -68,11 +87,40 @@ const nextConfig = {
           },
           {
             key: "Referrer-Policy",
-            value: "strict-origin-when-cross-origin",
+            value: "origin-when-cross-origin",
           },
+          // Add content security policy for better performance and security
           {
-            key: "Permissions-Policy",
-            value: "camera=(), microphone=(), geolocation=()",
+            key: "Content-Security-Policy",
+            value:
+              "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https://res.cloudinary.com https://hebbkx1anhila5yf.public.blob.vercel-storage.com https://www.google-analytics.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://www.google-analytics.com; frame-src 'self'; object-src 'none'",
+          },
+        ],
+      },
+      {
+        source: "/images/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      {
+        source: "/_next/image/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      {
+        source: "/fonts/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
           },
         ],
       },
@@ -80,57 +128,44 @@ const nextConfig = {
   },
 
   // Webpack optimizations
-  webpack: (config, { isServer }) => {
-    // Optimize client-side bundles
-    if (!isServer) {
-      config.optimization = {
-        ...config.optimization,
-        splitChunks: {
-          chunks: "all",
-          cacheGroups: {
-            default: false,
-            vendors: false,
-            framework: {
-              name: "framework",
-              chunks: "all",
-              test: /(?<!node_modules.*)[\\/]node_modules[\\/](react|react-dom|scheduler|prop-types|use-subscription)[\\/]/,
-              priority: 40,
-              enforce: true,
-            },
-            lib: {
-              test(module) {
-                return module.size() > 160000 && /node_modules[/\\]/.test(module.identifier())
-              },
-              name(module) {
-                const hash = crypto.createHash("sha1")
-                hash.update(module.identifier())
-                return hash.digest("hex").substring(0, 8)
-              },
-              priority: 30,
-              minChunks: 1,
-              reuseExistingChunk: true,
-            },
-            commons: {
-              name: "commons",
-              chunks: "all",
-              minChunks: 2,
-              priority: 20,
-            },
-            shared: {
-              name(module, chunks) {
-                return crypto
-                  .createHash("sha1")
-                  .update(chunks.reduce((acc, chunk) => acc + chunk.name, ""))
-                  .digest("hex")
-                  .substring(0, 8)
-              },
-              priority: 10,
-              minChunks: 2,
-              reuseExistingChunk: true,
-            },
+  webpack: (config, { dev, isServer }) => {
+    // Only apply optimizations for client bundles in production
+    if (!dev && !isServer) {
+      // Enable terser minification with better compression
+      config.optimization.minimize = true
+
+      // Optimize chunk splitting for better caching
+      config.optimization.splitChunks = {
+        chunks: "all",
+        maxInitialRequests: 25,
+        minSize: 20000,
+        maxSize: 244000,
+        cacheGroups: {
+          default: false,
+          vendors: false,
+          // Framework chunk
+          framework: {
+            name: "framework",
+            chunks: "all",
+            test: /[\\/]node_modules[\\/](react|react-dom|scheduler|prop-types|next)[\\/]/,
+            priority: 40,
+            enforce: true,
           },
-          maxAsyncRequests: 30,
-          maxInitialRequests: 30,
+          // Library chunk for node_modules
+          lib: {
+            name: "commons",
+            chunks: "all",
+            test: /[\\/]node_modules[\\/]/,
+            priority: 30,
+            maxSize: 200000,
+          },
+          // Shared app code
+          shared: {
+            name: "shared",
+            minChunks: 2,
+            priority: 10,
+            reuseExistingChunk: true,
+          },
         },
       }
     }
@@ -145,8 +180,107 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true, // Added update
   },
-}
 
-const crypto = require("crypto")
+  // Redirect configuration for old website URLs
+  async redirects() {
+    return [
+      // Specific redirects for old garagedoorspringsrepairfl.com URLs
+      {
+        source: "/port-st-lucie-springs-repair",
+        destination: "/services/garage-door-spring-replacement",
+        permanent: true,
+      },
+      {
+        source: "/port-st-lucie-services",
+        destination: "/#services",
+        permanent: true,
+      },
+      {
+        source: "/our-services",
+        destination: "/#services",
+        permanent: true,
+      },
+      {
+        source: "/melbourne-opener-repair",
+        destination: "/services/garage-door-opener-repair",
+        permanent: true,
+      },
+      {
+        source: "/military-discounts",
+        destination: "/#contact",
+        permanent: true,
+      },
+      {
+        source: "/opener-repair",
+        destination: "/services/garage-door-opener-repair",
+        permanent: true,
+      },
+      {
+        source: "/melbourne-fl-springs-repair",
+        destination: "/services/garage-door-spring-replacement",
+        permanent: true,
+      },
+      {
+        source: "/port-st-lucie-opener-repair",
+        destination: "/services/garage-door-opener-repair",
+        permanent: true,
+      },
+      {
+        source: "/services-6",
+        destination: "/#services",
+        permanent: true,
+      },
+      {
+        source: "/_frog",
+        destination: "/",
+        permanent: true,
+      },
+
+      // Common patterns for location-based service pages
+      {
+        source: "/:location(.*)-springs-repair",
+        destination: "/services/garage-door-spring-replacement",
+        permanent: true,
+      },
+      {
+        source: "/:location(.*)-opener-repair",
+        destination: "/services/garage-door-opener-repair",
+        permanent: true,
+      },
+      {
+        source: "/:location(.*)-services",
+        destination: "/#services",
+        permanent: true,
+      },
+
+      // Other common old URL patterns
+      {
+        source: "/about-us",
+        destination: "/#about",
+        permanent: true,
+      },
+      {
+        source: "/contact-us",
+        destination: "/#contact",
+        permanent: true,
+      },
+      {
+        source: "/gallery",
+        destination: "/#testimonials",
+        permanent: true,
+      },
+      {
+        source: "/blog/:path*",
+        destination: "/",
+        permanent: true,
+      },
+      {
+        source: "/services/:path*",
+        destination: "/#services",
+        permanent: true,
+      },
+    ]
+  },
+}
 
 module.exports = nextConfig
