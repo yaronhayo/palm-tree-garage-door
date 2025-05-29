@@ -128,35 +128,24 @@ export default function RootLayout({
         {/* Critical CSS inline for immediate rendering */}
         <style dangerouslySetInnerHTML={{ __html: criticalCSS }} />
 
-        {/* Preconnect to critical third-party origins */}
-        <link rel="preconnect" href="https://res.cloudinary.com" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://www.googletagmanager.com" />
-        <link rel="preconnect" href="https://www.google-analytics.com" />
-        <link rel="preconnect" href="https://hebbkx1anhila5yf.public.blob.vercel-storage.com" />
-
-        {/* DNS prefetch for additional performance */}
-        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-        <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
-
-        {/* Preload critical resources */}
-        <link rel="preload" href="/logo.png" as="image" type="image/png" fetchPriority="high" />
-        <link
-          rel="preload"
-          href="/images/service-truck.png"
-          as="image"
-          type="image/png"
-          fetchPriority="high"
-          media="(min-width: 768px)"
-        />
-
-        {/* Google Consent Mode v2 - Set default consent state BEFORE Google tag */}
+        {/* Google tag (gtag.js) - MUST BE FIRST */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-RKH53HHRHD"></script>
         <script
           dangerouslySetInnerHTML={{
             __html: `
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
-              
-              // Set default consent state (denied) before Google tag loads
+              gtag('js', new Date());
+              gtag('config', 'G-RKH53HHRHD');
+            `,
+          }}
+        />
+
+        {/* Google Consent Mode v2 - After Google tag */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              // Update consent mode after gtag is loaded
               gtag('consent', 'default', {
                 'ad_storage': 'denied',
                 'ad_user_data': 'denied',
@@ -183,20 +172,6 @@ export default function RootLayout({
           }}
         />
 
-        {/* Google tag (gtag.js) */}
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-RKH53HHRHD"></script>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-RKH53HHRHD');
-            `,
-          }}
-        />
-        {/* End Google tag */}
-
         {/* Google Tag Manager - GTM-MF948JFL */}
         <script
           dangerouslySetInnerHTML={{
@@ -208,6 +183,27 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           }}
         />
         {/* End Google Tag Manager */}
+
+        {/* Preconnect to critical third-party origins */}
+        <link rel="preconnect" href="https://res.cloudinary.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://www.googletagmanager.com" />
+        <link rel="preconnect" href="https://www.google-analytics.com" />
+        <link rel="preconnect" href="https://hebbkx1anhila5yf.public.blob.vercel-storage.com" />
+
+        {/* DNS prefetch for additional performance */}
+        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+
+        {/* Preload critical resources */}
+        <link rel="preload" href="/logo.png" as="image" type="image/png" fetchPriority="high" />
+        <link
+          rel="preload"
+          href="/images/service-truck.png"
+          as="image"
+          type="image/png"
+          fetchPriority="high"
+          media="(min-width: 768px)"
+        />
       </head>
       <body className={`${inter.className} antialiased`}>
         {/* Google Tag Manager (noscript) - GTM-MF948JFL */}
