@@ -19,7 +19,6 @@ const inter = Inter({
   fallback: ["system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Arial", "sans-serif"],
   variable: "--font-inter",
   weight: ["400", "500", "600", "700"],
-  adjustFontFallback: true,
 })
 
 export const metadata: Metadata = {
@@ -121,7 +120,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const gtmId = "GTM-MF948JFL"
+  // Use the correct GTM ID
+  const gtmId = process.env.NEXT_PUBLIC_GTM_ID || "GTM-MF948JFL"
 
   return (
     <html lang="en" className={`scroll-smooth ${inter.variable}`}>
@@ -152,21 +152,17 @@ export default function RootLayout({
           media="(min-width: 768px)"
         />
 
-        {/* Early hints for resource loading */}
-        <link rel="modulepreload" href="/_next/static/chunks/main.js" />
-        <link rel="modulepreload" href="/_next/static/chunks/webpack.js" />
-
-        {/* Google Tag Manager - optimized for performance */}
+        {/* Google Tag Manager - Standard implementation */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
               window.dataLayer = window.dataLayer || [];
-              (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-              new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-              j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.defer=true;
-              j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;
-              var t=setTimeout(function(){f.parentNode.insertBefore(j,f)},3000);
-              j.onload=j.onreadystatechange=function(){clearTimeout(t);f.parentNode.insertBefore(j,f)};
+              (function(w,d,s,l,i){
+                w[l]=w[l]||[];w[l].push({'gtm.start':
+                new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+                j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;
+                j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;
+                f.parentNode.insertBefore(j,f);
               })(window,document,'script','dataLayer','${gtmId}');
             `,
           }}
