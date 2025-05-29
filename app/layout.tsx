@@ -128,24 +128,14 @@ export default function RootLayout({
         {/* Critical CSS inline for immediate rendering */}
         <style dangerouslySetInnerHTML={{ __html: criticalCSS }} />
 
-        {/* Google tag (gtag.js) - MUST BE FIRST */}
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-RKH53HHRHD"></script>
+        {/* Google Consent Mode v2 - Set default consent state BEFORE GTM */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-RKH53HHRHD');
-            `,
-          }}
-        />
-
-        {/* Google Consent Mode v2 - After Google tag */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              // Update consent mode after gtag is loaded
+              
+              // Set default consent state (denied) before GTM loads
               gtag('consent', 'default', {
                 'ad_storage': 'denied',
                 'ad_user_data': 'denied',
@@ -172,7 +162,7 @@ export default function RootLayout({
           }}
         />
 
-        {/* Google Tag Manager - GTM-MF948JFL */}
+        {/* Google Tag Manager */}
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -206,7 +196,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         />
       </head>
       <body className={`${inter.className} antialiased`}>
-        {/* Google Tag Manager (noscript) - GTM-MF948JFL */}
+        {/* Google Tag Manager (noscript) */}
         <noscript>
           <iframe
             src="https://www.googletagmanager.com/ns.html?id=GTM-MF948JFL"
