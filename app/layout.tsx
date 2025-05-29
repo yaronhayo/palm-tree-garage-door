@@ -11,14 +11,15 @@ import SocialProofPopup from "@/components/SocialProofPopup"
 import ResponsiveMetaTags from "@/components/ResponsiveMetaTags"
 import { ErrorBoundary } from "@/components/ErrorBoundary"
 
-// Optimize font loading with display swap and preload
+// Optimize font loading with display swap and subset
 const inter = Inter({
   subsets: ["latin"],
   display: "swap",
   preload: true,
-  fallback: ["system-ui", "Arial", "sans-serif"],
+  fallback: ["system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Arial", "sans-serif"],
   variable: "--font-inter",
-  weight: ["400", "500", "600", "700"], // Only load needed weights
+  weight: ["400", "500", "600", "700"],
+  adjustFontFallback: true,
 })
 
 export const metadata: Metadata = {
@@ -96,6 +97,25 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 }
 
+// Critical CSS for above-the-fold content
+const criticalCSS = `
+  :root{--background:0 0% 100%;--foreground:222.2 84% 4.9%;--primary:164 55% 23%;--primary-foreground:210 40% 98%;--accent:84 67% 64%;--accent-foreground:164 55% 23%;--radius:0.5rem}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:var(--font-inter),system-ui,-apple-system,sans-serif;background:#fff;color:#020817;line-height:1.5;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+  .container{width:100%;max-width:1280px;margin:0 auto;padding:0 1rem}
+  .bg-primary-800{background-color:#0d423a}
+  .text-white{color:#fff}
+  .text-accent-500{color:#9adf67}
+  .bg-white{background-color:#fff}
+  .bg-accent-500{background-color:#9adf67}
+  .text-primary-900{color:#072722}
+  .font-bold{font-weight:700}
+  h1{font-size:2.25rem;font-weight:700;line-height:1.2;margin-bottom:1.5rem}
+  @media(min-width:640px){h1{font-size:3rem}}
+  img{max-width:100%;height:auto}
+  .hero-section{position:relative;padding-top:7rem;padding-bottom:5rem}
+`
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -108,78 +128,76 @@ export default function RootLayout({
       <head>
         <ResponsiveMetaTags />
 
-        {/* Critical CSS - inline the most important styles */}
-        <style
-          dangerouslySetInnerHTML={{
-            __html: `
-            .critical-hero{position:relative;padding-top:7rem;padding-bottom:5rem}
-            .critical-hero-content{position:relative;z-index:10}
-            .critical-hero-title{font-size:2.25rem;font-weight:700;color:white;margin-bottom:1.5rem;line-height:1.2}
-            .critical-hero-text{font-size:1.125rem;color:white;margin-bottom:2rem}
-            .bg-primary-800{background-color:#0d423a}
-            .text-white{color:white}
-            .text-accent-500{color:#9adf67}
-            .bg-white{background-color:white}
-            .bg-accent-500{background-color:#9adf67}
-            .text-primary-900{color:#072722}
-            .font-bold{font-weight:700}
-            @media(min-width:640px){.critical-hero-title{font-size:3rem}}
-          `,
-          }}
-        />
+        {/* Critical CSS inline for immediate rendering */}
+        <style dangerouslySetInnerHTML={{ __html: criticalCSS }} />
 
-        {/* Preload critical assets with high priority */}
-        <link rel="preload" href="/logo.png" as="image" type="image/png" fetchPriority="high" />
-        <link rel="preload" href="/images/service-truck.png" as="image" type="image/png" fetchPriority="high" />
-
-        {/* Preconnect to external domains */}
+        {/* Preconnect to critical third-party origins */}
         <link rel="preconnect" href="https://res.cloudinary.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://www.googletagmanager.com" />
         <link rel="preconnect" href="https://www.google-analytics.com" />
+        <link rel="preconnect" href="https://hebbkx1anhila5yf.public.blob.vercel-storage.com" />
 
-        {/* DNS prefetch for performance */}
-        <link rel="dns-prefetch" href="https://res.cloudinary.com" />
-        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
-        <link rel="dns-prefetch" href="https://www.google-analytics.com" />
-        <link rel="dns-prefetch" href="https://hebbkx1anhila5yf.public.blob.vercel-storage.com" />
+        {/* DNS prefetch for additional performance */}
+        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
 
-        {/* Google Tag Manager - placed as high as possible in the head */}
+        {/* Preload critical resources */}
+        <link rel="preload" href="/logo.png" as="image" type="image/png" fetchPriority="high" />
+        <link
+          rel="preload"
+          href="/images/service-truck.png"
+          as="image"
+          type="image/png"
+          fetchPriority="high"
+          media="(min-width: 768px)"
+        />
+
+        {/* Early hints for resource loading */}
+        <link rel="modulepreload" href="/_next/static/chunks/main.js" />
+        <link rel="modulepreload" href="/_next/static/chunks/webpack.js" />
+
+        {/* Google Tag Manager - optimized for performance */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-MF948JFL');`,
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+              new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+              j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.defer=true;
+              j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;
+              var t=setTimeout(function(){f.parentNode.insertBefore(j,f)},3000);
+              j.onload=j.onreadystatechange=function(){clearTimeout(t);f.parentNode.insertBefore(j,f)};
+              })(window,document,'script','dataLayer','${gtmId}');
+            `,
           }}
         />
-        {/* End Google Tag Manager */}
       </head>
       <body className={`${inter.className} antialiased`}>
-        {/* Google Tag Manager (noscript) - placed immediately after opening body tag */}
+        {/* Google Tag Manager (noscript) */}
         <noscript>
           <iframe
-            src="https://www.googletagmanager.com/ns.html?id=GTM-MF948JFL"
+            src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`}
             height="0"
             width="0"
             style={{ display: "none", visibility: "hidden" }}
             title="Google Tag Manager"
           />
         </noscript>
-        {/* End Google Tag Manager (noscript) */}
 
         <ErrorBoundary>
           <Header />
-          <main id="main-content">{children}</main>
+          <main id="main-content" className="min-h-screen">
+            {children}
+          </main>
           <Footer />
 
-          {/* Non-critical UI elements - load after main content */}
-          <CookieConsent />
-          <SocialProofPopup />
-          <SchemaMarkup page="home" />
-
-          {/* Initialize GoogleTagManager component for dataLayer */}
-          <GoogleTagManager gtmId={gtmId} />
+          {/* Defer non-critical components */}
+          <div suppressHydrationWarning>
+            <CookieConsent />
+            <SocialProofPopup />
+            <SchemaMarkup page="home" />
+            <GoogleTagManager gtmId={gtmId} />
+          </div>
         </ErrorBoundary>
       </body>
     </html>

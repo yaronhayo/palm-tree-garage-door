@@ -1,59 +1,46 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
+/* Critical CSS Variables */
 @layer base {
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 164 55% 23%; /* Updated to match the new lighter primary-600 */
+    --primary: 164 55% 23%;
     --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
     --accent: 84 67% 64%;
-    --accent-foreground: 164 55% 23%; /* Updated to match primary */
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 164 55% 23%; /* Updated to match primary */
-
+    --accent-foreground: 164 55% 23%;
     --radius: 0.5rem;
 
-    /* Header heights for different screen sizes */
+    /* Performance optimizations */
     --header-height-mobile: 64px;
     --header-height-tablet: 72px;
     --header-height-desktop: 80px;
   }
 }
 
+/* Tailwind Directives - Optimized */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Critical Base Styles */
 @layer base {
   * {
     @apply border-border;
   }
 
+  /* Optimize font loading and rendering */
   body {
     @apply bg-background text-foreground;
+    font-display: swap;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    font-display: swap;
+
+    /* Prevent layout shifts */
+    font-synthesis: none;
+    overflow-x: hidden;
   }
 
+  /* Optimize heading performance */
   h1,
   h2,
   h3,
@@ -62,84 +49,77 @@
   h6 {
     @apply text-primary-600 font-bold;
     text-wrap: balance;
+
+    /* Prevent font-loading layout shifts */
+    font-display: swap;
   }
 
+  /* Optimize links */
   a {
     @apply transition-colors duration-200;
+    text-decoration-skip-ink: auto;
   }
 
-  /* Responsive scroll margins for sections */
-  section[id] {
-    scroll-margin-top: calc(var(--header-height-mobile) + 16px);
-  }
-
-  @media (min-width: 640px) {
-    section[id] {
-      scroll-margin-top: calc(var(--header-height-tablet) + 20px);
-    }
-  }
-
-  @media (min-width: 1024px) {
-    section[id] {
-      scroll-margin-top: calc(var(--header-height-desktop) + 24px);
-    }
-  }
-
-  /* Prevent iOS zoom on form inputs */
-  input,
-  select,
-  textarea {
-    font-size: 16px !important;
-  }
-
-  /* Optimize image rendering */
-  img {
+  /* Prevent layout shifts from images */
+  img,
+  picture,
+  video,
+  canvas,
+  svg {
+    display: block;
+    max-width: 100%;
     height: auto;
-    width: 100%;
-    image-rendering: auto;
+  }
+
+  /* Optimize form inputs */
+  input,
+  button,
+  textarea,
+  select {
+    font: inherit;
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+
+  /* Smooth scroll behavior with reduced motion support */
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
   }
 }
 
+/* Critical Utilities */
 @layer utilities {
-  /* Critical performance utilities */
+  /* Performance optimization classes */
+  .gpu-accelerated {
+    transform: translateZ(0);
+    will-change: transform;
+    backface-visibility: hidden;
+  }
+
   .content-visibility-auto {
     content-visibility: auto;
     contain-intrinsic-size: 0 500px;
   }
 
-  .will-change-transform {
-    will-change: transform;
-  }
-
-  .gpu-accelerated {
-    transform: translateZ(0);
-    backface-visibility: hidden;
-  }
-
-  /* Touch targets for mobile */
+  /* Touch target optimization */
   .touch-target {
     min-height: 44px;
     min-width: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
 
-  /* Optimized animations */
-  .animate-fade-in {
-    animation: fadeIn 0.3s ease-in-out;
+  /* Optimized text glow animation */
+  .text-glow {
+    text-shadow: 0 0 10px rgba(154, 223, 103, 0.5);
   }
 
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
+  @media (prefers-reduced-motion: no-preference) {
+    .animate-text-glow {
+      animation: textGlow 3s ease-in-out infinite;
     }
-    to {
-      opacity: 1;
-    }
-  }
-
-  /* Text glow animation - optimized */
-  .animate-text-glow {
-    animation: textGlow 3s ease-in-out infinite;
-    will-change: text-shadow;
   }
 
   @keyframes textGlow {
@@ -151,111 +131,27 @@
       text-shadow: 0 0 20px rgba(154, 223, 103, 0.8);
     }
   }
-
-  /* Reduce motion for accessibility */
-  @media (prefers-reduced-motion: reduce) {
-    .animate-text-glow {
-      animation: none;
-      text-shadow: 0 0 10px rgba(154, 223, 103, 0.5);
-    }
-  }
 }
 
-/* Smooth scrolling */
-html {
-  scroll-behavior: smooth;
-}
-
-/* Optimize for Core Web Vitals */
-@media screen and (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-/* Critical CSS for above-the-fold content */
-.critical-hero {
+/* Critical above-the-fold styles */
+.hero-section {
   position: relative;
   padding-top: 7rem;
   padding-bottom: 5rem;
 }
 
-.critical-hero-content {
-  position: relative;
-  z-index: 10;
-}
-
-.critical-hero-title {
-  font-size: 2.25rem;
-  font-weight: 700;
-  color: white;
-  margin-bottom: 1.5rem;
-  line-height: 1.2;
-}
-
-.critical-hero-text {
-  font-size: 1.125rem;
-  color: white;
-  margin-bottom: 2rem;
-}
-
-@media (min-width: 640px) {
-  .critical-hero-title {
-    font-size: 3rem;
-  }
-}
-
-/* Optimize container queries */
-.container {
-  width: 100%;
-  margin-right: auto;
-  margin-left: auto;
-  padding-right: 1rem;
-  padding-left: 1rem;
-}
-
-@media (min-width: 640px) {
-  .container {
-    max-width: 640px;
-  }
-}
-
-@media (min-width: 768px) {
-  .container {
-    max-width: 768px;
-  }
-}
-
-@media (min-width: 1024px) {
-  .container {
-    max-width: 1024px;
-  }
-}
-
-@media (min-width: 1280px) {
-  .container {
-    max-width: 1280px;
-  }
-}
-
-/* Essential color utilities */
+/* Color utilities for immediate rendering */
 .bg-primary-800 {
   background-color: #0d423a;
 }
 .text-white {
-  color: white;
+  color: #ffffff;
 }
 .text-accent-500 {
   color: #9adf67;
 }
 .bg-white {
-  background-color: white;
+  background-color: #ffffff;
 }
 .bg-accent-500 {
   background-color: #9adf67;
@@ -263,6 +159,31 @@ html {
 .text-primary-900 {
   color: #072722;
 }
-.font-bold {
-  font-weight: 700;
+
+/* Container optimization */
+.container {
+  width: 100%;
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
+
+/* Responsive optimizations */
+@media (min-width: 640px) {
+  .container {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+/* Remove unused styles and animations */
+/* Purge unused Tailwind classes with PurgeCSS in production */

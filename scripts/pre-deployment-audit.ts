@@ -27,6 +27,7 @@ async function checkEnvironmentVariables() {
     { name: "RECAPTCHA_SITE_KEY", value: process.env.RECAPTCHA_SITE_KEY },
     { name: "RECAPTCHA_SECRET_KEY", value: process.env.RECAPTCHA_SECRET_KEY },
     { name: "NEXT_PUBLIC_GTM_ID", value: process.env.NEXT_PUBLIC_GTM_ID },
+    { name: "PAGESPEED_API_KEY", value: process.env.PAGESPEED_API_KEY },
   ]
 
   let allValid = true

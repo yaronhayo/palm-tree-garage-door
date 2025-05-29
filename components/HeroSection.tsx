@@ -5,33 +5,30 @@ import Link from "next/link"
 import Image from "next/image"
 import { Clock, Shield, Award, ArrowRight, Phone, Calendar } from "lucide-react"
 import { trackPhoneCall } from "@/lib/analytics"
-import QuickContactForm from "./forms/QuickContactForm"
+import dynamic from "next/dynamic"
+
+// Lazy load the form to improve initial page load
+const QuickContactForm = dynamic(() => import("./forms/QuickContactForm"), {
+  loading: () => <div className="animate-pulse bg-gray-100 rounded-lg h-[400px] w-full" />,
+  ssr: false,
+})
+
+// Preload critical data
+const heroImageBlurDataURL =
+  "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
 
 export default function HeroSection() {
-  const [showBookingForm, setShowBookingForm] = useState(false)
   const [imageLoaded, setImageLoaded] = useState(false)
-  const [imageError, setImageError] = useState(false)
-  const [isMobile, setIsMobile] = useState(false)
-  const [isTablet, setIsTablet] = useState(false)
+  const [showForm, setShowForm] = useState(false)
 
-  // Detect screen size
+  // Preload form component after initial render
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 640)
-      setIsTablet(window.innerWidth >= 640 && window.innerWidth < 1024)
-    }
-
-    // Initial check
-    handleResize()
-
-    // Add event listener
-    window.addEventListener("resize", handleResize)
-
-    // Cleanup
-    return () => window.removeEventListener("resize", handleResize)
+    const timer = setTimeout(() => {
+      setShowForm(true)
+    }, 100)
+    return () => clearTimeout(timer)
   }, [])
 
-  // Safe tracking function
   const handlePhoneClick = () => {
     try {
       trackPhoneCall("3213669723", "hero_section")
@@ -40,155 +37,90 @@ export default function HeroSection() {
     }
   }
 
-  // Get the appropriate object position based on screen size
-  const getObjectPosition = () => {
-    if (isMobile) {
-      return "center center" // Center the subject for mobile
-    } else if (isTablet) {
-      return "center 30%" // Slightly higher focus for tablets
-    } else {
-      return "center 40%" // Standard position for desktop
-    }
-  }
-
-  // Optimized responsive sizes for better performance
-  const imageSizes = "(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 100vw"
-
   return (
-    <section className="relative pt-28 sm:pt-32 pb-20">
-      {/* Background Image with Overlay */}
+    <section className="hero-section relative pt-28 sm:pt-32 pb-20" id="hero">
+      {/* Optimized Background Image */}
       <div className="absolute inset-0 z-0 overflow-hidden">
-        {/* Loading background - brand color instead of purple */}
-        <div
-          className={`absolute inset-0 bg-primary-800 transition-opacity duration-500 ${
-            imageLoaded ? "opacity-0" : "opacity-100"
-          }`}
-          style={{
-            backgroundSize: "cover",
-            backgroundPosition: getObjectPosition(),
-          }}
-        />
-
-        {!imageError ? (
-          <div className="w-full h-full relative">
-            <Image
-              src="/images/service-truck.png"
-              alt="Palm Tree Garage Door Repairs service truck in South Florida"
-              fill
-              priority
-              fetchPriority="high"
-              loading="eager"
-              className={`object-cover transition-opacity duration-700 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
-              sizes={imageSizes}
-              quality={isMobile ? 75 : isTablet ? 80 : 85}
-              onLoad={() => {
-                setImageLoaded(true)
-              }}
-              onError={() => {
-                setImageError(true)
-              }}
-              style={{ objectPosition: getObjectPosition() }}
-              placeholder="blur"
-              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
-            />
-          </div>
-        ) : (
-          <div className="w-full h-full bg-primary-800 flex items-center justify-center">
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-white text-center max-w-md">
-              <p className="font-medium">We couldn't load the image, but our service is still available!</p>
-              <p className="text-sm mt-2 text-white/80">Please check your connection or try refreshing the page.</p>
-            </div>
-          </div>
-        )}
-
-        {/* Darker overlay for better text contrast */}
-        <div
-          className={`absolute inset-0 bg-primary-900/85 transition-opacity duration-500 ${
-            imageLoaded ? "opacity-100" : "opacity-70"
-          }`}
-        />
+        <div className="relative w-full h-full">
+          <Image
+            src="/images/service-truck.png"
+            alt="Palm Tree Garage Door Repairs service truck in South Florida"
+            fill
+            priority
+            quality={85}
+            className={`object-cover transition-opacity duration-500 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
+            onLoad={() => setImageLoaded(true)}
+            placeholder="blur"
+            blurDataURL={heroImageBlurDataURL}
+            sizes="100vw"
+            style={{
+              objectPosition: "center 40%",
+            }}
+          />
+          {/* Overlay with CSS instead of additional div */}
+          <div className="absolute inset-0 bg-primary-900/85" />
+        </div>
       </div>
 
-      <div className="container mx-auto px-4 relative z-10">
+      <div className="container relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-          {/* Left Column - Content */}
-          <div>
-            <h1 className="critical-hero-title text-4xl sm:text-5xl md:text-6xl font-bold mb-6 leading-tight text-white">
-              <span className="text-accent-500 animate-text-glow">Fast & Reliable</span> Garage Door Repair in South
-              Florida
+          {/* Content Column - Optimized for text rendering */}
+          <div className="space-y-6">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight text-white">
+              <span className="text-accent-500">Fast & Reliable</span> Garage Door Repair in South Florida
             </h1>
 
-            <p className="critical-hero-text text-lg sm:text-xl text-white mb-8">
+            <p className="text-lg sm:text-xl text-white/90">
               We provide 24/7 emergency service with expert technicians. We fix all garage door problems quickly and
               affordably throughout South Florida.
             </p>
 
-            <div className="space-y-4 mb-10">
-              <div className="flex items-center">
-                <div className="bg-accent-500/20 p-2 rounded-full mr-3 flex-shrink-0">
-                  <Shield className="h-5 w-5 text-accent-500" />
-                </div>
-                <span className="text-base sm:text-lg text-white">Lifetime Warranty</span>
-              </div>
+            {/* Features List - Optimized structure */}
+            <ul className="space-y-3">
+              {[
+                { icon: Shield, text: "Lifetime Warranty" },
+                { icon: Clock, text: "Free Estimates" },
+                { icon: Award, text: "Seniors and Veterans Discounts Available" },
+              ].map(({ icon: Icon, text }, index) => (
+                <li key={index} className="flex items-center gap-3">
+                  <div className="bg-accent-500/20 p-2 rounded-full flex-shrink-0">
+                    <Icon className="h-5 w-5 text-accent-500" />
+                  </div>
+                  <span className="text-base sm:text-lg text-white">{text}</span>
+                </li>
+              ))}
+            </ul>
 
-              <div className="flex items-center">
-                <div className="bg-accent-500/20 p-2 rounded-full mr-3 flex-shrink-0">
-                  <Clock className="h-5 w-5 text-accent-500" />
-                </div>
-                <span className="text-base sm:text-lg text-white">Free Estimates</span>
-              </div>
-
-              <div className="flex items-center">
-                <div className="bg-accent-500/20 p-2 rounded-full mr-3 flex-shrink-0">
-                  <Award className="h-5 w-5 text-accent-500" />
-                </div>
-                <span className="text-base sm:text-lg text-white">Seniors and Veterans Discounts Available</span>
-              </div>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-4">
+            {/* CTA Buttons - Optimized for interaction */}
+            <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <a
                 href="tel:+13213669723"
-                className="bg-accent-500 hover:bg-accent-600 text-primary-900 font-bold py-3 px-6 rounded-md transition-all duration-300 flex items-center justify-center"
+                className="inline-flex items-center justify-center bg-accent-500 hover:bg-accent-600 text-primary-900 font-bold py-3 px-6 rounded-md transition-colors duration-200 touch-target"
                 onClick={handlePhoneClick}
                 data-call-tracking="true"
               >
-                <Phone className="mr-2 h-5 w-5" />
+                <Phone className="mr-2 h-5 w-5" aria-hidden="true" />
                 <span>Call Now</span>
               </a>
 
               <Link
                 href="/#booking"
-                className="bg-white hover:bg-gray-100 text-primary-900 font-bold py-3 px-6 rounded-md transition-all duration-300 flex items-center justify-center"
+                className="inline-flex items-center justify-center bg-white hover:bg-gray-100 text-primary-900 font-bold py-3 px-6 rounded-md transition-colors duration-200 touch-target"
                 onClick={(e) => {
                   e.preventDefault()
-                  document.getElementById("booking")?.scrollIntoView({ behavior: "smooth" })
+                  document.getElementById("booking")?.scrollIntoView({ behavior: "smooth", block: "start" })
                 }}
               >
-                <Calendar className="mr-2 h-5 w-5" />
+                <Calendar className="mr-2 h-5 w-5" aria-hidden="true" />
                 Book Online
-                <ArrowRight className="ml-2 h-5 w-5" />
+                <ArrowRight className="ml-2 h-5 w-5" aria-hidden="true" />
               </Link>
             </div>
           </div>
 
-          {/* Right Column - Form */}
-          <div className="bg-white rounded-lg shadow-xl p-6 border-l-4 border-accent-500 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-24 h-24 bg-accent-500/10 rounded-full -mr-8 -mt-8"></div>
-            <div className="absolute bottom-0 left-0 w-16 h-16 bg-primary-600/10 rounded-full -ml-8 -mb-8"></div>
-            {typeof QuickContactForm === "function" ? (
-              <QuickContactForm showBookingForm={showBookingForm} setShowBookingForm={setShowBookingForm} />
-            ) : (
-              <div className="p-4 text-center">
-                <p className="text-gray-700">Contact form is currently unavailable.</p>
-                <a
-                  href="tel:+13213669723"
-                  className="mt-4 inline-block bg-accent-500 hover:bg-accent-600 text-primary-900 font-bold py-2 px-4 rounded-md"
-                >
-                  Call Us
-                </a>
-              </div>
-            )}
+          {/* Form Column - Lazy loaded */}
+          <div className="bg-white rounded-lg shadow-xl p-6 border-l-4 border-accent-500 relative">
+            {showForm && <QuickContactForm />}
           </div>
         </div>
       </div>
