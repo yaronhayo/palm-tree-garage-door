@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, Suspense } from "react"
 import { usePathname, useSearchParams } from "next/navigation"
 
 interface GoogleTagManagerProps {
@@ -13,22 +13,21 @@ declare global {
   }
 }
 
-export default function GoogleTagManager({ gtmId }: GoogleTagManagerProps) {
+function GTMInner({ gtmId }: GoogleTagManagerProps) {
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
   useEffect(() => {
-    // Initialize dataLayer if it doesn't exist
     if (typeof window !== "undefined") {
       window.dataLayer = window.dataLayer || []
     }
   }, [])
 
-  // Track page views on route changes
   useEffect(() => {
-    if (typeof window === "undefined") return
+    if (typeof window === "undefined" || !pathname) return
 
-    // Send pageview with path and search
+    const pagePath = pathname + (searchParams ? `?${searchParams.toString()}` : "")
+
     window.dataLayer.push({
       event: "page_view",
       page: {
@@ -38,24 +37,25 @@ export default function GoogleTagManager({ gtmId }: GoogleTagManagerProps) {
         url: window.location.href,
       },
     })
-
-    // Log for debugging
-    console.log(`[GTM] Page view tracked: ${pathname}${searchParams ? `?${searchParams}` : ""}`)
+    console.log(`[GTM] Page view tracked: ${pagePath}`)
   }, [pathname, searchParams])
 
-  // Support for enhanced conversions
   useEffect(() => {
     if (typeof window === "undefined") return
-
-    // Add support for enhanced conversions
     window.dataLayer.push({
       "gtm.start": new Date().getTime(),
       event: "gtm.js",
     })
-
-    // Log GTM initialization
     console.log(`[GTM] Initialized with ID: ${gtmId}`)
   }, [gtmId])
 
   return null
+}
+
+export default function GoogleTagManager(props: GoogleTagManagerProps) {
+  return (
+    <Suspense fallback={null}>
+      <GTMInner {...props} />
+    </Suspense>
+  )
 }
