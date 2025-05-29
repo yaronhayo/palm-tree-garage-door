@@ -149,14 +149,14 @@ export default function RootLayout({
           media="(min-width: 768px)"
         />
 
-        {/* Google Consent Mode v2 - Set default consent state BEFORE GTM */}
+        {/* Google Consent Mode v2 - Set default consent state BEFORE Google tag */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
               
-              // Set default consent state (denied) before GTM loads
+              // Set default consent state (denied) before Google tag loads
               gtag('consent', 'default', {
                 'ad_storage': 'denied',
                 'ad_user_data': 'denied',
@@ -183,7 +183,21 @@ export default function RootLayout({
           }}
         />
 
-        {/* Google Tag Manager - ONLY GTM-MF948JFL */}
+        {/* Google tag (gtag.js) */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-RKH53HHRHD"></script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-RKH53HHRHD');
+            `,
+          }}
+        />
+        {/* End Google tag */}
+
+        {/* Google Tag Manager - GTM-MF948JFL */}
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -196,7 +210,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         {/* End Google Tag Manager */}
       </head>
       <body className={`${inter.className} antialiased`}>
-        {/* Google Tag Manager (noscript) - ONLY GTM-MF948JFL */}
+        {/* Google Tag Manager (noscript) - GTM-MF948JFL */}
         <noscript>
           <iframe
             src="https://www.googletagmanager.com/ns.html?id=GTM-MF948JFL"
