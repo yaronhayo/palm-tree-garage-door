@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { X, Cookie, ChevronRight, Settings } from "lucide-react"
 import { PrivacyPolicyModal } from "./PrivacyPolicyModal"
+import { updateConsentState, getStoredConsent, type ConsentState } from "@/lib/consent-manager"
 
 type CookiePreferences = {
   necessary: boolean
@@ -33,6 +34,17 @@ export function CookieConsent() {
         setIsVisible(true)
       }, 3000)
       return () => clearTimeout(timer)
+    } else {
+      // Load existing preferences
+      const storedConsent = getStoredConsent()
+      if (storedConsent) {
+        setPreferences({
+          necessary: true, // Always true
+          analytics: storedConsent.analytics_storage === "granted",
+          marketing: storedConsent.ad_storage === "granted",
+          preferences: storedConsent.personalization_storage === "granted",
+        })
+      }
     }
 
     // Check if mobile
@@ -49,6 +61,19 @@ export function CookieConsent() {
   const savePreferences = () => {
     localStorage.setItem("cookieConsent", "true")
     localStorage.setItem("cookiePreferences", JSON.stringify(preferences))
+
+    // Update Google Consent Mode v2
+    const consentState: ConsentState = {
+      ad_storage: preferences.marketing ? "granted" : "denied",
+      ad_user_data: preferences.marketing ? "granted" : "denied",
+      ad_personalization: preferences.marketing ? "granted" : "denied",
+      analytics_storage: preferences.analytics ? "granted" : "denied",
+      functionality_storage: "granted", // Always granted for necessary functionality
+      personalization_storage: preferences.preferences ? "granted" : "denied",
+      security_storage: "granted", // Always granted for security
+    }
+
+    updateConsentState(consentState)
 
     // Push consent to dataLayer for GTM
     if (typeof window !== "undefined") {
@@ -78,6 +103,19 @@ export function CookieConsent() {
     setPreferences(allAccepted)
     localStorage.setItem("cookieConsent", "true")
     localStorage.setItem("cookiePreferences", JSON.stringify(allAccepted))
+
+    // Update Google Consent Mode v2 - Grant all
+    const consentState: ConsentState = {
+      ad_storage: "granted",
+      ad_user_data: "granted",
+      ad_personalization: "granted",
+      analytics_storage: "granted",
+      functionality_storage: "granted",
+      personalization_storage: "granted",
+      security_storage: "granted",
+    }
+
+    updateConsentState(consentState)
 
     // Push consent to dataLayer for GTM
     if (typeof window !== "undefined") {
@@ -117,6 +155,19 @@ export function CookieConsent() {
     localStorage.setItem("cookieConsent", "true")
     localStorage.setItem("cookiePreferences", JSON.stringify(necessaryOnly))
 
+    // Update Google Consent Mode v2 - Deny all except necessary
+    const consentState: ConsentState = {
+      ad_storage: "denied",
+      ad_user_data: "denied",
+      ad_personalization: "denied",
+      analytics_storage: "denied",
+      functionality_storage: "granted",
+      personalization_storage: "denied",
+      security_storage: "granted",
+    }
+
+    updateConsentState(consentState)
+
     // Push consent to dataLayer for GTM
     if (typeof window !== "undefined") {
       window.dataLayer = window.dataLayer || []
@@ -148,7 +199,7 @@ export function CookieConsent() {
                 <div>
                   <h3 className="text-xs font-semibold text-gray-800">Cookie Notice</h3>
                   <p className="text-xs text-gray-600 mt-0.5">
-                    We use cookies to improve your experience.{" "}
+                    We use cookies to improve your experience and comply with privacy regulations.{" "}
                     <button
                       onClick={() => setIsPrivacyPolicyOpen(true)}
                       className="text-primary-600 hover:text-primary-800 underline font-medium"
@@ -159,6 +210,12 @@ export function CookieConsent() {
                 </div>
               </div>
               <div className="flex flex-wrap justify-end gap-2 mt-2">
+                <button
+                  onClick={acceptNecessaryOnly}
+                  className="px-2 py-1 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+                >
+                  Necessary Only
+                </button>
                 <button
                   onClick={() => setShowDetails(true)}
                   className="px-2 py-1 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors flex items-center"
@@ -192,14 +249,15 @@ export function CookieConsent() {
               </div>
 
               <p className="text-xs text-gray-600">
-                Customize your cookie preferences. Necessary cookies are required for basic functionality.
+                Customize your cookie preferences. Necessary cookies are required for basic functionality and comply
+                with Google Consent Mode v2.
               </p>
 
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between p-1.5 bg-gray-50 rounded-md">
                   <div>
                     <h4 className="text-xs font-medium text-gray-800">Necessary</h4>
-                    <p className="text-[10px] text-gray-600">Required for basic functions</p>
+                    <p className="text-[10px] text-gray-600">Required for basic functions & security</p>
                   </div>
                   <div className="relative">
                     <input
@@ -211,7 +269,7 @@ export function CookieConsent() {
                     />
                     <label htmlFor="necessary-cookies" className="flex items-center cursor-not-allowed">
                       <div className="relative w-7 h-3.5 bg-primary-600 rounded-full shadow-inner"></div>
-                      <div className="absolute left-1 top-1 w-1.5 h-1.5 bg-white rounded-full transition"></div>
+                      <div className="absolute left-4 top-1 w-1.5 h-1.5 bg-white rounded-full transition"></div>
                     </label>
                   </div>
                 </div>
@@ -219,7 +277,7 @@ export function CookieConsent() {
                 <div className="flex items-center justify-between p-1.5 bg-gray-50 rounded-md">
                   <div>
                     <h4 className="text-xs font-medium text-gray-800">Analytics</h4>
-                    <p className="text-[10px] text-gray-600">Help us improve our website</p>
+                    <p className="text-[10px] text-gray-600">Help us improve our website performance</p>
                   </div>
                   <div className="relative">
                     <input
@@ -234,7 +292,7 @@ export function CookieConsent() {
                         className={`relative w-7 h-3.5 ${preferences.analytics ? "bg-primary-600" : "bg-gray-300"} rounded-full shadow-inner transition-colors`}
                       ></div>
                       <div
-                        className={`absolute ${preferences.analytics ? "left-4.5" : "left-1"} top-1 w-1.5 h-1.5 bg-white rounded-full transition-all`}
+                        className={`absolute ${preferences.analytics ? "left-4" : "left-1"} top-1 w-1.5 h-1.5 bg-white rounded-full transition-all`}
                       ></div>
                     </label>
                   </div>
@@ -243,7 +301,7 @@ export function CookieConsent() {
                 <div className="flex items-center justify-between p-1.5 bg-gray-50 rounded-md">
                   <div>
                     <h4 className="text-xs font-medium text-gray-800">Marketing</h4>
-                    <p className="text-[10px] text-gray-600">For relevant advertisements</p>
+                    <p className="text-[10px] text-gray-600">For relevant advertisements & tracking</p>
                   </div>
                   <div className="relative">
                     <input
@@ -258,7 +316,7 @@ export function CookieConsent() {
                         className={`relative w-7 h-3.5 ${preferences.marketing ? "bg-primary-600" : "bg-gray-300"} rounded-full shadow-inner transition-colors`}
                       ></div>
                       <div
-                        className={`absolute ${preferences.marketing ? "left-4.5" : "left-1"} top-1 w-1.5 h-1.5 bg-white rounded-full transition-all`}
+                        className={`absolute ${preferences.marketing ? "left-4" : "left-1"} top-1 w-1.5 h-1.5 bg-white rounded-full transition-all`}
                       ></div>
                     </label>
                   </div>
@@ -267,7 +325,7 @@ export function CookieConsent() {
                 <div className="flex items-center justify-between p-1.5 bg-gray-50 rounded-md">
                   <div>
                     <h4 className="text-xs font-medium text-gray-800">Preferences</h4>
-                    <p className="text-[10px] text-gray-600">Remember your settings</p>
+                    <p className="text-[10px] text-gray-600">Remember your settings & personalization</p>
                   </div>
                   <div className="relative">
                     <input
@@ -282,7 +340,7 @@ export function CookieConsent() {
                         className={`relative w-7 h-3.5 ${preferences.preferences ? "bg-primary-600" : "bg-gray-300"} rounded-full shadow-inner transition-colors`}
                       ></div>
                       <div
-                        className={`absolute ${preferences.preferences ? "left-4.5" : "left-1"} top-1 w-1.5 h-1.5 bg-white rounded-full transition-all`}
+                        className={`absolute ${preferences.preferences ? "left-4" : "left-1"} top-1 w-1.5 h-1.5 bg-white rounded-full transition-all`}
                       ></div>
                     </label>
                   </div>
@@ -300,7 +358,7 @@ export function CookieConsent() {
                   onClick={savePreferences}
                   className="px-2 py-1 text-xs font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-md transition-colors"
                 >
-                  Save
+                  Save Preferences
                 </button>
               </div>
             </div>
